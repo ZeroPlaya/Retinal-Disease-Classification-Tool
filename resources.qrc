@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>assets/back.png</file>
+        <file>assets/bg.png</file>
+        <file>assets/getstarted.png</file>
+        <file>assets/history.png</file>
+        <file>assets/historybg.png</file>
+        <file>assets/invisback.png</file>
+        <file>assets/resultsbg.png</file>
+        <file>assets/save.png</file>
+        <file>assets/title.png</file>
+        <file>assets/upload.png</file>
+        <file>assets/uploadnew.png</file>
+    </qresource>
+</RCC>

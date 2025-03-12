@@ -17,7 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHeaderView,
     QLabel, QPushButton, QSizePolicy, QStackedWidget,
-    QTableWidget, QTableWidgetItem, QWidget)
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
+import rc_resources
 
 class Ui_RetinalDiseaseClassifier(object):
     def setupUi(self, RetinalDiseaseClassifier):
@@ -27,10 +28,9 @@ class Ui_RetinalDiseaseClassifier(object):
         RetinalDiseaseClassifier.setMinimumSize(QSize(720, 512))
         RetinalDiseaseClassifier.setMaximumSize(QSize(720, 512))
         RetinalDiseaseClassifier.setAutoFillBackground(False)
-        RetinalDiseaseClassifier.setStyleSheet(u"background-image: url(\"D:/Qt/Projects/Test/assets/bg.png\");\n"
+        RetinalDiseaseClassifier.setStyleSheet(u"background-image: url(:/images/assets/bg.png);\n"
 "background-repeat: no-repeat;\n"
 "background-position: center;\n"
-"background-size: cover; /* Ensures it covers the whole widget */\n"
 "")
         self.gridLayout_4 = QGridLayout(RetinalDiseaseClassifier)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
@@ -63,7 +63,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.Title.setFrameShadow(QFrame.Plain)
         self.Title.setLineWidth(1)
         self.Title.setTextFormat(Qt.AutoText)
-        self.Title.setPixmap(QPixmap(u"assets/title.png"))
+        self.Title.setPixmap(QPixmap(u":/images/assets/title.png"))
         self.Title.setScaledContents(True)
         self.Title.setAlignment(Qt.AlignCenter)
         self.Title.setWordWrap(True)
@@ -81,7 +81,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.getStartedButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
-"    background-image: url(\"D:/Qt/Projects/Test/assets/getstarted.png\");\n"
+"    background-image: url(:images/assets/getstarted.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
@@ -105,7 +105,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.uploadBackButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
-"    background-image: url(\"D:/Qt/Projects/Test/assets/back.png\");\n"
+"    background-image: url(:images/assets/back.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
@@ -119,7 +119,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.uploadImageButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
-"    background-image: url(\"D:/Qt/Projects/Test/assets/upload.png\");\n"
+"    background-image: url(:images/assets/upload.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
@@ -133,7 +133,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.historyButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
-"    background-image: url(\"D:/Qt/Projects/Test/assets/history.png\");\n"
+"    background-image: url(:images/assets/history.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
@@ -144,6 +144,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.imagePlaceholder = QLabel(self.ClassificationPage)
         self.imagePlaceholder.setObjectName(u"imagePlaceholder")
         self.imagePlaceholder.setGeometry(QRect(8, 100, 383, 254))
+        self.imagePlaceholder.setStyleSheet(u"")
         self.imagePlaceholder.setPixmap(QPixmap(u"C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png"))
         self.imagePlaceholder.setScaledContents(True)
         self.uploadNewImageButton = QPushButton(self.ClassificationPage)
@@ -152,7 +153,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.uploadNewImageButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
-"    background-image: url(\"D:/Qt/Projects/Test/assets/uploadnew.png\");\n"
+"    background-image: url(:images/assets/uploadnew.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
@@ -163,7 +164,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.saveResultsButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
-"    background-image: url(\"D:/Qt/Projects/Test/assets/save.png\");\n"
+"    background-image: url(:images/assets/save.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
@@ -179,7 +180,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.classificationBackButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
-"    background-image: url(\"D:/Qt/Projects/Test/assets/back.png\");\n"
+"    background-image: url(:images/assets/back.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
@@ -190,7 +191,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.widget.setMinimumSize(QSize(310, 247))
         self.widget.setMaximumSize(QSize(310, 247))
         self.widget.setStyleSheet(u"QWidget {\n"
-"    background-image: url(\"D:/Qt/Projects/Test/assets/resultsbg.png\");\n"
+"    background-image: url(:images/assets/resultsbg.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
@@ -370,16 +371,69 @@ class Ui_RetinalDiseaseClassifier(object):
         self.stackedWidget.addWidget(self.ClassificationPage)
         self.HistoryPage = QWidget()
         self.HistoryPage.setObjectName(u"HistoryPage")
-        self.tableWidget = QTableWidget(self.HistoryPage)
-        if (self.tableWidget.columnCount() < 2):
-            self.tableWidget.setColumnCount(2)
+        self.verticalLayout = QVBoxLayout(self.HistoryPage)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.widget_2 = QWidget(self.HistoryPage)
+        self.widget_2.setObjectName(u"widget_2")
+        self.widget_2.setStyleSheet(u"QWidget {\n"
+"    background-image: url(:images/assets/historybg.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
+        self.tableWidget = QTableWidget(self.widget_2)
+        if (self.tableWidget.columnCount() < 4):
+            self.tableWidget.setColumnCount(4)
         __qtablewidgetitem = QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem3)
+        if (self.tableWidget.rowCount() < 1):
+            self.tableWidget.setRowCount(1)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        self.tableWidget.setVerticalHeaderItem(0, __qtablewidgetitem4)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.tableWidget.setItem(0, 0, __qtablewidgetitem5)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        self.tableWidget.setItem(0, 1, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        self.tableWidget.setItem(0, 2, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        self.tableWidget.setItem(0, 3, __qtablewidgetitem8)
         self.tableWidget.setObjectName(u"tableWidget")
-        self.tableWidget.setGeometry(QRect(140, 140, 256, 192))
-        self.historyBackButton = QPushButton(self.HistoryPage)
+        self.tableWidget.setGeometry(QRect(20, 80, 631, 331))
+        self.tableWidget.setAutoFillBackground(False)
+        self.tableWidget.setStyleSheet(u"/* Table cells */\n"
+"QTableWidget {\n"
+"    background: white;\n"
+"    color: black;\n"
+"    gridline-color: lightgray; /* Light gray gridlines */\n"
+"    border: none; /* Removes outer border */\n"
+"}\n"
+"\n"
+"/* Column headers */\n"
+"QHeaderView::section {\n"
+"    background: white;\n"
+"    color: black;\n"
+"    border: none; /* Removes header border */\n"
+"}\n"
+"\n"
+"/* Left row headers */\n"
+"QTableCornerButton::section, QHeaderView::section:vertical {\n"
+"    background: #f0f0f0; /* Light gray */\n"
+"    color: black;\n"
+"    border: none; /* Removes row header border */\n"
+"}\n"
+"")
+        self.tableWidget.setFrameShadow(QFrame.Sunken)
+        self.tableWidget.setLineWidth(0)
+        self.tableWidget.setShowGrid(True)
+        self.tableWidget.setGridStyle(Qt.SolidLine)
+        self.historyBackButton = QPushButton(self.widget_2)
         self.historyBackButton.setObjectName(u"historyBackButton")
         self.historyBackButton.setGeometry(QRect(8, 8, 66, 66))
         sizePolicy.setHeightForWidth(self.historyBackButton.sizePolicy().hasHeightForWidth())
@@ -390,11 +444,22 @@ class Ui_RetinalDiseaseClassifier(object):
         self.historyBackButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
-"    background-image: url(\"D:/Qt/Projects/Test/assets/back.png\");\n"
+"    background-image: url(:images/assets/invisback.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
 "")
+        self.line = QFrame(self.widget_2)
+        self.line.setObjectName(u"line")
+        self.line.setGeometry(QRect(12, 60, 656, 20))
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
+        self.historyBackButton.raise_()
+        self.line.raise_()
+        self.tableWidget.raise_()
+
+        self.verticalLayout.addWidget(self.widget_2)
+
         self.stackedWidget.addWidget(self.HistoryPage)
 
         self.gridLayout_4.addWidget(self.stackedWidget, 0, 0, 1, 1)
@@ -402,7 +467,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
@@ -424,9 +489,28 @@ class Ui_RetinalDiseaseClassifier(object):
         self.resultPlaceholder3_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Central Serous Retinopathy (1.0%)", None))
         self.ClassificationResults_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Classification Results", None))
         ___qtablewidgetitem = self.tableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Name", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Image", None));
         ___qtablewidgetitem1 = self.tableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None));
-        self.historyBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Patient Name", None));
+        ___qtablewidgetitem2 = self.tableWidget.horizontalHeaderItem(2)
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None));
+        ___qtablewidgetitem3 = self.tableWidget.horizontalHeaderItem(3)
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Results", None));
+        ___qtablewidgetitem4 = self.tableWidget.verticalHeaderItem(0)
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"001", None));
+
+        __sortingEnabled = self.tableWidget.isSortingEnabled()
+        self.tableWidget.setSortingEnabled(False)
+        ___qtablewidgetitem5 = self.tableWidget.item(0, 0)
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"IMG_0065", None));
+        ___qtablewidgetitem6 = self.tableWidget.item(0, 1)
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"John Doe", None));
+        ___qtablewidgetitem7 = self.tableWidget.item(0, 2)
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"02/21/25", None));
+        ___qtablewidgetitem8 = self.tableWidget.item(0, 3)
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"ARMD, CRVO, MY", None));
+        self.tableWidget.setSortingEnabled(__sortingEnabled)
+
+        self.historyBackButton.setText("")
     # retranslateUi
 

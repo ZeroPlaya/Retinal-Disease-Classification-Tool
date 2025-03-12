@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+*.venv
+*.log
+.DS_Store
+*.qrc
+resources_rc.py
+# Ignore virtual environments
+.qtcreator/Python_3_12_64_bit_venv/
