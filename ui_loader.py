@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QTableWidget, QTableWidgetItem, QHeaderView
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QPixmap
 from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
 from handlers import ButtonHandlers  # Import handlers for button logic
@@ -13,8 +13,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.ui)
 
         self.setFixedSize(720, 512)  # Set a fixed window size
-
-        # Initialize button handlers
         self.handlers = ButtonHandlers(self.ui)
         self.setup_table()
 
@@ -22,13 +20,11 @@ class MainWindow(QMainWindow):
         """Configure the history table with a fixed layout (no resizing)."""
         self.table = self.ui.historyTable  # Ensure this matches your .ui object name
         self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels(["Preview", "ID", "Patient Name", "Results", "Date", "Comment"])
+        self.table.setHorizontalHeaderLabels(["Preview", "File", "Patient Name", "Results", "Date", "Comment"])
 
-        # Set a fixed width for the table
-        self.table.setFixedWidth(631)  # Locks table width at 631 pixels
 
         # Adjust column widths to fit within 631 pixels
-        column_widths = [94, 67, 107, 123, 92, 146]  # Predefined column widths
+        column_widths = [94, 73, 107, 123, 92, 140]  # Predefined column widths
         for i, width in enumerate(column_widths):
             self.table.setColumnWidth(i, width)
 
@@ -37,8 +33,8 @@ class MainWindow(QMainWindow):
         for i in range(6):
             header.setSectionResizeMode(i, QHeaderView.Fixed)  # Prevents column resizing
 
-        # Disable row resizing
         self.table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)  # Locks row heights
+        self.table.verticalHeader().setVisible(False)
 
         # Apply bold font to column headers
         header_font = QFont()
@@ -89,25 +85,38 @@ class MainWindow(QMainWindow):
         self.table.setSelectionMode(QTableWidget.SingleSelection)  # One row at a time
         self.table.setFocusPolicy(Qt.NoFocus)  # Disable focus outline
 
-
-        # Hide row numbers
-        self.table.verticalHeader().setVisible(False)
-
         # Make the table read-only
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
 
-        # Sample Data
-        sample_data = [
-            ["", "001", "John Doe", "DR, MYA, ARMD", "2025-03-16", "First visit"],
-            ["", "002", "Jane Smith", "MYA, TSLN, CRVO", "2025-03-15", "Needs follow-up"],
-            ["", "003", "Alice Johnson", "NORMAL", "2025-03-14", "Regular checkup"],
+        # Sample images (ensure these exist in your directory)
+        image_paths = [
+            "data/(0004)aria_d_28.tif",  # First row
+            "data/13.png",  # Second row
+            "data/31.png",  # Third row
         ]
 
-        # Insert rows with sample data
-        self.table.setRowCount(len(sample_data))  # Set the number of rows
+        # Sample Data
+        sample_data = [
+            ["", "aria_d_28", "John Doe", "DR, MYA, ARMD", "2025-03-16", "First visit"],
+            ["", "13", "Jane Smith", "MYA, TSLN, CRVO", "2025-03-15", "Needs follow-up"],
+            ["", "31", "Alice Johnson", "NORMAL", "2025-03-14", "Regular checkup"],
+        ]
+
+        self.table.setRowCount(len(sample_data))
+
         for row_idx, row_data in enumerate(sample_data):
-            for col_idx, text in enumerate(row_data):
+            # Load and resize image for each row
+            pixmap = QPixmap(image_paths[row_idx])
+            scaled_pixmap = pixmap.scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+            # Insert image in first column
+            image_item = QTableWidgetItem()
+            image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
+            self.table.setItem(row_idx, 0, image_item)
+
+            # Insert other data into columns
+            for col_idx, text in enumerate(row_data[1:], start=1):
                 item = QTableWidgetItem(text)
-                item.setTextAlignment(Qt.AlignCenter)  # Center-align text
+                item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(row_idx, col_idx, item)
