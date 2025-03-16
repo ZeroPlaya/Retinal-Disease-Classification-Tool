@@ -10,3 +10,4 @@ env/
 resources_rc.py
 # Ignore virtual environments
 .qtcreator/Python_3_12_64_bit_venv/
+Test.pyproject.user

@@ -381,33 +381,33 @@ class Ui_RetinalDiseaseClassifier(object):
 "    background-position: center;\n"
 "}\n"
 "")
-        self.tableWidget = QTableWidget(self.widget_2)
-        if (self.tableWidget.columnCount() < 4):
-            self.tableWidget.setColumnCount(4)
+        self.historyTableWidget = QTableWidget(self.widget_2)
+        if (self.historyTableWidget.columnCount() < 6):
+            self.historyTableWidget.setColumnCount(6)
         __qtablewidgetitem = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        self.historyTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        self.historyTableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem1)
         __qtablewidgetitem2 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        self.historyTableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem2)
         __qtablewidgetitem3 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem3)
-        if (self.tableWidget.rowCount() < 1):
-            self.tableWidget.setRowCount(1)
+        self.historyTableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem3)
+        if (self.historyTableWidget.rowCount() < 1):
+            self.historyTableWidget.setRowCount(1)
         __qtablewidgetitem4 = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(0, __qtablewidgetitem4)
+        self.historyTableWidget.setVerticalHeaderItem(0, __qtablewidgetitem4)
         __qtablewidgetitem5 = QTableWidgetItem()
-        self.tableWidget.setItem(0, 0, __qtablewidgetitem5)
+        self.historyTableWidget.setItem(0, 0, __qtablewidgetitem5)
         __qtablewidgetitem6 = QTableWidgetItem()
-        self.tableWidget.setItem(0, 1, __qtablewidgetitem6)
+        self.historyTableWidget.setItem(0, 1, __qtablewidgetitem6)
         __qtablewidgetitem7 = QTableWidgetItem()
-        self.tableWidget.setItem(0, 2, __qtablewidgetitem7)
+        self.historyTableWidget.setItem(0, 2, __qtablewidgetitem7)
         __qtablewidgetitem8 = QTableWidgetItem()
-        self.tableWidget.setItem(0, 3, __qtablewidgetitem8)
-        self.tableWidget.setObjectName(u"tableWidget")
-        self.tableWidget.setGeometry(QRect(20, 80, 631, 331))
-        self.tableWidget.setAutoFillBackground(False)
-        self.tableWidget.setStyleSheet(u"/* Table cells */\n"
+        self.historyTableWidget.setItem(0, 3, __qtablewidgetitem8)
+        self.historyTableWidget.setObjectName(u"historyTableWidget")
+        self.historyTableWidget.setGeometry(QRect(20, 80, 631, 331))
+        self.historyTableWidget.setAutoFillBackground(False)
+        self.historyTableWidget.setStyleSheet(u"/* Table cells */\n"
 "QTableWidget {\n"
 "    background: white;\n"
 "    color: black;\n"
@@ -429,10 +429,13 @@ class Ui_RetinalDiseaseClassifier(object):
 "    border: none; /* Removes row header border */\n"
 "}\n"
 "")
-        self.tableWidget.setFrameShadow(QFrame.Sunken)
-        self.tableWidget.setLineWidth(0)
-        self.tableWidget.setShowGrid(True)
-        self.tableWidget.setGridStyle(Qt.SolidLine)
+        self.historyTableWidget.setFrameShadow(QFrame.Sunken)
+        self.historyTableWidget.setLineWidth(0)
+        self.historyTableWidget.setShowGrid(True)
+        self.historyTableWidget.setGridStyle(Qt.SolidLine)
+        self.historyTableWidget.setColumnCount(6)
+        self.historyTableWidget.horizontalHeader().setVisible(True)
+        self.historyTableWidget.verticalHeader().setVisible(False)
         self.historyBackButton = QPushButton(self.widget_2)
         self.historyBackButton.setObjectName(u"historyBackButton")
         self.historyBackButton.setGeometry(QRect(8, 8, 66, 66))
@@ -456,7 +459,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
         self.historyBackButton.raise_()
         self.line.raise_()
-        self.tableWidget.raise_()
+        self.historyTableWidget.raise_()
 
         self.verticalLayout.addWidget(self.widget_2)
 
@@ -467,7 +470,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
@@ -488,28 +491,28 @@ class Ui_RetinalDiseaseClassifier(object):
         self.resultPlaceholder2_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Myopia (6.5%)", None))
         self.resultPlaceholder3_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Central Serous Retinopathy (1.0%)", None))
         self.ClassificationResults_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Classification Results", None))
-        ___qtablewidgetitem = self.tableWidget.horizontalHeaderItem(0)
+        ___qtablewidgetitem = self.historyTableWidget.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Image", None));
-        ___qtablewidgetitem1 = self.tableWidget.horizontalHeaderItem(1)
+        ___qtablewidgetitem1 = self.historyTableWidget.horizontalHeaderItem(1)
         ___qtablewidgetitem1.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Patient Name", None));
-        ___qtablewidgetitem2 = self.tableWidget.horizontalHeaderItem(2)
+        ___qtablewidgetitem2 = self.historyTableWidget.horizontalHeaderItem(2)
         ___qtablewidgetitem2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None));
-        ___qtablewidgetitem3 = self.tableWidget.horizontalHeaderItem(3)
+        ___qtablewidgetitem3 = self.historyTableWidget.horizontalHeaderItem(3)
         ___qtablewidgetitem3.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Results", None));
-        ___qtablewidgetitem4 = self.tableWidget.verticalHeaderItem(0)
+        ___qtablewidgetitem4 = self.historyTableWidget.verticalHeaderItem(0)
         ___qtablewidgetitem4.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"001", None));
 
-        __sortingEnabled = self.tableWidget.isSortingEnabled()
-        self.tableWidget.setSortingEnabled(False)
-        ___qtablewidgetitem5 = self.tableWidget.item(0, 0)
+        __sortingEnabled = self.historyTableWidget.isSortingEnabled()
+        self.historyTableWidget.setSortingEnabled(False)
+        ___qtablewidgetitem5 = self.historyTableWidget.item(0, 0)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"IMG_0065", None));
-        ___qtablewidgetitem6 = self.tableWidget.item(0, 1)
+        ___qtablewidgetitem6 = self.historyTableWidget.item(0, 1)
         ___qtablewidgetitem6.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"John Doe", None));
-        ___qtablewidgetitem7 = self.tableWidget.item(0, 2)
+        ___qtablewidgetitem7 = self.historyTableWidget.item(0, 2)
         ___qtablewidgetitem7.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"02/21/25", None));
-        ___qtablewidgetitem8 = self.tableWidget.item(0, 3)
+        ___qtablewidgetitem8 = self.historyTableWidget.item(0, 3)
         ___qtablewidgetitem8.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"ARMD, CRVO, MY", None));
-        self.tableWidget.setSortingEnabled(__sortingEnabled)
+        self.historyTableWidget.setSortingEnabled(__sortingEnabled)
 
         self.historyBackButton.setText("")
     # retranslateUi

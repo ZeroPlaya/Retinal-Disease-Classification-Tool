@@ -47,7 +47,7 @@ background-position: center;
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="MenuPage">
       <layout class="QGridLayout" name="gridLayout">
@@ -99,7 +99,7 @@ background-position: center;
           <enum>Qt::AutoText</enum>
          </property>
          <property name="pixmap">
-          <pixmap resource="resources.qrc">:/images/assets/title.png</pixmap>
+          <pixmap>:/images/assets/title.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -1363,7 +1363,7 @@ background-position: center;
 }
 </string>
          </property>
-         <widget class="QTableWidget" name="tableWidget">
+         <widget class="QTableWidget" name="historyTableWidget">
           <property name="geometry">
            <rect>
             <x>20</x>
@@ -1411,6 +1411,15 @@ QTableCornerButton::section, QHeaderView::section:vertical {
           <property name="gridStyle">
            <enum>Qt::SolidLine</enum>
           </property>
+          <property name="columnCount">
+           <number>6</number>
+          </property>
+          <attribute name="horizontalHeaderVisible">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
           <row>
            <property name="text">
             <string>001</string>
@@ -1436,6 +1445,8 @@ QTableCornerButton::section, QHeaderView::section:vertical {
             <string>Results</string>
            </property>
           </column>
+          <column/>
+          <column/>
           <item row="0" column="0">
            <property name="text">
             <string>IMG_0065</string>
@@ -1516,7 +1527,7 @@ QTableCornerButton::section, QHeaderView::section:vertical {
          </widget>
          <zorder>historyBackButton</zorder>
          <zorder>line</zorder>
-         <zorder>tableWidget</zorder>
+         <zorder>historyTableWidget</zorder>
         </widget>
        </item>
       </layout>
@@ -1525,9 +1536,7 @@ QTableCornerButton::section, QHeaderView::section:vertical {
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
  <slots>
   <slot>setCurrentIndex(1)</slot>
