@@ -47,7 +47,7 @@ background-position: center;
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="MenuPage">
       <layout class="QGridLayout" name="gridLayout">
@@ -99,7 +99,7 @@ background-position: center;
           <enum>Qt::AutoText</enum>
          </property>
          <property name="pixmap">
-          <pixmap>:/images/assets/title.png</pixmap>
+          <pixmap resource="../resources.qrc">:/images/assets/title.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -1536,7 +1536,9 @@ QTableCornerButton::section, QHeaderView::section:vertical {
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections/>
  <slots>
   <slot>setCurrentIndex(1)</slot>
