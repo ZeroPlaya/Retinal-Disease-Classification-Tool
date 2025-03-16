@@ -1,12 +1,9 @@
 {
     "files": [
         "main.py",
-        "ui/",
         "ui/retina.ui",
         "ui_loader.py",
         "handlers.py",
-        "resources.qrc",
-        "resources_rc.py",
-        "rc_resources.py"
+        "resources.qrc"
     ]
 }
