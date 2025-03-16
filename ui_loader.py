@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QTableWidget, QTableWidgetItem, QHeaderView
+from PySide6.QtWidgets import QMainWindow, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 from PySide6.QtGui import QFont, QPixmap
 from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
 
 
         # Adjust column widths to fit within 631 pixels
-        column_widths = [94, 73, 107, 123, 92, 140]  # Predefined column widths
+        column_widths = [94, 73, 107, 123, 92, 120]  # Predefined column widths
         for i, width in enumerate(column_widths):
             self.table.setColumnWidth(i, width)
 
@@ -78,6 +78,52 @@ class MainWindow(QMainWindow):
             QTableView::item:focus {
                 outline: none;  /* Remove focus rectangle */
             }
+
+            QScrollBar:vertical {
+                background-color: #f1f1f1;
+                width: 12px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background-color: #888;
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background-color: #555;
+            }
+
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                border: none;
+                background: none;
+                height: 0px;
+                width: 0px;
+            }
+
+            QScrollBar:horizontal {
+                background-color: #f1f1f1;
+                height: 12px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:horizontal {
+                background-color: #888;
+                border-radius: 6px;
+                min-width: 20px;
+            }
+
+            QScrollBar::handle:horizontal:hover {
+                background-color: #555;
+            }
+
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+                border: none;
+                background: none;
+                height: 0px;
+                width: 0px;
+            }
             """
         )
 
@@ -89,8 +135,24 @@ class MainWindow(QMainWindow):
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
 
+        # Enable smooth scrolling
+        self.table.setVerticalScrollMode(QTableWidget.ScrollPerPixel)
+        self.table.setHorizontalScrollMode(QTableWidget.ScrollPerPixel)
+
         # Sample images (ensure these exist in your directory)
         image_paths = [
+            "data/(0004)aria_d_28.tif",  # First row
+            "data/13.png",  # Second row
+            "data/31.png",  # Third row
+            "data/(0004)aria_d_28.tif",  # First row
+            "data/13.png",  # Second row
+            "data/31.png",  # Third row
+            "data/(0004)aria_d_28.tif",  # First row
+            "data/13.png",  # Second row
+            "data/31.png",  # Third row
+            "data/(0004)aria_d_28.tif",  # First row
+            "data/13.png",  # Second row
+            "data/31.png",  # Third row
             "data/(0004)aria_d_28.tif",  # First row
             "data/13.png",  # Second row
             "data/31.png",  # Third row
@@ -101,6 +163,18 @@ class MainWindow(QMainWindow):
             ["", "aria_d_28", "John Doe", "DR, MYA, ARMD", "2025-03-16", "First visit"],
             ["", "13", "Jane Smith", "MYA, TSLN, CRVO", "2025-03-15", "Needs follow-up"],
             ["", "31", "Alice Johnson", "NORMAL", "2025-03-14", "Regular checkup"],
+            ["", "32", "Bob Brown", "DR, MYA", "2025-03-13", "Initial consultation"],
+            ["", "33", "Charlie Davis", "ARMD", "2025-03-12", "Routine check"],
+            ["", "34", "Diana Evans", "MYA, TSLN", "2025-03-11", "Follow-up required"],
+            ["", "35", "Eve Foster", "CRVO", "2025-03-10", "Urgent review"],
+            ["", "36", "Frank Green", "NORMAL", "2025-03-09", "Annual checkup"],
+            ["", "37", "Grace Harris", "DR, ARMD", "2025-03-08", "Second opinion"],
+            ["", "38", "Hank Irving", "MYA", "2025-03-07", "New patient"],
+            ["", "39", "Ivy Johnson", "TSLN", "2025-03-06", "Follow-up visit"],
+            ["", "40", "Jack King", "CRVO, ARMD", "2025-03-05", "Specialist referral"],
+            ["", "41", "Kara Lee", "NORMAL", "2025-03-04", "Routine check"],
+            ["", "42", "Leo Martin", "DR, MYA", "2025-03-03", "Initial consultation"],
+            ["", "43", "Mia Nelson", "ARMD", "2025-03-02", "Routine check"],
         ]
 
         self.table.setRowCount(len(sample_data))
@@ -120,3 +194,4 @@ class MainWindow(QMainWindow):
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(row_idx, col_idx, item)
+
