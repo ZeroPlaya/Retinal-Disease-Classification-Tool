@@ -150,6 +150,7 @@ class MainWindow(QMainWindow):
             # Insert image in first column
             image_item = QTableWidgetItem()
             image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
+            image_item.setData(Qt.UserRole, image_paths[row_idx])  # Store the file path in a custom data role
             self.table.setItem(row_idx, 0, image_item)
 
             # Insert other data into columns

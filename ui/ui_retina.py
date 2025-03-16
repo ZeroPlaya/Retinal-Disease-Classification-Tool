@@ -143,7 +143,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.ClassificationPage.setObjectName(u"ClassificationPage")
         self.imagePlaceholder = QLabel(self.ClassificationPage)
         self.imagePlaceholder.setObjectName(u"imagePlaceholder")
-        self.imagePlaceholder.setGeometry(QRect(8, 100, 383, 254))
+        self.imagePlaceholder.setGeometry(QRect(10, 75, 390, 292))
         self.imagePlaceholder.setStyleSheet(u"")
         self.imagePlaceholder.setPixmap(QPixmap(u"C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png"))
         self.imagePlaceholder.setScaledContents(True)
@@ -470,7 +470,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
