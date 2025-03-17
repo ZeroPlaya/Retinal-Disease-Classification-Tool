@@ -47,7 +47,7 @@ background-position: center;
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="MenuPage">
       <layout class="QGridLayout" name="gridLayout">
@@ -299,6 +299,9 @@ background-position: center;
          <height>292</height>
         </rect>
        </property>
+       <property name="cursor">
+        <cursorShape>ArrowCursor</cursorShape>
+       </property>
        <property name="styleSheet">
         <string notr="true"/>
        </property>
@@ -316,10 +319,13 @@ background-position: center;
        <property name="geometry">
         <rect>
          <x>8</x>
-         <y>370</y>
+         <y>380</y>
          <width>144</width>
          <height>57</height>
         </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
        </property>
        <property name="styleSheet">
         <string notr="true">QPushButton {
@@ -339,10 +345,13 @@ background-position: center;
        <property name="geometry">
         <rect>
          <x>161</x>
-         <y>370</y>
+         <y>380</y>
          <width>127</width>
          <height>57</height>
         </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
        </property>
        <property name="styleSheet">
         <string notr="true">QPushButton {

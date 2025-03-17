@@ -144,12 +144,14 @@ class Ui_RetinalDiseaseClassifier(object):
         self.imagePlaceholder = QLabel(self.ClassificationPage)
         self.imagePlaceholder.setObjectName(u"imagePlaceholder")
         self.imagePlaceholder.setGeometry(QRect(10, 75, 390, 292))
+        self.imagePlaceholder.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
         self.imagePlaceholder.setStyleSheet(u"")
         self.imagePlaceholder.setPixmap(QPixmap(u"C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png"))
         self.imagePlaceholder.setScaledContents(True)
         self.uploadNewImageButton = QPushButton(self.ClassificationPage)
         self.uploadNewImageButton.setObjectName(u"uploadNewImageButton")
-        self.uploadNewImageButton.setGeometry(QRect(8, 370, 144, 57))
+        self.uploadNewImageButton.setGeometry(QRect(8, 380, 144, 57))
+        self.uploadNewImageButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.uploadNewImageButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
@@ -160,7 +162,8 @@ class Ui_RetinalDiseaseClassifier(object):
 "")
         self.saveResultsButton = QPushButton(self.ClassificationPage)
         self.saveResultsButton.setObjectName(u"saveResultsButton")
-        self.saveResultsButton.setGeometry(QRect(161, 370, 127, 57))
+        self.saveResultsButton.setGeometry(QRect(161, 380, 127, 57))
+        self.saveResultsButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.saveResultsButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
@@ -470,7 +473,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
