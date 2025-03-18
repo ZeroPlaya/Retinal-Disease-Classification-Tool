@@ -11,5 +11,6 @@
         <file>assets/title.png</file>
         <file>assets/upload.png</file>
         <file>assets/uploadnew.png</file>
+        <file>assets/blackbg.png</file>
     </qresource>
 </RCC>

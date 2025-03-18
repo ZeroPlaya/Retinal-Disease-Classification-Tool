@@ -47,7 +47,7 @@ background-position: center;
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="MenuPage">
       <layout class="QGridLayout" name="gridLayout">
@@ -290,31 +290,6 @@ background-position: center;
       </widget>
      </widget>
      <widget class="QWidget" name="ClassificationPage">
-      <widget class="QLabel" name="imagePlaceholder">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>75</y>
-         <width>390</width>
-         <height>292</height>
-        </rect>
-       </property>
-       <property name="cursor">
-        <cursorShape>ArrowCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap>C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png</pixmap>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
-       </property>
-      </widget>
       <widget class="QPushButton" name="uploadNewImageButton">
        <property name="geometry">
         <rect>
@@ -1359,6 +1334,60 @@ background-position: center;
         </property>
        </widget>
       </widget>
+      <widget class="QFrame" name="blackbg">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>80</y>
+         <width>390</width>
+         <height>292</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QFrame {
+    background-image: url(:images/assets/blackbg.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+</string>
+       </property>
+       <widget class="QLabel" name="imagePlaceholder">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>0</y>
+          <width>50</width>
+          <height>50</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>ArrowCursor</cursorShape>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+    background-color: white; /* Solid white background */
+}
+</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap>C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </widget>
+      <zorder>blackbg</zorder>
+      <zorder>uploadNewImageButton</zorder>
+      <zorder>saveResultsButton</zorder>
+      <zorder>classificationBackButton</zorder>
+      <zorder>widget</zorder>
      </widget>
      <widget class="QWidget" name="HistoryPage">
       <layout class="QVBoxLayout" name="verticalLayout">

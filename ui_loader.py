@@ -15,6 +15,7 @@ class MainWindow(QMainWindow):
 
         self.setFixedSize(720, 512)  # Set a fixed window size
         self.handlers = ButtonHandlers(self.ui)
+        
         self.setup_table()
 
     def setup_table(self):

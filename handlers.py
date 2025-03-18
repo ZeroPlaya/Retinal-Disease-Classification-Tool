@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QFileDialog, QLabel, QDialog, QVBoxLayout
+from PySide6.QtWidgets import QFileDialog, QLabel, QDialog, QVBoxLayout, QWidget
 from PySide6.QtCore import Slot, Qt, QEvent  # Import Qt and QEvent
 from PySide6.QtGui import QPixmap, QPainter, QCursor
 
@@ -32,11 +32,12 @@ class ButtonHandlers:
         self.replace_image_placeholder()
 
     def replace_image_placeholder(self):
-        """Replace the existing QLabel with ClickableLabel."""
+        """Replace the existing QLabel with ClickableLabel and set transparent background for imagePlaceholder."""
         old_label = self.ui.imagePlaceholder
         self.ui.imagePlaceholder = ClickableLabel(old_label.parent())
-        self.ui.imagePlaceholder.setGeometry(10, 75, 390, 292)  # Set the geometry to the specified values
+        self.ui.imagePlaceholder.setGeometry(0, 0, 390, 292)  # Set the geometry to the specified values
         self.ui.imagePlaceholder.setObjectName(old_label.objectName())
+        self.ui.imagePlaceholder.setStyleSheet("background-color: transparent;")  # Set transparent background
         self.ui.imagePlaceholder.clicked = self.open_image_preview  # Connect click event
 
     @Slot()
@@ -51,7 +52,7 @@ class ButtonHandlers:
         """Set the image in the imagePlaceholder QLabel."""
         pixmap = QPixmap(image_path)
         label_size = self.ui.imagePlaceholder.size()
-        scaled_pixmap = pixmap.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        scaled_pixmap = pixmap.scaledToHeight(292, Qt.SmoothTransformation)  # Restrict height to 292 and keep aspect ratio
 
         # Create a new pixmap with the label's size and fill it with a transparent background
         final_pixmap = QPixmap(label_size)

@@ -141,13 +141,6 @@ class Ui_RetinalDiseaseClassifier(object):
         self.stackedWidget.addWidget(self.UploadPage)
         self.ClassificationPage = QWidget()
         self.ClassificationPage.setObjectName(u"ClassificationPage")
-        self.imagePlaceholder = QLabel(self.ClassificationPage)
-        self.imagePlaceholder.setObjectName(u"imagePlaceholder")
-        self.imagePlaceholder.setGeometry(QRect(10, 75, 390, 292))
-        self.imagePlaceholder.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
-        self.imagePlaceholder.setStyleSheet(u"")
-        self.imagePlaceholder.setPixmap(QPixmap(u"C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png"))
-        self.imagePlaceholder.setScaledContents(True)
         self.uploadNewImageButton = QPushButton(self.ClassificationPage)
         self.uploadNewImageButton.setObjectName(u"uploadNewImageButton")
         self.uploadNewImageButton.setGeometry(QRect(8, 380, 144, 57))
@@ -371,7 +364,32 @@ class Ui_RetinalDiseaseClassifier(object):
 "")
         self.ClassificationResults_2.setFrameShadow(QFrame.Plain)
         self.ClassificationResults_2.setAlignment(Qt.AlignCenter)
+        self.blackbg = QFrame(self.ClassificationPage)
+        self.blackbg.setObjectName(u"blackbg")
+        self.blackbg.setGeometry(QRect(10, 80, 390, 292))
+        self.blackbg.setStyleSheet(u"QFrame {\n"
+"    background-image: url(:images/assets/blackbg.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
+        self.imagePlaceholder = QLabel(self.blackbg)
+        self.imagePlaceholder.setObjectName(u"imagePlaceholder")
+        self.imagePlaceholder.setGeometry(QRect(170, 0, 50, 50))
+        self.imagePlaceholder.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
+        self.imagePlaceholder.setAutoFillBackground(False)
+        self.imagePlaceholder.setStyleSheet(u"QLabel {\n"
+"    background-color: white; /* Solid white background */\n"
+"}\n"
+"")
+        self.imagePlaceholder.setPixmap(QPixmap(u"C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png"))
+        self.imagePlaceholder.setScaledContents(True)
         self.stackedWidget.addWidget(self.ClassificationPage)
+        self.blackbg.raise_()
+        self.uploadNewImageButton.raise_()
+        self.saveResultsButton.raise_()
+        self.classificationBackButton.raise_()
+        self.widget.raise_()
         self.HistoryPage = QWidget()
         self.HistoryPage.setObjectName(u"HistoryPage")
         self.verticalLayout = QVBoxLayout(self.HistoryPage)
@@ -473,7 +491,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
@@ -486,7 +504,6 @@ class Ui_RetinalDiseaseClassifier(object):
         self.uploadBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
         self.uploadImageButton.setText("")
         self.historyButton.setText("")
-        self.imagePlaceholder.setText("")
         self.uploadNewImageButton.setText("")
         self.saveResultsButton.setText("")
         self.classificationBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
@@ -494,6 +511,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.resultPlaceholder2_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Myopia (6.5%)", None))
         self.resultPlaceholder3_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Central Serous Retinopathy (1.0%)", None))
         self.ClassificationResults_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Classification Results", None))
+        self.imagePlaceholder.setText("")
         ___qtablewidgetitem = self.historyTable.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Image", None));
         ___qtablewidgetitem1 = self.historyTable.horizontalHeaderItem(1)
