@@ -1386,7 +1386,7 @@ background-position: center;
         <property name="geometry">
          <rect>
           <x>169</x>
-          <y>260</y>
+          <y>266</y>
           <width>211</width>
           <height>20</height>
          </rect>

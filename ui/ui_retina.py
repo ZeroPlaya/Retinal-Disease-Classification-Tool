@@ -143,7 +143,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.ClassificationPage.setObjectName(u"ClassificationPage")
         self.uploadNewImageButton = QPushButton(self.ClassificationPage)
         self.uploadNewImageButton.setObjectName(u"uploadNewImageButton")
-        self.uploadNewImageButton.setGeometry(QRect(8, 380, 144, 57))
+        self.uploadNewImageButton.setGeometry(QRect(8, 391, 144, 57))
         self.uploadNewImageButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.uploadNewImageButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
@@ -155,7 +155,7 @@ class Ui_RetinalDiseaseClassifier(object):
 "")
         self.saveResultsButton = QPushButton(self.ClassificationPage)
         self.saveResultsButton.setObjectName(u"saveResultsButton")
-        self.saveResultsButton.setGeometry(QRect(161, 380, 127, 57))
+        self.saveResultsButton.setGeometry(QRect(161, 391, 127, 57))
         self.saveResultsButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.saveResultsButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
@@ -183,7 +183,7 @@ class Ui_RetinalDiseaseClassifier(object):
 "")
         self.widget = QWidget(self.ClassificationPage)
         self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(390, 101, 310, 247))
+        self.widget.setGeometry(QRect(400, 100, 310, 247))
         self.widget.setMinimumSize(QSize(310, 247))
         self.widget.setMaximumSize(QSize(310, 247))
         self.widget.setStyleSheet(u"QWidget {\n"
@@ -194,7 +194,7 @@ class Ui_RetinalDiseaseClassifier(object):
 "")
         self.resultPlaceholder1_2 = QLabel(self.widget)
         self.resultPlaceholder1_2.setObjectName(u"resultPlaceholder1_2")
-        self.resultPlaceholder1_2.setGeometry(QRect(40, 79, 151, 41))
+        self.resultPlaceholder1_2.setGeometry(QRect(40, 79, 161, 41))
         palette = QPalette()
         brush = QBrush(QColor(0, 0, 0, 255))
         brush.setStyle(Qt.SolidPattern)
@@ -366,7 +366,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.ClassificationResults_2.setAlignment(Qt.AlignCenter)
         self.blackbg = QFrame(self.ClassificationPage)
         self.blackbg.setObjectName(u"blackbg")
-        self.blackbg.setGeometry(QRect(10, 80, 390, 292))
+        self.blackbg.setGeometry(QRect(10, 84, 390, 292))
         self.blackbg.setStyleSheet(u"QFrame {\n"
 "    background-image: url(:images/assets/blackbg.png);\n"
 "    background-repeat: no-repeat;\n"
@@ -384,6 +384,15 @@ class Ui_RetinalDiseaseClassifier(object):
 "")
         self.imagePlaceholder.setPixmap(QPixmap(u"C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png"))
         self.imagePlaceholder.setScaledContents(True)
+        self.imageName = QLabel(self.blackbg)
+        self.imageName.setObjectName(u"imageName")
+        self.imageName.setGeometry(QRect(169, 260, 211, 20))
+        self.imageName.setLayoutDirection(Qt.LeftToRight)
+        self.imageName.setStyleSheet(u"QLabel {\n"
+"background-color: transparent; \n"
+"color: white;\n"
+"}")
+        self.imageName.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
         self.stackedWidget.addWidget(self.ClassificationPage)
         self.blackbg.raise_()
         self.uploadNewImageButton.raise_()
@@ -512,6 +521,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.resultPlaceholder3_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Central Serous Retinopathy (1.0%)", None))
         self.ClassificationResults_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Classification Results", None))
         self.imagePlaceholder.setText("")
+        self.imageName.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"placeholder.png", None))
         ___qtablewidgetitem = self.historyTable.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Image", None));
         ___qtablewidgetitem1 = self.historyTable.horizontalHeaderItem(1)

@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QFileDialog, QLabel, QDialog, QVBoxLayout, QWidget
 from PySide6.QtCore import Slot, Qt, QEvent  # Import Qt and QEvent
-from PySide6.QtGui import QPixmap, QPainter, QCursor
+from PySide6.QtGui import QPixmap, QPainter, QCursor, QFont
 
 class ClickableLabel(QLabel):
     def __init__(self, parent=None):
@@ -11,6 +11,11 @@ class ClickableLabel(QLabel):
     def mousePressEvent(self, event):
         if self.clicked:
             self.clicked(event)
+
+class TransparentLabel(QLabel):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)  # Set transparent background
 
 class ButtonHandlers:
     def __init__(self, ui):
@@ -40,6 +45,16 @@ class ButtonHandlers:
         self.ui.imagePlaceholder.setStyleSheet("background-color: transparent;")  # Set transparent background
         self.ui.imagePlaceholder.clicked = self.open_image_preview  # Connect click event
 
+        # Replace the existing QLabel with TransparentLabel for imageName
+        old_image_name_label = self.ui.imageName
+        self.ui.imageName = TransparentLabel(old_image_name_label.parent())
+        self.ui.imageName.setGeometry(169, 266, 211, 20)  # Adjust the geometry as needed (x, y, width, height)
+        self.ui.imageName.setObjectName(old_image_name_label.objectName())
+        self.ui.imageName.setStyleSheet("color: white; text-align: right; font: 400 italic 13pt 'SF Pro Display';")  # Set text color to white, right-align, and font style
+        self.ui.imageName.setAlignment(Qt.AlignRight | Qt.AlignVCenter)  # Ensure text is right-aligned
+
+        self.ui.imageName.raise_()  # Bring imageName QLabel to the front
+
     @Slot()
     def open_file_explorer(self):
         """Opens a file dialog and switches pages if a file is selected."""
@@ -49,7 +64,7 @@ class ButtonHandlers:
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
 
     def set_image_placeholder(self, image_path):
-        """Set the image in the imagePlaceholder QLabel."""
+        """Set the image in the imagePlaceholder QLabel and update the imageName QLabel."""
         pixmap = QPixmap(image_path)
         label_size = self.ui.imagePlaceholder.size()
         scaled_pixmap = pixmap.scaledToHeight(292, Qt.SmoothTransformation)  # Restrict height to 292 and keep aspect ratio
@@ -68,6 +83,10 @@ class ButtonHandlers:
         self.ui.imagePlaceholder.setPixmap(final_pixmap)
         self.ui.imagePlaceholder.setScaledContents(False)  # Ensure QLabel does not scale the pixmap further
         self.ui.imagePlaceholder.setProperty("imagePath", image_path)  # Store the image path in the QLabel
+
+        # Set the image name in the imageName QLabel
+        image_name = image_path.split("/")[-1]  # Extract the image name from the path
+        self.ui.imageName.setText(image_name)
 
     @Slot()
     def on_row_double_clicked(self, item):
