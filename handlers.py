@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QFileDialog, QLabel, QDialog, QVBoxLayout, QWidget
 from PySide6.QtCore import Slot, Qt, QEvent  # Import Qt and QEvent
 from PySide6.QtGui import QPixmap, QPainter, QCursor, QFont
+from datetime import datetime  # Import datetime for date formatting
 
 class ClickableLabel(QLabel):
     def __init__(self, parent=None):
@@ -23,12 +24,13 @@ class ButtonHandlers:
         self.connect_buttons()
 
     def connect_buttons(self):
-        """0 = titlepage, 1 = selectionpage, 2 = classificationpage, 3 = historypage"""
+        """0 = titlepage, 1 = selectionpage, 2 = classificationpage, 3 = historyview, 4 = historypage"""
         self.ui.getStartedButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
         self.ui.uploadBackButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
         self.ui.historyBackButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
-        self.ui.historyButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(3))
+        self.ui.historyButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(4))
         self.ui.classificationBackButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
+        self.ui.historyViewBackButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(4))
         self.ui.uploadImageButton.clicked.connect(self.open_file_explorer)
         self.ui.uploadNewImageButton.clicked.connect(self.open_file_explorer)
         self.ui.historyTable.itemDoubleClicked.connect(self.on_row_double_clicked)  # Connect double-click signal
@@ -37,23 +39,23 @@ class ButtonHandlers:
         self.replace_image_placeholder()
 
     def replace_image_placeholder(self):
-        """Replace the existing QLabel with ClickableLabel and set transparent background for imagePlaceholder."""
-        old_label = self.ui.imagePlaceholder
-        self.ui.imagePlaceholder = ClickableLabel(old_label.parent())
-        self.ui.imagePlaceholder.setGeometry(0, 0, 390, 292)  # Set the geometry to the specified values
-        self.ui.imagePlaceholder.setObjectName(old_label.objectName())
-        self.ui.imagePlaceholder.setStyleSheet("background-color: transparent;")  # Set transparent background
-        self.ui.imagePlaceholder.clicked = self.open_image_preview  # Connect click event
+        """Replace the existing QLabel with ClickableLabel and set transparent background for imagePlaceholder_2."""
+        old_label = self.ui.imagePlaceholder_2
+        self.ui.imagePlaceholder_2 = ClickableLabel(old_label.parent())
+        self.ui.imagePlaceholder_2.setGeometry(0, 0, 390, 292)  # Set the geometry to the specified values
+        self.ui.imagePlaceholder_2.setObjectName(old_label.objectName())
+        self.ui.imagePlaceholder_2.setStyleSheet("background-color: transparent;")  # Set transparent background
+        self.ui.imagePlaceholder_2.clicked = self.open_image_preview  # Connect click event
 
-        # Replace the existing QLabel with TransparentLabel for imageName
-        old_image_name_label = self.ui.imageName
-        self.ui.imageName = TransparentLabel(old_image_name_label.parent())
-        self.ui.imageName.setGeometry(169, 266, 211, 20)  # Adjust the geometry as needed (x, y, width, height)
-        self.ui.imageName.setObjectName(old_image_name_label.objectName())
-        self.ui.imageName.setStyleSheet("color: white; text-align: right; font: 450 italic 13pt 'SF Pro Display';")  # Set text color to white, right-align, and font style
-        self.ui.imageName.setAlignment(Qt.AlignRight | Qt.AlignVCenter)  # Ensure text is right-aligned
+        # Replace the existing QLabel with TransparentLabel for imageName_2
+        old_image_name_label = self.ui.imageName_2
+        self.ui.imageName_2 = TransparentLabel(old_image_name_label.parent())
+        self.ui.imageName_2.setGeometry(169, 266, 211, 20)  # Adjust the geometry as needed (x, y, width, height)
+        self.ui.imageName_2.setObjectName(old_image_name_label.objectName())
+        self.ui.imageName_2.setStyleSheet("color: white; text-align: right; font: 450 italic 13pt 'SF Pro Display';")  # Set text color to white, right-align, and font style
+        self.ui.imageName_2.setAlignment(Qt.AlignRight | Qt.AlignVCenter)  # Ensure text is right-aligned
 
-        self.ui.imageName.raise_()  # Bring imageName QLabel to the front
+        self.ui.imageName_2.raise_()  # Bring imageName_2 QLabel to the front
 
     @Slot()
     def open_file_explorer(self):
@@ -64,9 +66,9 @@ class ButtonHandlers:
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
 
     def set_image_placeholder(self, image_path):
-        """Set the image in the imagePlaceholder QLabel and update the imageName QLabel."""
+        """Set the image in the imagePlaceholder_2 QLabel and update the imageName_2 QLabel."""
         pixmap = QPixmap(image_path)
-        label_size = self.ui.imagePlaceholder.size()
+        label_size = self.ui.imagePlaceholder_2.size()
         scaled_pixmap = pixmap.scaledToHeight(292, Qt.SmoothTransformation)  # Restrict height to 292 and keep aspect ratio
 
         # Create a new pixmap with the label's size and fill it with a transparent background
@@ -80,20 +82,22 @@ class ButtonHandlers:
         painter.drawPixmap(x, y, scaled_pixmap)
         painter.end()
 
-        self.ui.imagePlaceholder.setPixmap(final_pixmap)
-        self.ui.imagePlaceholder.setScaledContents(False)  # Ensure QLabel does not scale the pixmap further
-        self.ui.imagePlaceholder.setProperty("imagePath", image_path)  # Store the image path in the QLabel
+        self.ui.imagePlaceholder_2.setPixmap(final_pixmap)
+        self.ui.imagePlaceholder_2.setScaledContents(False)  # Ensure QLabel does not scale the pixmap further
+        self.ui.imagePlaceholder_2.setProperty("imagePath", image_path)  # Store the image path in the QLabel
 
-        # Set the image name in the imageName QLabel
+        # Set the image name in the imageName_2 QLabel
         image_name = image_path.split("/")[-1]  # Extract the image name from the path
-        self.ui.imageName.setText(image_name)
+        self.ui.imageName_2.setText(image_name)
 
     @Slot()
     def on_row_double_clicked(self, item):
-        """Switch to the classification page when a row is double-clicked and set the image and result."""
+        """Switch to the classification page when a row is double-clicked and set the image, result, name, and date."""
         row = item.row()
         image_path = self.ui.historyTable.item(row, 0).data(Qt.UserRole)  # Get the file path from the custom data role
         result_text = self.ui.historyTable.item(row, 3).text()  # Get the result text from the 4th column
+        name_text = self.ui.historyTable.item(row, 2).text()  # Get the name text from the 3rd column
+        date_text = self.ui.historyTable.item(row, 4).text()  # Get the date text from the 5th column
 
         # Mapping of shortened names to full names
         disease_mapping = {
@@ -121,16 +125,21 @@ class ButtonHandlers:
         # Replace shortened names with full names
         full_result_text = "\n\n".join(disease_mapping.get(disease.strip(), disease.strip()) for disease in result_text.split(","))
 
+        # Convert date to "Month Day, Year" format
+        formatted_date = datetime.strptime(date_text, "%Y-%m-%d").strftime("%B %d, %Y")
+
         if image_path:
             self.set_image_placeholder(image_path)
-            self.ui.resultPlaceholder.setText(full_result_text)  # Set the result text in the resultPlaceholder QLabel
-            self.ui.resultPlaceholder.adjustSize()  # Adjust the size of the QLabel to fit the text
-            self.ui.stackedWidget.setCurrentIndex(2)
+            self.ui.resultPlaceholder_2.setText(full_result_text)  # Set the result text in the resultPlaceholder_2 QLabel
+            self.ui.resultPlaceholder_2.adjustSize()  # Adjust the size of the QLabel to fit the text
+            self.ui.nameValue_2.setText(name_text)  # Set the name text in the nameValue_2 QLabel
+            self.ui.dateValue_2.setText(formatted_date)  # Set the formatted date in the dateValue_2 QLabel
+            self.ui.stackedWidget.setCurrentIndex(3)  # Move to history viewer
 
     @Slot()
     def open_image_preview(self, event):
-        """Open a larger preview of the image when the imagePlaceholder is clicked."""
-        image_path = self.ui.imagePlaceholder.property("imagePath")
+        """Open a larger preview of the image when the imagePlaceholder_2 is clicked."""
+        image_path = self.ui.imagePlaceholder_2.property("imagePath")
         if image_path:
             pixmap = QPixmap(image_path)
             dialog = QDialog(self.ui)

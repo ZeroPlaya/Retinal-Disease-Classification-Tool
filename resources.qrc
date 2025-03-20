@@ -13,5 +13,6 @@
         <file>assets/blackbg.png</file>
         <file>assets/resultsbg.png</file>
         <file>assets/classification results.png</file>
+        <file>assets/modifyrecord.png</file>
     </qresource>
 </RCC>
