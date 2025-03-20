@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QFileDialog, QLabel, QDialog, QVBoxLayout, QWidget
 from PySide6.QtCore import Slot, Qt, QEvent  # Import Qt and QEvent
-from PySide6.QtGui import QPixmap, QPainter, QCursor, QFont
+from PySide6.QtGui import QPixmap, QPainter, QCursor, QFont, QKeySequence, QShortcut  # Import QShortcut from PySide6.QtGui
 from datetime import datetime  # Import datetime for date formatting
 
 class ClickableLabel(QLabel):
@@ -21,7 +21,9 @@ class TransparentLabel(QLabel):
 class ButtonHandlers:
     def __init__(self, ui):
         self.ui = ui
+        self.current_row = 0  # Track the current row for navigation
         self.connect_buttons()
+        self.setup_shortcuts()  # Setup shortcuts
 
     def connect_buttons(self):
         """0 = titlepage, 1 = selectionpage, 2 = classificationpage, 3 = historyview, 4 = historypage"""
@@ -30,13 +32,22 @@ class ButtonHandlers:
         self.ui.historyBackButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
         self.ui.historyButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(4))
         self.ui.classificationBackButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(1))
-        self.ui.historyViewBackButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(4))
+        self.ui.xButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(4))
+        self.ui.leftButton.clicked.connect(self.navigate_left)
+        self.ui.rightButton.clicked.connect(self.navigate_right)
+        
         self.ui.uploadImageButton.clicked.connect(self.open_file_explorer)
         self.ui.uploadNewImageButton.clicked.connect(self.open_file_explorer)
         self.ui.historyTable.itemDoubleClicked.connect(self.on_row_double_clicked)  # Connect double-click signal
 
         # Replace the existing QLabel with ClickableLabel
         self.replace_image_placeholder()
+
+    def setup_shortcuts(self):
+        """Setup keyboard shortcuts."""
+        QShortcut(QKeySequence(Qt.Key_Escape), self.ui.xButton, self.ui.xButton.click)  # Add ESC hotkey for xButton
+        QShortcut(QKeySequence(Qt.Key_Left), self.ui.leftButton, self.ui.leftButton.click)  # Add left arrow hotkey for leftButton
+        QShortcut(QKeySequence(Qt.Key_Right), self.ui.rightButton, self.ui.rightButton.click)  # Add right arrow hotkey for rightButton
 
     def replace_image_placeholder(self):
         """Replace the existing QLabel with ClickableLabel and set transparent background for imagePlaceholder_2."""
@@ -56,6 +67,9 @@ class ButtonHandlers:
         self.ui.imageName_2.setAlignment(Qt.AlignRight | Qt.AlignVCenter)  # Ensure text is right-aligned
 
         self.ui.imageName_2.raise_()  # Bring imageName_2 QLabel to the front
+        self.ui.xButton.raise_()
+        self.ui.leftButton.raise_()
+        self.ui.rightButton.raise_()
 
     @Slot()
     def open_file_explorer(self):
@@ -93,7 +107,11 @@ class ButtonHandlers:
     @Slot()
     def on_row_double_clicked(self, item):
         """Switch to the classification page when a row is double-clicked and set the image, result, name, and date."""
-        row = item.row()
+        self.current_row = item.row()  # Update the current row
+        self.update_record(self.current_row)
+
+    def update_record(self, row):
+        """Update the labels with the data from the specified row."""
         image_path = self.ui.historyTable.item(row, 0).data(Qt.UserRole)  # Get the file path from the custom data role
         result_text = self.ui.historyTable.item(row, 3).text()  # Get the result text from the 4th column
         name_text = self.ui.historyTable.item(row, 2).text()  # Get the name text from the 3rd column
@@ -135,6 +153,20 @@ class ButtonHandlers:
             self.ui.nameValue_2.setText(name_text)  # Set the name text in the nameValue_2 QLabel
             self.ui.dateValue_2.setText(formatted_date)  # Set the formatted date in the dateValue_2 QLabel
             self.ui.stackedWidget.setCurrentIndex(3)  # Move to history viewer
+
+    @Slot()
+    def navigate_left(self):
+        """Navigate to the previous record."""
+        if self.current_row > 0:
+            self.current_row -= 1
+            self.update_record(self.current_row)
+
+    @Slot()
+    def navigate_right(self):
+        """Navigate to the next record."""
+        if self.current_row < self.ui.historyTable.rowCount() - 1:
+            self.current_row += 1
+            self.update_record(self.current_row)
 
     @Slot()
     def open_image_preview(self, event):

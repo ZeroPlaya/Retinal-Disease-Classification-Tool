@@ -14,5 +14,8 @@
         <file>assets/resultsbg.png</file>
         <file>assets/classification results.png</file>
         <file>assets/modifyrecord.png</file>
+        <file>assets/x.png</file>
+        <file>assets/left.png</file>
+        <file>assets/right.png</file>
     </qresource>
 </RCC>

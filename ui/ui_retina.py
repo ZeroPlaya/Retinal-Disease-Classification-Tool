@@ -420,22 +420,6 @@ class Ui_RetinalDiseaseClassifier(object):
         self.widget.raise_()
         self.historyViewer = QWidget()
         self.historyViewer.setObjectName(u"historyViewer")
-        self.historyViewBackButton = QPushButton(self.historyViewer)
-        self.historyViewBackButton.setObjectName(u"historyViewBackButton")
-        self.historyViewBackButton.setGeometry(QRect(8, 8, 66, 66))
-        sizePolicy.setHeightForWidth(self.historyViewBackButton.sizePolicy().hasHeightForWidth())
-        self.historyViewBackButton.setSizePolicy(sizePolicy)
-        self.historyViewBackButton.setMinimumSize(QSize(66, 66))
-        self.historyViewBackButton.setMaximumSize(QSize(66, 66))
-        self.historyViewBackButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.historyViewBackButton.setStyleSheet(u"QPushButton {\n"
-"    border: none;\n"
-"    background: transparent;\n"
-"    background-image: url(:images/assets/back.png);\n"
-"    background-repeat: no-repeat;\n"
-"    background-position: center;\n"
-"}\n"
-"")
         self.modifyButton = QPushButton(self.historyViewer)
         self.modifyButton.setObjectName(u"modifyButton")
         self.modifyButton.setGeometry(QRect(8, 391, 144, 57))
@@ -489,6 +473,39 @@ class Ui_RetinalDiseaseClassifier(object):
 "color: white;\n"
 "}")
         self.imageName_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.xButton = QPushButton(self.blackbg_2)
+        self.xButton.setObjectName(u"xButton")
+        self.xButton.setGeometry(QRect(9, 9, 34, 33))
+        self.xButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.xButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/x.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}")
+        self.leftButton = QPushButton(self.blackbg_2)
+        self.leftButton.setObjectName(u"leftButton")
+        self.leftButton.setGeometry(QRect(313, 9, 34, 33))
+        self.leftButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.leftButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/left.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}")
+        self.rightButton = QPushButton(self.blackbg_2)
+        self.rightButton.setObjectName(u"rightButton")
+        self.rightButton.setGeometry(QRect(349, 9, 34, 33))
+        self.rightButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.rightButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/right.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}")
         self.ResultInfo = QWidget(self.historyViewer)
         self.ResultInfo.setObjectName(u"ResultInfo")
         self.ResultInfo.setGeometry(QRect(400, 50, 311, 367))
@@ -797,11 +814,13 @@ class Ui_RetinalDiseaseClassifier(object):
         self.remarkLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"abcd", None))
         self.imagePlaceholder.setText("")
         self.imageName.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"placeholder.png", None))
-        self.historyViewBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
         self.modifyButton.setText("")
         self.saveChangesButton.setText("")
         self.imagePlaceholder_2.setText("")
         self.imageName_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"placeholder.png", None))
+        self.xButton.setText("")
+        self.leftButton.setText("")
+        self.rightButton.setText("")
         self.resultPlaceholder_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Diabetic Retinopathy (92.5%)", None))
         self.nameLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Patient's Name", None))
         self.dateLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None))
