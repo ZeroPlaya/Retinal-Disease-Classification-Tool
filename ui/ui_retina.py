@@ -678,15 +678,6 @@ class Ui_RetinalDiseaseClassifier(object):
         self.remarkValue_2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
         self.remarkValue_2.setWordWrap(True)
         self.remarkValue_2.setIndent(1)
-        self.nameLabel_3 = QLabel(self.historyViewer)
-        self.nameLabel_3.setObjectName(u"nameLabel_3")
-        self.nameLabel_3.setGeometry(QRect(210, 20, 131, 16))
-        self.nameLabel_3.setFont(font2)
-        self.nameLabel_3.setStyleSheet(u"QLabel {\n"
-"    background-color: white; /* Solid white background */\n"
-"    color: black; /* Ensure text stays visible */\n"
-"}\n"
-"")
         self.stackedWidget.addWidget(self.historyViewer)
         self.HistoryPage = QWidget()
         self.HistoryPage.setObjectName(u"HistoryPage")
@@ -821,14 +812,13 @@ class Ui_RetinalDiseaseClassifier(object):
         self.xButton.setText("")
         self.leftButton.setText("")
         self.rightButton.setText("")
-        self.resultPlaceholder_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Diabetic Retinopathy (92.5%)", None))
+        self.resultPlaceholder_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Placeholder (xx.x%)", None))
         self.nameLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Patient's Name", None))
         self.dateLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None))
         self.nameValue_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Enter Name", None))
         self.dateValue_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"March 18, 2025", None))
         self.remarkLabel_13.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Remarks:", None))
         self.remarkValue_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"abcd", None))
-        self.nameLabel_3.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"HISTORY VIEW", None))
         ___qtablewidgetitem = self.historyTable.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Image", None));
         ___qtablewidgetitem1 = self.historyTable.horizontalHeaderItem(1)

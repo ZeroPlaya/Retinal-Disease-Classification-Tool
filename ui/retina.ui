@@ -1784,7 +1784,7 @@ color: white;
          <number>0</number>
         </property>
         <property name="text">
-         <string>Diabetic Retinopathy (92.5%)</string>
+         <string>Placeholder (xx.x%)</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -2375,33 +2375,6 @@ color: white;
          <number>1</number>
         </property>
        </widget>
-      </widget>
-      <widget class="QLabel" name="nameLabel_3">
-       <property name="geometry">
-        <rect>
-         <x>210</x>
-         <y>20</y>
-         <width>131</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Inter</family>
-         <pointsize>11</pointsize>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QLabel {
-    background-color: white; /* Solid white background */
-    color: black; /* Ensure text stays visible */
-}
-</string>
-       </property>
-       <property name="text">
-        <string>HISTORY VIEW</string>
-       </property>
       </widget>
      </widget>
      <widget class="QWidget" name="HistoryPage">
