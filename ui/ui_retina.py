@@ -42,11 +42,30 @@ class Ui_RetinalDiseaseClassifier(object):
         self.MenuPage.setObjectName(u"MenuPage")
         self.gridLayout = QGridLayout(self.MenuPage)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.Title = QLabel(self.MenuPage)
-        self.Title.setObjectName(u"Title")
+        self.getStartedButton = QPushButton(self.MenuPage)
+        self.getStartedButton.setObjectName(u"getStartedButton")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.getStartedButton.sizePolicy().hasHeightForWidth())
+        self.getStartedButton.setSizePolicy(sizePolicy)
+        self.getStartedButton.setMinimumSize(QSize(387, 121))
+        self.getStartedButton.setMaximumSize(QSize(387, 121))
+        self.getStartedButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.getStartedButton.setAutoFillBackground(False)
+        self.getStartedButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/getstarted.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
+
+        self.gridLayout.addWidget(self.getStartedButton, 2, 0, 1, 1)
+
+        self.Title = QLabel(self.MenuPage)
+        self.Title.setObjectName(u"Title")
         sizePolicy.setHeightForWidth(self.Title.sizePolicy().hasHeightForWidth())
         self.Title.setSizePolicy(sizePolicy)
         self.Title.setMinimumSize(QSize(386, 330))
@@ -68,26 +87,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.Title.setAlignment(Qt.AlignCenter)
         self.Title.setWordWrap(True)
 
-        self.gridLayout.addWidget(self.Title, 1, 1, 1, 1)
-
-        self.getStartedButton = QPushButton(self.MenuPage)
-        self.getStartedButton.setObjectName(u"getStartedButton")
-        sizePolicy.setHeightForWidth(self.getStartedButton.sizePolicy().hasHeightForWidth())
-        self.getStartedButton.setSizePolicy(sizePolicy)
-        self.getStartedButton.setMinimumSize(QSize(387, 121))
-        self.getStartedButton.setMaximumSize(QSize(387, 121))
-        self.getStartedButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.getStartedButton.setAutoFillBackground(False)
-        self.getStartedButton.setStyleSheet(u"QPushButton {\n"
-"    border: none;\n"
-"    background: transparent;\n"
-"    background-image: url(:images/assets/getstarted.png);\n"
-"    background-repeat: no-repeat;\n"
-"    background-position: center;\n"
-"}\n"
-"")
-
-        self.gridLayout.addWidget(self.getStartedButton, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.Title, 1, 0, 1, 1)
 
         self.stackedWidget.addWidget(self.MenuPage)
         self.UploadPage = QWidget()
@@ -141,15 +141,10 @@ class Ui_RetinalDiseaseClassifier(object):
         self.stackedWidget.addWidget(self.UploadPage)
         self.ClassificationPage = QWidget()
         self.ClassificationPage.setObjectName(u"ClassificationPage")
-        self.imagePlaceholder = QLabel(self.ClassificationPage)
-        self.imagePlaceholder.setObjectName(u"imagePlaceholder")
-        self.imagePlaceholder.setGeometry(QRect(8, 100, 383, 254))
-        self.imagePlaceholder.setStyleSheet(u"")
-        self.imagePlaceholder.setPixmap(QPixmap(u"C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png"))
-        self.imagePlaceholder.setScaledContents(True)
         self.uploadNewImageButton = QPushButton(self.ClassificationPage)
         self.uploadNewImageButton.setObjectName(u"uploadNewImageButton")
-        self.uploadNewImageButton.setGeometry(QRect(8, 370, 144, 57))
+        self.uploadNewImageButton.setGeometry(QRect(8, 391, 144, 57))
+        self.uploadNewImageButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.uploadNewImageButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
@@ -160,7 +155,8 @@ class Ui_RetinalDiseaseClassifier(object):
 "")
         self.saveResultsButton = QPushButton(self.ClassificationPage)
         self.saveResultsButton.setObjectName(u"saveResultsButton")
-        self.saveResultsButton.setGeometry(QRect(161, 370, 127, 57))
+        self.saveResultsButton.setGeometry(QRect(161, 391, 127, 57))
+        self.saveResultsButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.saveResultsButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
@@ -187,18 +183,23 @@ class Ui_RetinalDiseaseClassifier(object):
 "")
         self.widget = QWidget(self.ClassificationPage)
         self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(390, 101, 310, 247))
-        self.widget.setMinimumSize(QSize(310, 247))
-        self.widget.setMaximumSize(QSize(310, 247))
+        self.widget.setGeometry(QRect(400, 50, 311, 367))
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
+        self.widget.setSizePolicy(sizePolicy1)
+        self.widget.setMinimumSize(QSize(311, 367))
+        self.widget.setMaximumSize(QSize(0, 0))
         self.widget.setStyleSheet(u"QWidget {\n"
-"    background-image: url(:images/assets/resultsbg.png);\n"
+"    background-image: url(:images/assets/classification results.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
 "")
-        self.resultPlaceholder1_2 = QLabel(self.widget)
-        self.resultPlaceholder1_2.setObjectName(u"resultPlaceholder1_2")
-        self.resultPlaceholder1_2.setGeometry(QRect(40, 79, 151, 41))
+        self.resultPlaceholder = QLabel(self.widget)
+        self.resultPlaceholder.setObjectName(u"resultPlaceholder")
+        self.resultPlaceholder.setGeometry(QRect(37, 98, 231, 131))
         palette = QPalette()
         brush = QBrush(QColor(0, 0, 0, 255))
         brush.setStyle(Qt.SolidPattern)
@@ -233,142 +234,451 @@ class Ui_RetinalDiseaseClassifier(object):
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush2)
 #endif
-        self.resultPlaceholder1_2.setPalette(palette)
+        self.resultPlaceholder.setPalette(palette)
         font1 = QFont()
-        font1.setBold(False)
+        font1.setFamilies([u"Inter"])
+        font1.setPointSize(10)
+        font1.setBold(True)
         font1.setItalic(True)
-        self.resultPlaceholder1_2.setFont(font1)
-        self.resultPlaceholder1_2.setStyleSheet(u"QLabel {\n"
+        self.resultPlaceholder.setFont(font1)
+        self.resultPlaceholder.setStyleSheet(u"QLabel {\n"
 "    background-color: white; /* Solid white background */\n"
 "    color: black; /* Ensure text stays visible */\n"
 "}\n"
 "")
-        self.resultPlaceholder1_2.setLineWidth(0)
-        self.resultPlaceholder1_2.setWordWrap(True)
-        self.resultPlaceholder2_2 = QLabel(self.widget)
-        self.resultPlaceholder2_2.setObjectName(u"resultPlaceholder2_2")
-        self.resultPlaceholder2_2.setGeometry(QRect(40, 120, 141, 41))
+        self.resultPlaceholder.setLineWidth(0)
+        self.resultPlaceholder.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.resultPlaceholder.setWordWrap(True)
+        self.nameLabel = QLabel(self.widget)
+        self.nameLabel.setObjectName(u"nameLabel")
+        self.nameLabel.setGeometry(QRect(37, 36, 131, 16))
+        font2 = QFont()
+        font2.setFamilies([u"Inter"])
+        font2.setPointSize(11)
+        font2.setBold(True)
+        self.nameLabel.setFont(font2)
+        self.nameLabel.setStyleSheet(u"QLabel {\n"
+"    background-color: white; /* Solid white background */\n"
+"    color: black; /* Ensure text stays visible */\n"
+"}\n"
+"")
+        self.dateLabel = QLabel(self.widget)
+        self.dateLabel.setObjectName(u"dateLabel")
+        self.dateLabel.setGeometry(QRect(161, 36, 111, 16))
+        self.dateLabel.setFont(font2)
+        self.dateLabel.setStyleSheet(u"QLabel {\n"
+"    background-color: white; /* Solid white background */\n"
+"    color: black; /* Ensure text stays visible */\n"
+"}\n"
+"")
+        self.dateLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.nameValue = QLabel(self.widget)
+        self.nameValue.setObjectName(u"nameValue")
+        self.nameValue.setGeometry(QRect(37, 50, 131, 20))
+        font3 = QFont()
+        font3.setFamilies([u"Inter"])
+        font3.setPointSize(8)
+        font3.setBold(False)
+        font3.setKerning(False)
+        self.nameValue.setFont(font3)
+        self.nameValue.setStyleSheet(u"QLabel {\n"
+"    background-color: transparent; /* Solid white background */\n"
+"    color: black; /* Ensure text stays visible */\n"
+"}\n"
+"")
+        self.dateValue = QLabel(self.widget)
+        self.dateValue.setObjectName(u"dateValue")
+        self.dateValue.setGeometry(QRect(161, 50, 111, 21))
+        self.dateValue.setFont(font3)
+        self.dateValue.setStyleSheet(u"QLabel {\n"
+"    background-color: transparent; /* Solid white background */\n"
+"    color: black; /* Ensure text stays visible */\n"
+"}\n"
+"")
+        self.dateValue.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.remarkLabel = QLabel(self.widget)
+        self.remarkLabel.setObjectName(u"remarkLabel")
+        self.remarkLabel.setGeometry(QRect(50, 250, 91, 31))
         palette1 = QPalette()
         palette1.setBrush(QPalette.Active, QPalette.WindowText, brush)
-        palette1.setBrush(QPalette.Active, QPalette.Button, brush1)
+        brush3 = QBrush(QColor(244, 244, 244, 255))
+        brush3.setStyle(Qt.SolidPattern)
+        palette1.setBrush(QPalette.Active, QPalette.Button, brush3)
         palette1.setBrush(QPalette.Active, QPalette.Text, brush)
         palette1.setBrush(QPalette.Active, QPalette.ButtonText, brush)
-        palette1.setBrush(QPalette.Active, QPalette.Base, brush1)
-        palette1.setBrush(QPalette.Active, QPalette.Window, brush1)
+        palette1.setBrush(QPalette.Active, QPalette.Base, brush3)
+        palette1.setBrush(QPalette.Active, QPalette.Window, brush3)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette1.setBrush(QPalette.Active, QPalette.PlaceholderText, brush2)
 #endif
         palette1.setBrush(QPalette.Inactive, QPalette.WindowText, brush)
-        palette1.setBrush(QPalette.Inactive, QPalette.Button, brush1)
+        palette1.setBrush(QPalette.Inactive, QPalette.Button, brush3)
         palette1.setBrush(QPalette.Inactive, QPalette.Text, brush)
         palette1.setBrush(QPalette.Inactive, QPalette.ButtonText, brush)
-        palette1.setBrush(QPalette.Inactive, QPalette.Base, brush1)
-        palette1.setBrush(QPalette.Inactive, QPalette.Window, brush1)
+        palette1.setBrush(QPalette.Inactive, QPalette.Base, brush3)
+        palette1.setBrush(QPalette.Inactive, QPalette.Window, brush3)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette1.setBrush(QPalette.Inactive, QPalette.PlaceholderText, brush2)
 #endif
         palette1.setBrush(QPalette.Disabled, QPalette.WindowText, brush)
-        palette1.setBrush(QPalette.Disabled, QPalette.Button, brush1)
+        palette1.setBrush(QPalette.Disabled, QPalette.Button, brush3)
         palette1.setBrush(QPalette.Disabled, QPalette.Text, brush)
         palette1.setBrush(QPalette.Disabled, QPalette.ButtonText, brush)
-        palette1.setBrush(QPalette.Disabled, QPalette.Base, brush1)
-        palette1.setBrush(QPalette.Disabled, QPalette.Window, brush1)
+        palette1.setBrush(QPalette.Disabled, QPalette.Base, brush3)
+        palette1.setBrush(QPalette.Disabled, QPalette.Window, brush3)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette1.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush2)
 #endif
-        self.resultPlaceholder2_2.setPalette(palette1)
-        self.resultPlaceholder2_2.setFont(font1)
-        self.resultPlaceholder2_2.setStyleSheet(u"QLabel {\n"
-"    background-color: white; /* Solid white background */\n"
+        self.remarkLabel.setPalette(palette1)
+        self.remarkLabel.setFont(font1)
+        self.remarkLabel.setStyleSheet(u"QLabel {\n"
+"    background-color: rgb(244, 244, 244); /* Solid white background */\n"
 "    color: black; /* Ensure text stays visible */\n"
 "}\n"
 "")
-        self.resultPlaceholder2_2.setWordWrap(True)
-        self.resultPlaceholder3_2 = QLabel(self.widget)
-        self.resultPlaceholder3_2.setObjectName(u"resultPlaceholder3_2")
-        self.resultPlaceholder3_2.setGeometry(QRect(40, 160, 141, 41))
+        self.remarkLabel.setWordWrap(True)
+        self.remarkValue = QLabel(self.widget)
+        self.remarkValue.setObjectName(u"remarkValue")
+        self.remarkValue.setGeometry(QRect(50, 274, 211, 41))
         palette2 = QPalette()
         palette2.setBrush(QPalette.Active, QPalette.WindowText, brush)
-        palette2.setBrush(QPalette.Active, QPalette.Button, brush1)
+        palette2.setBrush(QPalette.Active, QPalette.Button, brush3)
         palette2.setBrush(QPalette.Active, QPalette.Text, brush)
         palette2.setBrush(QPalette.Active, QPalette.ButtonText, brush)
-        palette2.setBrush(QPalette.Active, QPalette.Base, brush1)
-        palette2.setBrush(QPalette.Active, QPalette.Window, brush1)
+        palette2.setBrush(QPalette.Active, QPalette.Base, brush3)
+        palette2.setBrush(QPalette.Active, QPalette.Window, brush3)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette2.setBrush(QPalette.Active, QPalette.PlaceholderText, brush2)
 #endif
         palette2.setBrush(QPalette.Inactive, QPalette.WindowText, brush)
-        palette2.setBrush(QPalette.Inactive, QPalette.Button, brush1)
+        palette2.setBrush(QPalette.Inactive, QPalette.Button, brush3)
         palette2.setBrush(QPalette.Inactive, QPalette.Text, brush)
         palette2.setBrush(QPalette.Inactive, QPalette.ButtonText, brush)
-        palette2.setBrush(QPalette.Inactive, QPalette.Base, brush1)
-        palette2.setBrush(QPalette.Inactive, QPalette.Window, brush1)
+        palette2.setBrush(QPalette.Inactive, QPalette.Base, brush3)
+        palette2.setBrush(QPalette.Inactive, QPalette.Window, brush3)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette2.setBrush(QPalette.Inactive, QPalette.PlaceholderText, brush2)
 #endif
         palette2.setBrush(QPalette.Disabled, QPalette.WindowText, brush)
-        palette2.setBrush(QPalette.Disabled, QPalette.Button, brush1)
+        palette2.setBrush(QPalette.Disabled, QPalette.Button, brush3)
         palette2.setBrush(QPalette.Disabled, QPalette.Text, brush)
         palette2.setBrush(QPalette.Disabled, QPalette.ButtonText, brush)
-        palette2.setBrush(QPalette.Disabled, QPalette.Base, brush1)
-        palette2.setBrush(QPalette.Disabled, QPalette.Window, brush1)
+        palette2.setBrush(QPalette.Disabled, QPalette.Base, brush3)
+        palette2.setBrush(QPalette.Disabled, QPalette.Window, brush3)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette2.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush2)
 #endif
-        self.resultPlaceholder3_2.setPalette(palette2)
-        self.resultPlaceholder3_2.setFont(font1)
-        self.resultPlaceholder3_2.setStyleSheet(u"QLabel {\n"
-"    background-color: white; /* Solid white background */\n"
+        self.remarkValue.setPalette(palette2)
+        font4 = QFont()
+        font4.setFamilies([u"Inter"])
+        font4.setPointSize(9)
+        font4.setBold(False)
+        font4.setItalic(False)
+        self.remarkValue.setFont(font4)
+        self.remarkValue.setStyleSheet(u"QLabel {\n"
+"    background-color: rgb(244, 244, 244); /* Solid white background */\n"
 "    color: black; /* Ensure text stays visible */\n"
 "}\n"
 "")
-        self.resultPlaceholder3_2.setWordWrap(True)
-        self.ClassificationResults_2 = QLabel(self.widget)
-        self.ClassificationResults_2.setObjectName(u"ClassificationResults_2")
-        self.ClassificationResults_2.setGeometry(QRect(40, 30, 231, 41))
+        self.remarkValue.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.remarkValue.setWordWrap(True)
+        self.remarkValue.setIndent(1)
+        self.blackbg = QFrame(self.ClassificationPage)
+        self.blackbg.setObjectName(u"blackbg")
+        self.blackbg.setGeometry(QRect(10, 84, 390, 292))
+        self.blackbg.setStyleSheet(u"QFrame {\n"
+"    background-image: url(:images/assets/blackbg.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
+        self.imagePlaceholder = QLabel(self.blackbg)
+        self.imagePlaceholder.setObjectName(u"imagePlaceholder")
+        self.imagePlaceholder.setGeometry(QRect(170, 0, 50, 50))
+        self.imagePlaceholder.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
+        self.imagePlaceholder.setAutoFillBackground(False)
+        self.imagePlaceholder.setStyleSheet(u"QLabel {\n"
+"    background-color: white; /* Solid white background */\n"
+"}\n"
+"")
+        self.imagePlaceholder.setPixmap(QPixmap(u"C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png"))
+        self.imagePlaceholder.setScaledContents(True)
+        self.imageName = QLabel(self.blackbg)
+        self.imageName.setObjectName(u"imageName")
+        self.imageName.setGeometry(QRect(169, 266, 211, 20))
+        self.imageName.setLayoutDirection(Qt.LeftToRight)
+        self.imageName.setStyleSheet(u"QLabel {\n"
+"background-color: transparent; \n"
+"color: white;\n"
+"}")
+        self.imageName.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.stackedWidget.addWidget(self.ClassificationPage)
+        self.blackbg.raise_()
+        self.uploadNewImageButton.raise_()
+        self.saveResultsButton.raise_()
+        self.classificationBackButton.raise_()
+        self.widget.raise_()
+        self.historyViewer = QWidget()
+        self.historyViewer.setObjectName(u"historyViewer")
+        self.modifyRecordButton = QPushButton(self.historyViewer)
+        self.modifyRecordButton.setObjectName(u"modifyRecordButton")
+        self.modifyRecordButton.setGeometry(QRect(8, 391, 144, 57))
+        self.modifyRecordButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.modifyRecordButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/modifyrecord.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
+        self.saveChangesButton = QPushButton(self.historyViewer)
+        self.saveChangesButton.setObjectName(u"saveChangesButton")
+        self.saveChangesButton.setGeometry(QRect(161, 391, 127, 57))
+        self.saveChangesButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.saveChangesButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/savechanges.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
+        self.blackbg_2 = QFrame(self.historyViewer)
+        self.blackbg_2.setObjectName(u"blackbg_2")
+        self.blackbg_2.setGeometry(QRect(10, 84, 390, 292))
+        self.blackbg_2.setStyleSheet(u"QFrame {\n"
+"    background-image: url(:images/assets/blackbg.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
+        self.imagePlaceholder_2 = QLabel(self.blackbg_2)
+        self.imagePlaceholder_2.setObjectName(u"imagePlaceholder_2")
+        self.imagePlaceholder_2.setGeometry(QRect(170, 0, 50, 50))
+        self.imagePlaceholder_2.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
+        self.imagePlaceholder_2.setAutoFillBackground(False)
+        self.imagePlaceholder_2.setStyleSheet(u"QLabel {\n"
+"    background-color: white; /* Solid white background */\n"
+"}\n"
+"")
+        self.imagePlaceholder_2.setPixmap(QPixmap(u"C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png"))
+        self.imagePlaceholder_2.setScaledContents(True)
+        self.imageName_2 = QLabel(self.blackbg_2)
+        self.imageName_2.setObjectName(u"imageName_2")
+        self.imageName_2.setGeometry(QRect(169, 266, 211, 20))
+        self.imageName_2.setLayoutDirection(Qt.LeftToRight)
+        self.imageName_2.setStyleSheet(u"QLabel {\n"
+"background-color: transparent; \n"
+"color: white;\n"
+"}")
+        self.imageName_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.xButton = QPushButton(self.blackbg_2)
+        self.xButton.setObjectName(u"xButton")
+        self.xButton.setGeometry(QRect(9, 9, 34, 33))
+        self.xButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.xButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/x.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}")
+        self.leftButton = QPushButton(self.blackbg_2)
+        self.leftButton.setObjectName(u"leftButton")
+        self.leftButton.setGeometry(QRect(313, 9, 34, 33))
+        self.leftButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.leftButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/left.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}")
+        self.rightButton = QPushButton(self.blackbg_2)
+        self.rightButton.setObjectName(u"rightButton")
+        self.rightButton.setGeometry(QRect(349, 9, 34, 33))
+        self.rightButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.rightButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/right.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}")
+        self.ResultInfo = QWidget(self.historyViewer)
+        self.ResultInfo.setObjectName(u"ResultInfo")
+        self.ResultInfo.setGeometry(QRect(400, 50, 311, 367))
+        sizePolicy1.setHeightForWidth(self.ResultInfo.sizePolicy().hasHeightForWidth())
+        self.ResultInfo.setSizePolicy(sizePolicy1)
+        self.ResultInfo.setMinimumSize(QSize(311, 367))
+        self.ResultInfo.setMaximumSize(QSize(0, 0))
+        self.ResultInfo.setStyleSheet(u"QWidget {\n"
+"    background-image: url(:images/assets/classification results.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
+        self.resultPlaceholder_2 = QLabel(self.ResultInfo)
+        self.resultPlaceholder_2.setObjectName(u"resultPlaceholder_2")
+        self.resultPlaceholder_2.setGeometry(QRect(37, 98, 191, 131))
         palette3 = QPalette()
         palette3.setBrush(QPalette.Active, QPalette.WindowText, brush)
-        brush3 = QBrush(QColor(0, 0, 0, 0))
-        brush3.setStyle(Qt.SolidPattern)
-        palette3.setBrush(QPalette.Active, QPalette.Button, brush3)
+        palette3.setBrush(QPalette.Active, QPalette.Button, brush1)
         palette3.setBrush(QPalette.Active, QPalette.Text, brush)
         palette3.setBrush(QPalette.Active, QPalette.ButtonText, brush)
-        palette3.setBrush(QPalette.Active, QPalette.Base, brush3)
-        palette3.setBrush(QPalette.Active, QPalette.Window, brush3)
+        palette3.setBrush(QPalette.Active, QPalette.Base, brush1)
+        palette3.setBrush(QPalette.Active, QPalette.Window, brush1)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette3.setBrush(QPalette.Active, QPalette.PlaceholderText, brush2)
 #endif
         palette3.setBrush(QPalette.Inactive, QPalette.WindowText, brush)
-        palette3.setBrush(QPalette.Inactive, QPalette.Button, brush3)
+        palette3.setBrush(QPalette.Inactive, QPalette.Button, brush1)
         palette3.setBrush(QPalette.Inactive, QPalette.Text, brush)
         palette3.setBrush(QPalette.Inactive, QPalette.ButtonText, brush)
-        palette3.setBrush(QPalette.Inactive, QPalette.Base, brush3)
-        palette3.setBrush(QPalette.Inactive, QPalette.Window, brush3)
+        palette3.setBrush(QPalette.Inactive, QPalette.Base, brush1)
+        palette3.setBrush(QPalette.Inactive, QPalette.Window, brush1)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette3.setBrush(QPalette.Inactive, QPalette.PlaceholderText, brush2)
 #endif
         palette3.setBrush(QPalette.Disabled, QPalette.WindowText, brush)
-        palette3.setBrush(QPalette.Disabled, QPalette.Button, brush3)
+        palette3.setBrush(QPalette.Disabled, QPalette.Button, brush1)
         palette3.setBrush(QPalette.Disabled, QPalette.Text, brush)
         palette3.setBrush(QPalette.Disabled, QPalette.ButtonText, brush)
-        palette3.setBrush(QPalette.Disabled, QPalette.Base, brush3)
-        palette3.setBrush(QPalette.Disabled, QPalette.Window, brush3)
+        palette3.setBrush(QPalette.Disabled, QPalette.Base, brush1)
+        palette3.setBrush(QPalette.Disabled, QPalette.Window, brush1)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette3.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush2)
 #endif
-        self.ClassificationResults_2.setPalette(palette3)
-        font2 = QFont()
-        font2.setPointSize(13)
-        font2.setBold(True)
-        self.ClassificationResults_2.setFont(font2)
-        self.ClassificationResults_2.setStyleSheet(u"QLabel {\n"
-"    background-color: transparent;\n"
+        self.resultPlaceholder_2.setPalette(palette3)
+        self.resultPlaceholder_2.setFont(font1)
+        self.resultPlaceholder_2.setStyleSheet(u"QLabel {\n"
+"    background-color: white; /* Solid white background */\n"
 "    color: black; /* Ensure text stays visible */\n"
 "}\n"
 "")
-        self.ClassificationResults_2.setFrameShadow(QFrame.Plain)
-        self.ClassificationResults_2.setAlignment(Qt.AlignCenter)
-        self.stackedWidget.addWidget(self.ClassificationPage)
+        self.resultPlaceholder_2.setLineWidth(0)
+        self.resultPlaceholder_2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.resultPlaceholder_2.setWordWrap(True)
+        self.nameLabel_2 = QLabel(self.ResultInfo)
+        self.nameLabel_2.setObjectName(u"nameLabel_2")
+        self.nameLabel_2.setGeometry(QRect(37, 36, 131, 16))
+        self.nameLabel_2.setFont(font2)
+        self.nameLabel_2.setStyleSheet(u"QLabel {\n"
+"    background-color: white; /* Solid white background */\n"
+"    color: black; /* Ensure text stays visible */\n"
+"}\n"
+"")
+        self.dateLabel_2 = QLabel(self.ResultInfo)
+        self.dateLabel_2.setObjectName(u"dateLabel_2")
+        self.dateLabel_2.setGeometry(QRect(161, 36, 111, 16))
+        self.dateLabel_2.setFont(font2)
+        self.dateLabel_2.setStyleSheet(u"QLabel {\n"
+"    background-color: white; /* Solid white background */\n"
+"    color: black; /* Ensure text stays visible */\n"
+"}\n"
+"")
+        self.dateLabel_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.nameValue_2 = QLabel(self.ResultInfo)
+        self.nameValue_2.setObjectName(u"nameValue_2")
+        self.nameValue_2.setGeometry(QRect(37, 50, 131, 20))
+        self.nameValue_2.setFont(font3)
+        self.nameValue_2.setStyleSheet(u"QLabel {\n"
+"    background-color: transparent; /* Solid white background */\n"
+"    color: black; /* Ensure text stays visible */\n"
+"}\n"
+"")
+        self.dateValue_2 = QLabel(self.ResultInfo)
+        self.dateValue_2.setObjectName(u"dateValue_2")
+        self.dateValue_2.setGeometry(QRect(161, 50, 111, 21))
+        self.dateValue_2.setFont(font3)
+        self.dateValue_2.setStyleSheet(u"QLabel {\n"
+"    background-color: transparent; /* Solid white background */\n"
+"    color: black; /* Ensure text stays visible */\n"
+"}\n"
+"")
+        self.dateValue_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.remarkLabel_2 = QLabel(self.ResultInfo)
+        self.remarkLabel_2.setObjectName(u"remarkLabel_2")
+        self.remarkLabel_2.setGeometry(QRect(50, 250, 91, 31))
+        palette4 = QPalette()
+        palette4.setBrush(QPalette.Active, QPalette.WindowText, brush)
+        palette4.setBrush(QPalette.Active, QPalette.Button, brush3)
+        palette4.setBrush(QPalette.Active, QPalette.Text, brush)
+        palette4.setBrush(QPalette.Active, QPalette.ButtonText, brush)
+        palette4.setBrush(QPalette.Active, QPalette.Base, brush3)
+        palette4.setBrush(QPalette.Active, QPalette.Window, brush3)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette4.setBrush(QPalette.Active, QPalette.PlaceholderText, brush2)
+#endif
+        palette4.setBrush(QPalette.Inactive, QPalette.WindowText, brush)
+        palette4.setBrush(QPalette.Inactive, QPalette.Button, brush3)
+        palette4.setBrush(QPalette.Inactive, QPalette.Text, brush)
+        palette4.setBrush(QPalette.Inactive, QPalette.ButtonText, brush)
+        palette4.setBrush(QPalette.Inactive, QPalette.Base, brush3)
+        palette4.setBrush(QPalette.Inactive, QPalette.Window, brush3)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette4.setBrush(QPalette.Inactive, QPalette.PlaceholderText, brush2)
+#endif
+        palette4.setBrush(QPalette.Disabled, QPalette.WindowText, brush)
+        palette4.setBrush(QPalette.Disabled, QPalette.Button, brush3)
+        palette4.setBrush(QPalette.Disabled, QPalette.Text, brush)
+        palette4.setBrush(QPalette.Disabled, QPalette.ButtonText, brush)
+        palette4.setBrush(QPalette.Disabled, QPalette.Base, brush3)
+        palette4.setBrush(QPalette.Disabled, QPalette.Window, brush3)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette4.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush2)
+#endif
+        self.remarkLabel_2.setPalette(palette4)
+        self.remarkLabel_2.setFont(font1)
+        self.remarkLabel_2.setStyleSheet(u"QLabel {\n"
+"    background-color: rgb(244, 244, 244); /* Solid white background */\n"
+"    color: black; /* Ensure text stays visible */\n"
+"}\n"
+"")
+        self.remarkLabel_2.setWordWrap(True)
+        self.remarkValue_2 = QLabel(self.ResultInfo)
+        self.remarkValue_2.setObjectName(u"remarkValue_2")
+        self.remarkValue_2.setGeometry(QRect(50, 274, 211, 41))
+        palette5 = QPalette()
+        palette5.setBrush(QPalette.Active, QPalette.WindowText, brush)
+        palette5.setBrush(QPalette.Active, QPalette.Button, brush3)
+        palette5.setBrush(QPalette.Active, QPalette.Text, brush)
+        palette5.setBrush(QPalette.Active, QPalette.ButtonText, brush)
+        palette5.setBrush(QPalette.Active, QPalette.Base, brush3)
+        palette5.setBrush(QPalette.Active, QPalette.Window, brush3)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette5.setBrush(QPalette.Active, QPalette.PlaceholderText, brush2)
+#endif
+        palette5.setBrush(QPalette.Inactive, QPalette.WindowText, brush)
+        palette5.setBrush(QPalette.Inactive, QPalette.Button, brush3)
+        palette5.setBrush(QPalette.Inactive, QPalette.Text, brush)
+        palette5.setBrush(QPalette.Inactive, QPalette.ButtonText, brush)
+        palette5.setBrush(QPalette.Inactive, QPalette.Base, brush3)
+        palette5.setBrush(QPalette.Inactive, QPalette.Window, brush3)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette5.setBrush(QPalette.Inactive, QPalette.PlaceholderText, brush2)
+#endif
+        palette5.setBrush(QPalette.Disabled, QPalette.WindowText, brush)
+        palette5.setBrush(QPalette.Disabled, QPalette.Button, brush3)
+        palette5.setBrush(QPalette.Disabled, QPalette.Text, brush)
+        palette5.setBrush(QPalette.Disabled, QPalette.ButtonText, brush)
+        palette5.setBrush(QPalette.Disabled, QPalette.Base, brush3)
+        palette5.setBrush(QPalette.Disabled, QPalette.Window, brush3)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette5.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush2)
+#endif
+        self.remarkValue_2.setPalette(palette5)
+        self.remarkValue_2.setFont(font4)
+        self.remarkValue_2.setStyleSheet(u"QLabel {\n"
+"    background-color: rgb(244, 244, 244); /* Solid white background */\n"
+"    color: black; /* Ensure text stays visible */\n"
+"}\n"
+"")
+        self.remarkValue_2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.remarkValue_2.setWordWrap(True)
+        self.remarkValue_2.setIndent(1)
+        self.stackedWidget.addWidget(self.historyViewer)
         self.HistoryPage = QWidget()
         self.HistoryPage.setObjectName(u"HistoryPage")
         self.verticalLayout = QVBoxLayout(self.HistoryPage)
@@ -381,33 +691,33 @@ class Ui_RetinalDiseaseClassifier(object):
 "    background-position: center;\n"
 "}\n"
 "")
-        self.historyTableWidget = QTableWidget(self.widget_2)
-        if (self.historyTableWidget.columnCount() < 6):
-            self.historyTableWidget.setColumnCount(6)
+        self.historyTable = QTableWidget(self.widget_2)
+        if (self.historyTable.columnCount() < 6):
+            self.historyTable.setColumnCount(6)
         __qtablewidgetitem = QTableWidgetItem()
-        self.historyTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        self.historyTable.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
-        self.historyTableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        self.historyTable.setHorizontalHeaderItem(1, __qtablewidgetitem1)
         __qtablewidgetitem2 = QTableWidgetItem()
-        self.historyTableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        self.historyTable.setHorizontalHeaderItem(2, __qtablewidgetitem2)
         __qtablewidgetitem3 = QTableWidgetItem()
-        self.historyTableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem3)
-        if (self.historyTableWidget.rowCount() < 1):
-            self.historyTableWidget.setRowCount(1)
+        self.historyTable.setHorizontalHeaderItem(3, __qtablewidgetitem3)
+        if (self.historyTable.rowCount() < 1):
+            self.historyTable.setRowCount(1)
         __qtablewidgetitem4 = QTableWidgetItem()
-        self.historyTableWidget.setVerticalHeaderItem(0, __qtablewidgetitem4)
+        self.historyTable.setVerticalHeaderItem(0, __qtablewidgetitem4)
         __qtablewidgetitem5 = QTableWidgetItem()
-        self.historyTableWidget.setItem(0, 0, __qtablewidgetitem5)
+        self.historyTable.setItem(0, 0, __qtablewidgetitem5)
         __qtablewidgetitem6 = QTableWidgetItem()
-        self.historyTableWidget.setItem(0, 1, __qtablewidgetitem6)
+        self.historyTable.setItem(0, 1, __qtablewidgetitem6)
         __qtablewidgetitem7 = QTableWidgetItem()
-        self.historyTableWidget.setItem(0, 2, __qtablewidgetitem7)
+        self.historyTable.setItem(0, 2, __qtablewidgetitem7)
         __qtablewidgetitem8 = QTableWidgetItem()
-        self.historyTableWidget.setItem(0, 3, __qtablewidgetitem8)
-        self.historyTableWidget.setObjectName(u"historyTableWidget")
-        self.historyTableWidget.setGeometry(QRect(20, 80, 631, 331))
-        self.historyTableWidget.setAutoFillBackground(False)
-        self.historyTableWidget.setStyleSheet(u"/* Table cells */\n"
+        self.historyTable.setItem(0, 3, __qtablewidgetitem8)
+        self.historyTable.setObjectName(u"historyTable")
+        self.historyTable.setGeometry(QRect(20, 80, 631, 301))
+        self.historyTable.setAutoFillBackground(False)
+        self.historyTable.setStyleSheet(u"/* Table cells */\n"
 "QTableWidget {\n"
 "    background: white;\n"
 "    color: black;\n"
@@ -429,13 +739,13 @@ class Ui_RetinalDiseaseClassifier(object):
 "    border: none; /* Removes row header border */\n"
 "}\n"
 "")
-        self.historyTableWidget.setFrameShadow(QFrame.Sunken)
-        self.historyTableWidget.setLineWidth(0)
-        self.historyTableWidget.setShowGrid(True)
-        self.historyTableWidget.setGridStyle(Qt.SolidLine)
-        self.historyTableWidget.setColumnCount(6)
-        self.historyTableWidget.horizontalHeader().setVisible(True)
-        self.historyTableWidget.verticalHeader().setVisible(False)
+        self.historyTable.setFrameShadow(QFrame.Sunken)
+        self.historyTable.setLineWidth(0)
+        self.historyTable.setShowGrid(True)
+        self.historyTable.setGridStyle(Qt.SolidLine)
+        self.historyTable.setColumnCount(6)
+        self.historyTable.horizontalHeader().setVisible(True)
+        self.historyTable.verticalHeader().setVisible(False)
         self.historyBackButton = QPushButton(self.widget_2)
         self.historyBackButton.setObjectName(u"historyBackButton")
         self.historyBackButton.setGeometry(QRect(8, 8, 66, 66))
@@ -457,9 +767,22 @@ class Ui_RetinalDiseaseClassifier(object):
         self.line.setGeometry(QRect(12, 60, 656, 20))
         self.line.setFrameShape(QFrame.Shape.HLine)
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
+        self.deleteButton = QPushButton(self.widget_2)
+        self.deleteButton.setObjectName(u"deleteButton")
+        self.deleteButton.setGeometry(QRect(20, 390, 114, 54))
+        self.deleteButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.deleteButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/deleterecord.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
         self.historyBackButton.raise_()
         self.line.raise_()
-        self.historyTableWidget.raise_()
+        self.historyTable.raise_()
+        self.deleteButton.raise_()
 
         self.verticalLayout.addWidget(self.widget_2)
 
@@ -470,7 +793,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
@@ -478,42 +801,61 @@ class Ui_RetinalDiseaseClassifier(object):
 
     def retranslateUi(self, RetinalDiseaseClassifier):
         RetinalDiseaseClassifier.setWindowTitle(QCoreApplication.translate("RetinalDiseaseClassifier", u"Retinal Disease Classification", None))
-        self.Title.setText("")
         self.getStartedButton.setText("")
+        self.Title.setText("")
         self.uploadBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
         self.uploadImageButton.setText("")
         self.historyButton.setText("")
-        self.imagePlaceholder.setText("")
         self.uploadNewImageButton.setText("")
         self.saveResultsButton.setText("")
         self.classificationBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
-        self.resultPlaceholder1_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Diabetic Retinopathy (92.5%)", None))
-        self.resultPlaceholder2_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Myopia (6.5%)", None))
-        self.resultPlaceholder3_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Central Serous Retinopathy (1.0%)", None))
-        self.ClassificationResults_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Classification Results", None))
-        ___qtablewidgetitem = self.historyTableWidget.horizontalHeaderItem(0)
+        self.resultPlaceholder.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Placeholder (xx.x%)", None))
+        self.nameLabel.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Patient's Name", None))
+        self.dateLabel.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None))
+        self.nameValue.setText("")
+        self.dateValue.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"March 18, 2025", None))
+        self.remarkLabel.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Remarks:", None))
+        self.remarkValue.setText("")
+        self.imagePlaceholder.setText("")
+        self.imageName.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"placeholder.png", None))
+        self.modifyRecordButton.setText("")
+        self.saveChangesButton.setText("")
+        self.imagePlaceholder_2.setText("")
+        self.imageName_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"placeholder.png", None))
+        self.xButton.setText("")
+        self.leftButton.setText("")
+        self.rightButton.setText("")
+        self.resultPlaceholder_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Placeholder (xx.x%)", None))
+        self.nameLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Patient's Name", None))
+        self.dateLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None))
+        self.nameValue_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Enter Name", None))
+        self.dateValue_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"March 18, 2025", None))
+        self.remarkLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Remarks:", None))
+        self.remarkValue_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Placeholder", None))
+        ___qtablewidgetitem = self.historyTable.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Image", None));
-        ___qtablewidgetitem1 = self.historyTableWidget.horizontalHeaderItem(1)
+        ___qtablewidgetitem1 = self.historyTable.horizontalHeaderItem(1)
         ___qtablewidgetitem1.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Patient Name", None));
-        ___qtablewidgetitem2 = self.historyTableWidget.horizontalHeaderItem(2)
+        ___qtablewidgetitem2 = self.historyTable.horizontalHeaderItem(2)
         ___qtablewidgetitem2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None));
-        ___qtablewidgetitem3 = self.historyTableWidget.horizontalHeaderItem(3)
+        ___qtablewidgetitem3 = self.historyTable.horizontalHeaderItem(3)
         ___qtablewidgetitem3.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Results", None));
-        ___qtablewidgetitem4 = self.historyTableWidget.verticalHeaderItem(0)
+        ___qtablewidgetitem4 = self.historyTable.verticalHeaderItem(0)
         ___qtablewidgetitem4.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"001", None));
 
-        __sortingEnabled = self.historyTableWidget.isSortingEnabled()
-        self.historyTableWidget.setSortingEnabled(False)
-        ___qtablewidgetitem5 = self.historyTableWidget.item(0, 0)
+        __sortingEnabled = self.historyTable.isSortingEnabled()
+        self.historyTable.setSortingEnabled(False)
+        ___qtablewidgetitem5 = self.historyTable.item(0, 0)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"IMG_0065", None));
-        ___qtablewidgetitem6 = self.historyTableWidget.item(0, 1)
+        ___qtablewidgetitem6 = self.historyTable.item(0, 1)
         ___qtablewidgetitem6.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"John Doe", None));
-        ___qtablewidgetitem7 = self.historyTableWidget.item(0, 2)
+        ___qtablewidgetitem7 = self.historyTable.item(0, 2)
         ___qtablewidgetitem7.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"02/21/25", None));
-        ___qtablewidgetitem8 = self.historyTableWidget.item(0, 3)
+        ___qtablewidgetitem8 = self.historyTable.item(0, 3)
         ___qtablewidgetitem8.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"ARMD, CRVO, MY", None));
-        self.historyTableWidget.setSortingEnabled(__sortingEnabled)
+        self.historyTable.setSortingEnabled(__sortingEnabled)
 
         self.historyBackButton.setText("")
+        self.deleteButton.setText("")
     # retranslateUi
 

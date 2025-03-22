@@ -6,4 +6,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
+
+    # Set the main widget's background to transparent
+    window.setStyleSheet("QWidget#RetinalDiseaseClassifier { background: transparent; }")
+
     sys.exit(app.exec())

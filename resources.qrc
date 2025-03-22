@@ -6,10 +6,18 @@
         <file>assets/history.png</file>
         <file>assets/historybg.png</file>
         <file>assets/invisback.png</file>
-        <file>assets/resultsbg.png</file>
         <file>assets/save.png</file>
         <file>assets/title.png</file>
         <file>assets/upload.png</file>
         <file>assets/uploadnew.png</file>
+        <file>assets/blackbg.png</file>
+        <file>assets/resultsbg.png</file>
+        <file>assets/classification results.png</file>
+        <file>assets/x.png</file>
+        <file>assets/left.png</file>
+        <file>assets/right.png</file>
+        <file>assets/deleterecord.png</file>
+        <file>assets/savechanges.png</file>
+        <file>assets/modifyrecord.png</file>
     </qresource>
 </RCC>
