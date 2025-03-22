@@ -24,7 +24,6 @@ class MainWindow(QMainWindow):
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels(["Preview", "File", "Patient Name", "Results", "Date", "Comment"])
 
-
         # Adjust column widths to fit within 631 pixels
         column_widths = [94, 73, 107, 123, 92, 120]  # Predefined column widths
         for i, width in enumerate(column_widths):
@@ -156,6 +155,8 @@ class MainWindow(QMainWindow):
 
             # Insert other data into columns
             for col_idx, text in enumerate(row_data[1:], start=1):
+                if col_idx == 3:  # If the column is for results
+                    text = ", ".join(row_data[3].keys())  # Join disease names without confidence scores
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(row_idx, col_idx, item)

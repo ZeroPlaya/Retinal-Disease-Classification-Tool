@@ -47,7 +47,7 @@ background-position: center;
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="MenuPage">
       <layout class="QGridLayout" name="gridLayout">
@@ -648,7 +648,7 @@ background-position: center;
          <number>0</number>
         </property>
         <property name="text">
-         <string>Diabetic Retinopathy (92.5%)</string>
+         <string>Placeholder (xx.x%)</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -739,7 +739,7 @@ background-position: center;
 </string>
         </property>
         <property name="text">
-         <string>Enter Name</string>
+         <string/>
         </property>
        </widget>
        <widget class="QLabel" name="dateValue">
@@ -1003,7 +1003,7 @@ background-position: center;
          <bool>true</bool>
         </property>
        </widget>
-       <widget class="QLabel" name="remarkLabel_2">
+       <widget class="QLabel" name="remarkValue">
         <property name="geometry">
          <rect>
           <x>50</x>
@@ -1227,7 +1227,7 @@ background-position: center;
 </string>
         </property>
         <property name="text">
-         <string>abcd</string>
+         <string/>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1321,7 +1321,7 @@ color: white;
       <zorder>widget</zorder>
      </widget>
      <widget class="QWidget" name="historyViewer">
-      <widget class="QPushButton" name="modifyButton">
+      <widget class="QPushButton" name="modifyRecordButton">
        <property name="geometry">
         <rect>
          <x>8</x>
@@ -1363,7 +1363,7 @@ color: white;
         <string notr="true">QPushButton {
     border: none;
     background: transparent;
-    background-image: url(:images/assets/save.png);
+    background-image: url(:images/assets/savechanges.png);
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -1562,7 +1562,7 @@ color: white;
          <rect>
           <x>37</x>
           <y>98</y>
-          <width>231</width>
+          <width>191</width>
           <height>131</height>
          </rect>
         </property>
@@ -1909,7 +1909,7 @@ color: white;
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
-       <widget class="QLabel" name="remarkLabel_13">
+       <widget class="QLabel" name="remarkLabel_2">
         <property name="geometry">
          <rect>
           <x>50</x>
@@ -2363,7 +2363,7 @@ color: white;
 </string>
         </property>
         <property name="text">
-         <string>abcd</string>
+         <string>Placeholder</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -2395,7 +2395,7 @@ color: white;
             <x>20</x>
             <y>80</y>
             <width>631</width>
-            <height>331</height>
+            <height>301</height>
            </rect>
           </property>
           <property name="autoFillBackground">
@@ -2551,9 +2551,36 @@ QTableCornerButton::section, QHeaderView::section:vertical {
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
+         <widget class="QPushButton" name="deleteButton">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>390</y>
+            <width>114</width>
+            <height>54</height>
+           </rect>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+    border: none;
+    background: transparent;
+    background-image: url(:images/assets/deleterecord.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
          <zorder>historyBackButton</zorder>
          <zorder>line</zorder>
          <zorder>historyTable</zorder>
+         <zorder>deleteButton</zorder>
         </widget>
        </item>
       </layout>

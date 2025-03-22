@@ -337,9 +337,9 @@ class Ui_RetinalDiseaseClassifier(object):
 "}\n"
 "")
         self.remarkLabel.setWordWrap(True)
-        self.remarkLabel_2 = QLabel(self.widget)
-        self.remarkLabel_2.setObjectName(u"remarkLabel_2")
-        self.remarkLabel_2.setGeometry(QRect(50, 274, 211, 41))
+        self.remarkValue = QLabel(self.widget)
+        self.remarkValue.setObjectName(u"remarkValue")
+        self.remarkValue.setGeometry(QRect(50, 274, 211, 41))
         palette2 = QPalette()
         palette2.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette2.setBrush(QPalette.Active, QPalette.Button, brush3)
@@ -368,21 +368,21 @@ class Ui_RetinalDiseaseClassifier(object):
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette2.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush2)
 #endif
-        self.remarkLabel_2.setPalette(palette2)
+        self.remarkValue.setPalette(palette2)
         font4 = QFont()
         font4.setFamilies([u"Inter"])
         font4.setPointSize(9)
         font4.setBold(False)
         font4.setItalic(False)
-        self.remarkLabel_2.setFont(font4)
-        self.remarkLabel_2.setStyleSheet(u"QLabel {\n"
+        self.remarkValue.setFont(font4)
+        self.remarkValue.setStyleSheet(u"QLabel {\n"
 "    background-color: rgb(244, 244, 244); /* Solid white background */\n"
 "    color: black; /* Ensure text stays visible */\n"
 "}\n"
 "")
-        self.remarkLabel_2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
-        self.remarkLabel_2.setWordWrap(True)
-        self.remarkLabel_2.setIndent(1)
+        self.remarkValue.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.remarkValue.setWordWrap(True)
+        self.remarkValue.setIndent(1)
         self.blackbg = QFrame(self.ClassificationPage)
         self.blackbg.setObjectName(u"blackbg")
         self.blackbg.setGeometry(QRect(10, 84, 390, 292))
@@ -420,11 +420,11 @@ class Ui_RetinalDiseaseClassifier(object):
         self.widget.raise_()
         self.historyViewer = QWidget()
         self.historyViewer.setObjectName(u"historyViewer")
-        self.modifyButton = QPushButton(self.historyViewer)
-        self.modifyButton.setObjectName(u"modifyButton")
-        self.modifyButton.setGeometry(QRect(8, 391, 144, 57))
-        self.modifyButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.modifyButton.setStyleSheet(u"QPushButton {\n"
+        self.modifyRecordButton = QPushButton(self.historyViewer)
+        self.modifyRecordButton.setObjectName(u"modifyRecordButton")
+        self.modifyRecordButton.setGeometry(QRect(8, 391, 144, 57))
+        self.modifyRecordButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.modifyRecordButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
 "    background-image: url(:images/assets/modifyrecord.png);\n"
@@ -439,7 +439,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.saveChangesButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
-"    background-image: url(:images/assets/save.png);\n"
+"    background-image: url(:images/assets/savechanges.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
@@ -521,7 +521,7 @@ class Ui_RetinalDiseaseClassifier(object):
 "")
         self.resultPlaceholder_2 = QLabel(self.ResultInfo)
         self.resultPlaceholder_2.setObjectName(u"resultPlaceholder_2")
-        self.resultPlaceholder_2.setGeometry(QRect(37, 98, 231, 131))
+        self.resultPlaceholder_2.setGeometry(QRect(37, 98, 191, 131))
         palette3 = QPalette()
         palette3.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette3.setBrush(QPalette.Active, QPalette.Button, brush1)
@@ -598,9 +598,9 @@ class Ui_RetinalDiseaseClassifier(object):
 "}\n"
 "")
         self.dateValue_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-        self.remarkLabel_13 = QLabel(self.ResultInfo)
-        self.remarkLabel_13.setObjectName(u"remarkLabel_13")
-        self.remarkLabel_13.setGeometry(QRect(50, 250, 91, 31))
+        self.remarkLabel_2 = QLabel(self.ResultInfo)
+        self.remarkLabel_2.setObjectName(u"remarkLabel_2")
+        self.remarkLabel_2.setGeometry(QRect(50, 250, 91, 31))
         palette4 = QPalette()
         palette4.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette4.setBrush(QPalette.Active, QPalette.Button, brush3)
@@ -629,14 +629,14 @@ class Ui_RetinalDiseaseClassifier(object):
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette4.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush2)
 #endif
-        self.remarkLabel_13.setPalette(palette4)
-        self.remarkLabel_13.setFont(font1)
-        self.remarkLabel_13.setStyleSheet(u"QLabel {\n"
+        self.remarkLabel_2.setPalette(palette4)
+        self.remarkLabel_2.setFont(font1)
+        self.remarkLabel_2.setStyleSheet(u"QLabel {\n"
 "    background-color: rgb(244, 244, 244); /* Solid white background */\n"
 "    color: black; /* Ensure text stays visible */\n"
 "}\n"
 "")
-        self.remarkLabel_13.setWordWrap(True)
+        self.remarkLabel_2.setWordWrap(True)
         self.remarkValue_2 = QLabel(self.ResultInfo)
         self.remarkValue_2.setObjectName(u"remarkValue_2")
         self.remarkValue_2.setGeometry(QRect(50, 274, 211, 41))
@@ -715,7 +715,7 @@ class Ui_RetinalDiseaseClassifier(object):
         __qtablewidgetitem8 = QTableWidgetItem()
         self.historyTable.setItem(0, 3, __qtablewidgetitem8)
         self.historyTable.setObjectName(u"historyTable")
-        self.historyTable.setGeometry(QRect(20, 80, 631, 331))
+        self.historyTable.setGeometry(QRect(20, 80, 631, 301))
         self.historyTable.setAutoFillBackground(False)
         self.historyTable.setStyleSheet(u"/* Table cells */\n"
 "QTableWidget {\n"
@@ -767,9 +767,22 @@ class Ui_RetinalDiseaseClassifier(object):
         self.line.setGeometry(QRect(12, 60, 656, 20))
         self.line.setFrameShape(QFrame.Shape.HLine)
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
+        self.deleteButton = QPushButton(self.widget_2)
+        self.deleteButton.setObjectName(u"deleteButton")
+        self.deleteButton.setGeometry(QRect(20, 390, 114, 54))
+        self.deleteButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.deleteButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/deleterecord.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
         self.historyBackButton.raise_()
         self.line.raise_()
         self.historyTable.raise_()
+        self.deleteButton.raise_()
 
         self.verticalLayout.addWidget(self.widget_2)
 
@@ -780,7 +793,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
@@ -796,16 +809,16 @@ class Ui_RetinalDiseaseClassifier(object):
         self.uploadNewImageButton.setText("")
         self.saveResultsButton.setText("")
         self.classificationBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
-        self.resultPlaceholder.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Diabetic Retinopathy (92.5%)", None))
+        self.resultPlaceholder.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Placeholder (xx.x%)", None))
         self.nameLabel.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Patient's Name", None))
         self.dateLabel.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None))
-        self.nameValue.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Enter Name", None))
+        self.nameValue.setText("")
         self.dateValue.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"March 18, 2025", None))
         self.remarkLabel.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Remarks:", None))
-        self.remarkLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"abcd", None))
+        self.remarkValue.setText("")
         self.imagePlaceholder.setText("")
         self.imageName.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"placeholder.png", None))
-        self.modifyButton.setText("")
+        self.modifyRecordButton.setText("")
         self.saveChangesButton.setText("")
         self.imagePlaceholder_2.setText("")
         self.imageName_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"placeholder.png", None))
@@ -817,8 +830,8 @@ class Ui_RetinalDiseaseClassifier(object):
         self.dateLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None))
         self.nameValue_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Enter Name", None))
         self.dateValue_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"March 18, 2025", None))
-        self.remarkLabel_13.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Remarks:", None))
-        self.remarkValue_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"abcd", None))
+        self.remarkLabel_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Remarks:", None))
+        self.remarkValue_2.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Placeholder", None))
         ___qtablewidgetitem = self.historyTable.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Image", None));
         ___qtablewidgetitem1 = self.historyTable.horizontalHeaderItem(1)
@@ -843,5 +856,6 @@ class Ui_RetinalDiseaseClassifier(object):
         self.historyTable.setSortingEnabled(__sortingEnabled)
 
         self.historyBackButton.setText("")
+        self.deleteButton.setText("")
     # retranslateUi
 
