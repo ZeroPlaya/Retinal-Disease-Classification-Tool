@@ -42,11 +42,30 @@ class Ui_RetinalDiseaseClassifier(object):
         self.MenuPage.setObjectName(u"MenuPage")
         self.gridLayout = QGridLayout(self.MenuPage)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.Title = QLabel(self.MenuPage)
-        self.Title.setObjectName(u"Title")
+        self.getStartedButton = QPushButton(self.MenuPage)
+        self.getStartedButton.setObjectName(u"getStartedButton")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.getStartedButton.sizePolicy().hasHeightForWidth())
+        self.getStartedButton.setSizePolicy(sizePolicy)
+        self.getStartedButton.setMinimumSize(QSize(387, 121))
+        self.getStartedButton.setMaximumSize(QSize(387, 121))
+        self.getStartedButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.getStartedButton.setAutoFillBackground(False)
+        self.getStartedButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/getstarted.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
+
+        self.gridLayout.addWidget(self.getStartedButton, 2, 0, 1, 1)
+
+        self.Title = QLabel(self.MenuPage)
+        self.Title.setObjectName(u"Title")
         sizePolicy.setHeightForWidth(self.Title.sizePolicy().hasHeightForWidth())
         self.Title.setSizePolicy(sizePolicy)
         self.Title.setMinimumSize(QSize(386, 330))
@@ -68,26 +87,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.Title.setAlignment(Qt.AlignCenter)
         self.Title.setWordWrap(True)
 
-        self.gridLayout.addWidget(self.Title, 1, 1, 1, 1)
-
-        self.getStartedButton = QPushButton(self.MenuPage)
-        self.getStartedButton.setObjectName(u"getStartedButton")
-        sizePolicy.setHeightForWidth(self.getStartedButton.sizePolicy().hasHeightForWidth())
-        self.getStartedButton.setSizePolicy(sizePolicy)
-        self.getStartedButton.setMinimumSize(QSize(387, 121))
-        self.getStartedButton.setMaximumSize(QSize(387, 121))
-        self.getStartedButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.getStartedButton.setAutoFillBackground(False)
-        self.getStartedButton.setStyleSheet(u"QPushButton {\n"
-"    border: none;\n"
-"    background: transparent;\n"
-"    background-image: url(:images/assets/getstarted.png);\n"
-"    background-repeat: no-repeat;\n"
-"    background-position: center;\n"
-"}\n"
-"")
-
-        self.gridLayout.addWidget(self.getStartedButton, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.Title, 1, 0, 1, 1)
 
         self.stackedWidget.addWidget(self.MenuPage)
         self.UploadPage = QWidget()
@@ -793,7 +793,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
@@ -801,8 +801,8 @@ class Ui_RetinalDiseaseClassifier(object):
 
     def retranslateUi(self, RetinalDiseaseClassifier):
         RetinalDiseaseClassifier.setWindowTitle(QCoreApplication.translate("RetinalDiseaseClassifier", u"Retinal Disease Classification", None))
-        self.Title.setText("")
         self.getStartedButton.setText("")
+        self.Title.setText("")
         self.uploadBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
         self.uploadImageButton.setText("")
         self.historyButton.setText("")
