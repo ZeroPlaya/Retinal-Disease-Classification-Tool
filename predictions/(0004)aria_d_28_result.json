@@ -1,0 +1,84 @@
+{
+    "image_file": "(0004)aria_d_28.png",
+    "positive_classes": [
+        "ARMD"
+    ],
+    "class_predictions": {
+        "DR": {
+            "probability": 0.0013056197203695774,
+            "prediction": 0
+        },
+        "NORMAL": {
+            "probability": 8.0002286040326e-07,
+            "prediction": 0
+        },
+        "MH": {
+            "probability": 9.091599844566815e-24,
+            "prediction": 0
+        },
+        "ODC": {
+            "probability": 4.212672868235572e-18,
+            "prediction": 0
+        },
+        "TSLN": {
+            "probability": 5.73186136615801e-15,
+            "prediction": 0
+        },
+        "ARMD": {
+            "probability": 0.8016304969787598,
+            "prediction": 1
+        },
+        "DN": {
+            "probability": 1.8243190477171208e-17,
+            "prediction": 0
+        },
+        "MYA": {
+            "probability": 4.983667016393578e-13,
+            "prediction": 0
+        },
+        "BRVO": {
+            "probability": 9.657716091323449e-23,
+            "prediction": 0
+        },
+        "ODP": {
+            "probability": 9.948532731124375e-21,
+            "prediction": 0
+        },
+        "CRVO": {
+            "probability": 6.005781543580939e-19,
+            "prediction": 0
+        },
+        "CNV": {
+            "probability": 0.0,
+            "prediction": 0
+        },
+        "RS": {
+            "probability": 2.595958781270724e-09,
+            "prediction": 0
+        },
+        "ODE": {
+            "probability": 5.472552393751473e-15,
+            "prediction": 0
+        },
+        "LS": {
+            "probability": 2.1714888683879946e-16,
+            "prediction": 0
+        },
+        "CSR": {
+            "probability": 4.1606495538356464e-14,
+            "prediction": 0
+        },
+        "HTR": {
+            "probability": 4.8760903666098e-21,
+            "prediction": 0
+        },
+        "ASR": {
+            "probability": 5.397278293997576e-36,
+            "prediction": 0
+        },
+        "CRS": {
+            "probability": 1.086858537006922e-20,
+            "prediction": 0
+        }
+    }
+}

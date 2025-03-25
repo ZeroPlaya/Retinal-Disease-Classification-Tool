@@ -5,6 +5,8 @@ from datetime import datetime  # Import datetime for date formatting
 from database import sample_data, image_paths  # Import sample_data and image_paths from database
 import random  # Import random for generating random diseases and percentages
 import json  # Import json for writing to file
+import time
+from prediction import RetinaDiseasePredictor  # Import RetinaDiseasePredictor from prediction
 
 class ClickableLabel(QLabel):
     def __init__(self, parent=None):
@@ -28,6 +30,11 @@ class ButtonHandlers:
         self.connect_buttons()
         self.setup_shortcuts()  # Setup shortcuts
         self.setup_editable_fields()  # Setup editable fields
+        self.predictor = RetinaDiseasePredictor(
+                            model_path="retinal_model_best_no_other.pth", 
+                            threshold=0.5, 
+                            output_dir="predictions"
+                        )
 
     def connect_buttons(self):
         """0 = titlepage, 1 = selectionpage, 2 = classificationpage, 3 = historyview, 4 = historypage"""
@@ -185,6 +192,8 @@ class ButtonHandlers:
         """Opens a file dialog and switches to the classification page if a file is selected."""
         file_path, _ = QFileDialog.getOpenFileName(None, "Select an Image", "", "Images (*.tiff *.png *.jpeg *.jpg)")
         if file_path:
+            self.predictor.predict(file_path)
+            time. sleep(5)
             self.set_image_placeholder_classification(file_path)
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
 
@@ -218,7 +227,7 @@ class ButtonHandlers:
         self.ui.remarkValue.setPlaceholderText("Insert Remarks")
 
         # Generate random diseases with random percentages
-        diseases = ["DR", "NORMAL", "MH", "ODC", "TSLN", "ARMD", "MYA", "BRVO", "ODP", "CRVO", "CNV", "RS", "ODE", "LS", "CSR", "HTR", "ASR", "CRS", "OTHER"]
+        diseases = ["DR", "NORMAL", "MH", "ODC", "TSLN", "ARMD", "MYA", "BRVO", "ODP", "CRVO", "CNV", "RS", "ODE", "LS", "CSR", "HTR", "ASR", "CRS"]
         num_diseases = random.choices([1, 2, 3], weights=[50, 30, 20], k=1)[0]  # More likely to output fewer diseases
         selected_diseases = random.sample(diseases, num_diseases)  # Select random diseases
         result_dict = {disease: round(random.uniform(0.5, 1.0), 2) for disease in selected_diseases}  # Assign random percentages
@@ -242,8 +251,7 @@ class ButtonHandlers:
             "CSR": "Central Serous Retinopathy",
             "HTR": "Hypertensive Retinopathy",
             "ASR": "Arteriosclerotic Retinopathy",
-            "CRS": "Chorioretinitis",
-            "OTHER": "Others"
+            "CRS": "Chorioretinitis"
         }
 
         # Format result text with disease names and confidence scores
@@ -291,8 +299,7 @@ class ButtonHandlers:
             "CSR": "Central Serous Retinopathy",
             "HTR": "Hypertensive Retinopathy",
             "ASR": "Arteriosclerotic Retinopathy",
-            "CRS": "Chorioretinitis",
-            "OTHER": "Others"
+            "CRS": "Chorioretinitis"
         }
 
         # Format result text with disease names and confidence scores
@@ -435,8 +442,7 @@ class ButtonHandlers:
             "Central Serous Retinopathy": "CSR",
             "Hypertensive Retinopathy": "HTR",
             "Arteriosclerotic Retinopathy": "ASR",
-            "Chorioretinitis": "CRS",
-            "Others": "OTHER"
+            "Chorioretinitis": "CRS"
         }
 
         # Convert full names to shortened names
@@ -509,6 +515,8 @@ class ButtonHandlers:
         file_path, _ = QFileDialog.getOpenFileName(None, "Select an Image", "", "Images (*.tiff *.png *.jpeg *.jpg)")
         if file_path:
             self.reset_placeholders()
+            self.predictor.predict(file_path)
+            time. sleep(5)
             self.set_image_placeholder_classification(file_path)
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
 
