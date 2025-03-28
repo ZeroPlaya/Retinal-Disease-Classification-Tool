@@ -1,0 +1,83 @@
+{
+    "positive_classes": [
+        "NORMAL"
+    ],
+    "class_predictions": {
+        "DR": {
+            "probability": 0.09777981042861938,
+            "prediction": 0
+        },
+        "NORMAL": {
+            "probability": 0.998877227306366,
+            "prediction": 1
+        },
+        "MH": {
+            "probability": 3.7698666801588843e-06,
+            "prediction": 0
+        },
+        "ODC": {
+            "probability": 6.0135153034934774e-05,
+            "prediction": 0
+        },
+        "TSLN": {
+            "probability": 9.283017425332218e-05,
+            "prediction": 0
+        },
+        "ARMD": {
+            "probability": 4.828128567169188e-06,
+            "prediction": 0
+        },
+        "DN": {
+            "probability": 0.0006952261319383979,
+            "prediction": 0
+        },
+        "MYA": {
+            "probability": 4.964922695194218e-08,
+            "prediction": 0
+        },
+        "BRVO": {
+            "probability": 2.8432439194148174e-06,
+            "prediction": 0
+        },
+        "ODP": {
+            "probability": 2.2577669369638897e-06,
+            "prediction": 0
+        },
+        "CRVO": {
+            "probability": 3.05602588923648e-05,
+            "prediction": 0
+        },
+        "CNV": {
+            "probability": 2.3758038878440857e-05,
+            "prediction": 0
+        },
+        "RS": {
+            "probability": 1.179907826553972e-06,
+            "prediction": 0
+        },
+        "ODE": {
+            "probability": 5.666832407769107e-07,
+            "prediction": 0
+        },
+        "LS": {
+            "probability": 2.995513170844788e-07,
+            "prediction": 0
+        },
+        "CSR": {
+            "probability": 8.07351682396984e-07,
+            "prediction": 0
+        },
+        "HTR": {
+            "probability": 5.7782867770583834e-06,
+            "prediction": 0
+        },
+        "ASR": {
+            "probability": 0.0010199574753642082,
+            "prediction": 0
+        },
+        "CRS": {
+            "probability": 5.6555915506351084e-08,
+            "prediction": 0
+        }
+    }
+}

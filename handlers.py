@@ -192,12 +192,14 @@ class ButtonHandlers:
         """Opens a file dialog and switches to the classification page if a file is selected."""
         file_path, _ = QFileDialog.getOpenFileName(None, "Select an Image", "", "Images (*.tiff *.png *.jpeg *.jpg)")
         if file_path:
-            self.predictor.predict(file_path)
-            time. sleep(5)
-            self.set_image_placeholder_classification(file_path)
+            # Get prediction results from the predictor
+            result_dict = self.predictor.predict(file_path)
+            
+            # Display the image and results in the UI
+            self.set_image_placeholder_classification(file_path, result_dict["class_predictions"])
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
 
-    def set_image_placeholder_classification(self, image_path):
+    def set_image_placeholder_classification(self, image_path, class_predictions):
         """Set the image in the imagePlaceholder QLabel for the classification page."""
         pixmap = QPixmap(image_path)
         label_size = self.ui.imagePlaceholder.size()
@@ -226,41 +228,11 @@ class ButtonHandlers:
         self.ui.nameValue.setPlaceholderText("Insert Name")
         self.ui.remarkValue.setPlaceholderText("Insert Remarks")
 
-        # Generate random diseases with random percentages
-        diseases = ["DR", "NORMAL", "MH", "ODC", "TSLN", "ARMD", "MYA", "BRVO", "ODP", "CRVO", "CNV", "RS", "ODE", "LS", "CSR", "HTR", "ASR", "CRS"]
-        num_diseases = random.choices([1, 2, 3], weights=[50, 30, 20], k=1)[0]  # More likely to output fewer diseases
-        selected_diseases = random.sample(diseases, num_diseases)  # Select random diseases
-        result_dict = {disease: round(random.uniform(0.5, 1.0), 2) for disease in selected_diseases}  # Assign random percentages
-
-        # Mapping of shortened names to full names
-        disease_mapping = {
-            "DR": "Diabetic Retinopathy",
-            "NORMAL": "Normal",
-            "MH": "Media Haze",
-            "ODC": "Optic Disc Cupping",
-            "TSLN": "Tessellation",
-            "ARMD": "Age-Related Macular Degeneration",
-            "MYA": "Myopia",
-            "BRVO": "Branch Retinal Vein Occlusion",
-            "ODP": "Optic Disc Pallor",
-            "CRVO": "Central Retinal Vein Occlusion",
-            "CNV": "Choroidal Neovascularization",
-            "RS": "Retinitis",
-            "ODE": "Optic Disc Edema",
-            "LS": "Laser Scars",
-            "CSR": "Central Serous Retinopathy",
-            "HTR": "Hypertensive Retinopathy",
-            "ASR": "Arteriosclerotic Retinopathy",
-            "CRS": "Chorioretinitis"
-        }
-
-        # Format result text with disease names and confidence scores
+        # Format and display the prediction results
         full_result_text = "\n\n".join(
-            f"{disease_mapping.get(disease, disease)} ({confidence:.2f}%)"
-            for disease, confidence in result_dict.items()
+            f"{disease} ({data['probability'] * 100:.2f}%)"
+            for disease, data in class_predictions.items() if data["prediction"] == 1
         )
-
-        # Set the result text in the resultPlaceholder QLabel
         self.ui.resultPlaceholder.setText(full_result_text)
         self.ui.resultPlaceholder.setWordWrap(True)  # Enable word wrap
         self.ui.resultPlaceholder.setFixedWidth(191)  # Set fixed width to 191
@@ -302,9 +274,8 @@ class ButtonHandlers:
             "CRS": "Chorioretinitis"
         }
 
-        # Format result text with disease names and confidence scores
         full_result_text = "\n\n".join(
-            f"{disease_mapping.get(disease, disease)} ({confidence:.2f}%)"
+            f"{disease_mapping.get(disease, disease)} ({float(confidence):.2f}%)"
             for disease, confidence in result_dict.items()
         )
 
@@ -514,10 +485,14 @@ class ButtonHandlers:
         """Handle uploading a new image and reset placeholders if successful."""
         file_path, _ = QFileDialog.getOpenFileName(None, "Select an Image", "", "Images (*.tiff *.png *.jpeg *.jpg)")
         if file_path:
+            # Reset placeholders
             self.reset_placeholders()
-            self.predictor.predict(file_path)
-            time. sleep(5)
-            self.set_image_placeholder_classification(file_path)
+            
+            # Get prediction results from the predictor
+            result_dict = self.predictor.predict(file_path)
+            
+            # Display the image and results in the UI
+            self.set_image_placeholder_classification(file_path, result_dict["class_predictions"])
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
 
     def reset_placeholders(self):

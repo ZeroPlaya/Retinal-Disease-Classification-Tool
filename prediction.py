@@ -9,6 +9,7 @@ from PIL import Image
 import cv2
 import os
 import json
+import time  # Add this import
 
 class RetinaDiseasePredictor:
     def __init__(self, 
@@ -213,6 +214,9 @@ class RetinaDiseasePredictor:
         """Main prediction method"""
         print(f"Processing image: {image_path}")
         
+        # Add delay before prediction
+        time.sleep(5)
+        
         # Predict probabilities
         probabilities = self.predict_single_image(image_path)
         
@@ -223,10 +227,12 @@ class RetinaDiseasePredictor:
         
         # Create JSON output
         json_result = self.create_json_output(image_path, probabilities)
+        print(json_result)
         
         # Save JSON result
         self.save_json_result(json_result)
         
+        # Return the JSON result
         return json_result
 
 class CombinedModel(nn.Module):
