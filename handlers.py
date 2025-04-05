@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QFileDialog, QLabel, QDialog, QVBoxLayout, QWidget
 from PySide6.QtCore import Slot, Qt, QEvent, QDate  # Import QDate
 from PySide6.QtGui import QPixmap, QPainter, QCursor, QFont, QKeySequence, QShortcut  # Import QShortcut from PySide6.QtGui
 from datetime import datetime  # Import datetime for date formatting
-from database import sample_data, image_paths  # Import sample_data and image_paths from database
+from database import DatabaseManager  # Import only DatabaseManager
 import random  # Import random for generating random diseases and percentages
 import json  # Import json for writing to file
 
@@ -25,6 +25,7 @@ class ButtonHandlers:
     def __init__(self, ui):
         self.ui = ui
         self.current_row = 0  # Track the current row for navigation
+        self.db_manager = DatabaseManager()  # Initialize DatabaseManager with default connection string
         self.connect_buttons()
         self.setup_shortcuts()  # Setup shortcuts
         self.setup_editable_fields()  # Setup editable fields
@@ -67,19 +68,27 @@ class ButtonHandlers:
 
     def setup_editable_fields(self):
         """Setup editable fields for nameValue, dateValue, and remarkValue."""
-        # Define the stylesheet for QLineEdit
-        line_edit_stylesheet = """
-        QLineEdit {
-            background-color: rgb(244, 244, 244); /* Solid white background */
+        # Define the stylesheet for QLineEdit and QLabel
+        common_stylesheet = """
+        QLineEdit, QLabel {
+            background-color: transparent; /* Transparent background */
             color: black; /* Ensure text stays visible */
         }
+        QLineEdit {
+            border: 1px solid #dcdcdc; /* Add a border for the input field */
+            padding: 4px; /* Add padding for better alignment */
+        }
+        QLabel {
+            font-weight: bold; /* Make the label text bold */
+        }
         """
+
         # Replace nameValue QLabel with QLineEdit
         old_name_label = self.ui.nameValue
         self.ui.nameValue = QLineEdit(old_name_label.parent())
         self.ui.nameValue.setGeometry(old_name_label.geometry())
         self.ui.nameValue.setObjectName(old_name_label.objectName())
-        self.ui.nameValue.setStyleSheet(line_edit_stylesheet)
+        self.ui.nameValue.setStyleSheet(common_stylesheet)
         self.ui.nameValue.setAlignment(old_name_label.alignment())
         self.ui.nameValue.setFont(old_name_label.font())
         self.ui.nameValue.setPlaceholderText("Insert Name")  # Set placeholder text
@@ -95,19 +104,24 @@ class ButtonHandlers:
         self.ui.remarkValue = QLineEdit(old_remark_label.parent())
         self.ui.remarkValue.setGeometry(old_remark_label.geometry())
         self.ui.remarkValue.setObjectName(old_remark_label.objectName())
-        self.ui.remarkValue.setStyleSheet(line_edit_stylesheet)
+        self.ui.remarkValue.setStyleSheet(common_stylesheet)
         self.ui.remarkValue.setAlignment(old_remark_label.alignment())
         self.ui.remarkValue.setFont(old_remark_label.font())
         self.ui.remarkValue.setPlaceholderText("Insert Remarks")  # Set placeholder text
         self.ui.remarkValue.setFrame(False)  # Remove the frame to make it look like a QLabel
         self.ui.remarkValue.textChanged.connect(self.update_placeholder_visibility)  # Connect textChanged signal
 
+        # Adjust the label's background to match the input field
+        remark_label = self.ui.remarkLabel  # Assuming the label is named `remarkLabel`
+        remark_label.setStyleSheet(common_stylesheet)
+        remark_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)  # Align text to the left and vertically centered
+
         # Replace nameValue_2 QLabel with QLineEdit
         old_name_label_2 = self.ui.nameValue_2
         self.ui.nameValue_2 = QLineEdit(old_name_label_2.parent())
         self.ui.nameValue_2.setGeometry(old_name_label_2.geometry())
         self.ui.nameValue_2.setObjectName(old_name_label_2.objectName())
-        self.ui.nameValue_2.setStyleSheet(line_edit_stylesheet)
+        self.ui.nameValue_2.setStyleSheet(common_stylesheet)
         self.ui.nameValue_2.setAlignment(old_name_label_2.alignment())
         self.ui.nameValue_2.setFont(old_name_label_2.font())
         self.ui.nameValue_2.setPlaceholderText("Insert Name")  # Set placeholder text
@@ -119,7 +133,7 @@ class ButtonHandlers:
         self.ui.remarkValue_2 = QLineEdit(old_remark_label_2.parent())
         self.ui.remarkValue_2.setGeometry(old_remark_label_2.geometry())
         self.ui.remarkValue_2.setObjectName(old_remark_label_2.objectName())
-        self.ui.remarkValue_2.setStyleSheet(line_edit_stylesheet)
+        self.ui.remarkValue_2.setStyleSheet(common_stylesheet)
         self.ui.remarkValue_2.setAlignment(old_remark_label_2.alignment())
         self.ui.remarkValue_2.setFont(old_remark_label_2.font())
         self.ui.remarkValue_2.setPlaceholderText("Insert Remarks")  # Set placeholder text
@@ -267,10 +281,11 @@ class ButtonHandlers:
     def update_record(self, row):
         """Update the labels with the data from the specified row."""
         image_path = self.ui.historyTable.item(row, 0).data(Qt.UserRole)  # Get the file path from the custom data role
-        result_dict = sample_data[row][3]  # Get the result dictionary from sample_data
-        name_text = self.ui.historyTable.item(row, 2).text()  # Get the name text from the 3rd column
-        date_text = self.ui.historyTable.item(row, 4).text()  # Get the date text from the 5th column
-        remark_text = self.ui.historyTable.item(row, 5).text()  # Get the remark text from the 6th column
+        record = list(self.db_manager.collection.find())[row]  # Fetch the record from the database
+        result_dict = record.get("diagnosis", {})  # Get the result dictionary
+        name_text = record.get("patient_name", "")  # Get the name text
+        date_text = record.get("date", "")  # Get the date text
+        remark_text = record.get("notes", "")  # Get the remark text
 
         # Mapping of shortened names to full names
         disease_mapping = {
@@ -397,7 +412,7 @@ class ButtonHandlers:
             dialog.exec()
 
     def save_results(self):
-        """Save the current data to sample_data and persist to database.py."""
+        """Save the current data to the database."""
         name = self.ui.nameValue.text()
         date = self.ui.dateValue.text()
         remark = self.ui.remarkValue.text()
@@ -405,7 +420,31 @@ class ButtonHandlers:
         image_path = self.ui.imagePlaceholder.property("imagePath")
 
         if not name:
-            QMessageBox.warning(self.ui, "Warning", "Name cannot be empty!")
+            msg_box = QMessageBox(self.ui)
+            msg_box.setWindowTitle("Warning")
+            msg_box.setText("Name cannot be empty!")
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setStyleSheet(
+                """
+                QMessageBox {
+                    background-color: white; /* Plain white background */
+                    color: black; /* Ensure text is black */
+                }
+                QLabel {
+                    color: black; /* Ensure text is black */
+                }
+                QPushButton {
+                    background-color: white; /* Plain button background */
+                    border: 1px solid #dcdcdc;
+                    color: black; /* Ensure button text is black */
+                    padding: 5px;
+                }
+                QPushButton:hover {
+                    background-color: #f0f0f0; /* Slight hover effect */
+                }
+                """
+            )
+            msg_box.exec()
             return
 
         # Convert results text to dictionary
@@ -416,89 +455,77 @@ class ButtonHandlers:
                 confidence = float(confidence.rstrip("%)"))
                 result_dict[disease] = confidence / 100
 
-        # Mapping of full names to shortened names
-        reverse_disease_mapping = {
-            "Diabetic Retinopathy": "DR",
-            "Normal": "NORMAL",
-            "Media Haze": "MH",
-            "Optic Disc Cupping": "ODC",
-            "Tessellation": "TSLN",
-            "Age-Related Macular Degeneration": "ARMD",
-            "Myopia": "MYA",
-            "Branch Retinal Vein Occlusion": "BRVO",
-            "Optic Disc Pallor": "ODP",
-            "Central Retinal Vein Occlusion": "CRVO",
-            "Choroidal Neovascularization": "CNV",
-            "Retinitis": "RS",
-            "Optic Disc Edema": "ODE",
-            "Laser Scars": "LS",
-            "Central Serous Retinopathy": "CSR",
-            "Hypertensive Retinopathy": "HTR",
-            "Arteriosclerotic Retinopathy": "ASR",
-            "Chorioretinitis": "CRS",
-            "Others": "OTHER"
+        # Prepare the record to save
+        record = {
+            "image_path": image_path,
+            "file_name": image_path.split("/")[-1] if image_path else "",
+            "patient_name": name,
+            "diagnosis": result_dict,
+            "date": datetime.strptime(date, "%B %d, %Y").strftime("%Y-%m-%d"),
+            "notes": remark
         }
 
-        # Convert full names to shortened names
-        result_dict_shortened = {reverse_disease_mapping.get(disease, disease): confidence for disease, confidence in result_dict.items()}
+        # Save the record to the database
+        self.db_manager.save_record(record)
 
-        # Find the current row in sample_data and update it
-        for row in sample_data:
-            if row[2] == name:
-                row[0] = image_path
-                row[1] = image_path.split("/")[-1]  # Extract the image file name
-                row[3] = result_dict_shortened
-                row[4] = datetime.strptime(date, "%B %d, %Y").strftime("%Y-%m-%d")
-                row[5] = remark
-                break
-        else:
-            # If the name is not found, add a new record
-            sample_data.append([
-                image_path,
-                image_path.split("/")[-1],
-                name,
-                result_dict_shortened,
-                datetime.strptime(date, "%B %d, %Y").strftime("%Y-%m-%d"),
-                remark
-            ])
-            image_paths.append(image_path)  # Add the new image path to image_paths
+        msg_box = QMessageBox(self.ui)
+        msg_box.setWindowTitle("Success")
+        msg_box.setText("Record Saved!")
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setStyleSheet(
+            """
+            QMessageBox {
+                background-color: white; /* Plain white background */
+                color: black; /* Ensure text is black */
+            }
+            QLabel {
+                color: black; /* Ensure text is black */
+            }
+            QPushButton {
+                background-color: white; /* Plain button background */
+                border: 1px solid #dcdcdc;
+                color: black; /* Ensure button text is black */
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #f0f0f0; /* Slight hover effect */
+            }
+            """
+        )
+        msg_box.exec()
 
-        # Write the updated sample_data to database.py
-        with open('d:\\Qt\\Projects\\Test\\database.py', 'w') as f:
-            f.write("# Sample images (ensure these exist in your directory)\n")
-            f.write("image_paths = [\n")
-            for path in image_paths:
-                f.write(f'    "{path}",\n')
-            f.write("]\n\n")
-            f.write("# Sample Data with confidence scores\n")
-            f.write("sample_data = [\n")
-            for row in sample_data:
-                f.write(f'    {json.dumps(row)},\n')
-            f.write("]\n")
-
-        QMessageBox.information(self.ui, "Success", "Record Saved!")
-
-        # Refresh the history table
         self.refresh_history_table()
 
     def refresh_history_table(self):
         """Refresh the history table to show the updated records."""
-        self.ui.historyTable.setRowCount(len(sample_data))
-        for row_idx, row_data in enumerate(sample_data):
+        if self.db_manager.collection is not None:  # Explicitly check if collection is not None
+            records = list(self.db_manager.collection.find())  # Fetch records from MongoDB
+        else:
+            records = []
+
+        self.ui.historyTable.setRowCount(len(records))
+
+        for row_idx, record in enumerate(records):
             # Load and resize image for each row
-            pixmap = QPixmap(image_paths[row_idx])
+            image_path = record.get("image_path", "")
+            pixmap = QPixmap(image_path)
             scaled_pixmap = pixmap.scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
             # Insert image in first column
             image_item = QTableWidgetItem()
             image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
-            image_item.setData(Qt.UserRole, image_paths[row_idx])  # Store the file path in a custom data role
+            image_item.setData(Qt.UserRole, image_path)  # Store the file path in a custom data role
             self.ui.historyTable.setItem(row_idx, 0, image_item)
 
             # Insert other data into columns
-            for col_idx, text in enumerate(row_data[1:], start=1):
-                if col_idx == 3:  # If the column is for results
-                    text = ", ".join(row_data[3].keys())  # Join disease names without confidence scores
+            file_name = record.get("file_name", "")
+            patient_name = record.get("patient_name", "")
+            diagnosis = ", ".join(record.get("diagnosis", {}).keys())  # Join disease names without confidence scores
+            date = record.get("date", "")
+            notes = record.get("notes", "")
+
+            row_data = [file_name, patient_name, diagnosis, date, notes]
+            for col_idx, text in enumerate(row_data, start=1):
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.ui.historyTable.setItem(row_idx, col_idx, item)
@@ -526,22 +553,40 @@ class ButtonHandlers:
         """Delete the selected record from the history table and database."""
         selected_row = self.ui.historyTable.currentRow()
         if selected_row >= 0:
-            # Remove the record from sample_data and image_paths
-            del sample_data[selected_row]
-            del image_paths[selected_row]
-
-            # Write the updated sample_data to database.py
-            with open('d:\\Qt\\Projects\\Test\\database.py', 'w') as f:
-                f.write("# Sample images (ensure these exist in your directory)\n")
-                f.write("image_paths = [\n")
-                for path in image_paths:
-                    f.write(f'    "{path}",\n')
-                f.write("]\n\n")
-                f.write("# Sample Data with confidence scores\n")
-                f.write("sample_data = [\n")
-                for row in sample_data:
-                    f.write(f'    {json.dumps(row)},\n')
-                f.write("]\n")
+            if self.db_manager.collection is not None:
+                # Fetch the record to delete
+                record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)
+                try:
+                    self.db_manager.collection.delete_one({"image_path": record_id})
+                    msg_box = QMessageBox(self.ui)
+                    msg_box.setWindowTitle("Success")
+                    msg_box.setText("Record deleted successfully!")
+                    msg_box.setIcon(QMessageBox.Information)
+                    msg_box.setStyleSheet(
+                        """
+                        QMessageBox {
+                            background-color: white; /* Plain white background */
+                            color: black; /* Ensure text is black */
+                        }
+                        QLabel {
+                            color: black; /* Ensure text is black */
+                        }
+                        QPushButton {
+                            background-color: white; /* Plain button background */
+                            border: 1px solid #dcdcdc;
+                            color: black; /* Ensure button text is black */
+                            padding: 5px;
+                        }
+                        QPushButton:hover {
+                            background-color: #f0f0f0; /* Slight hover effect */
+                        }
+                        """
+                    )
+                    msg_box.exec()
+                except Exception as e:
+                    QMessageBox.critical(self.ui, "Error", f"Failed to delete record: {e}")
+            else:
+                QMessageBox.warning(self.ui, "Warning", "Database connection is not established.")
 
             # Refresh the history table
             self.refresh_history_table()
@@ -557,30 +602,74 @@ class ButtonHandlers:
         remark = self.ui.remarkValue_2.text()
 
         if not name:
-            QMessageBox.warning(self.ui, "Warning", "Name cannot be empty!")
+            msg_box = QMessageBox(self.ui)
+            msg_box.setWindowTitle("Warning")
+            msg_box.setText("Name cannot be empty!")
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setStyleSheet(
+                """
+                QMessageBox {
+                    background-color: white; /* Plain white background */
+                    color: black; /* Ensure text is black */
+                }
+                QLabel {
+                    color: black; /* Ensure text is black */
+                }
+                QPushButton {
+                    background-color: white; /* Plain button background */
+                    border: 1px solid #dcdcdc;
+                    color: black; /* Ensure button text is black */
+                    padding: 5px;
+                }
+                QPushButton:hover {
+                    background-color: #f0f0f0; /* Slight hover effect */
+                }
+                """
+            )
+            msg_box.exec()
             return
 
-        # Update the record in sample_data
-        sample_data[self.current_row][2] = name
-        sample_data[self.current_row][5] = remark
+        selected_row = self.current_row
+        if selected_row >= 0:
+            record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)
+            if self.db_manager.collection is not None:
+                try:
+                    self.db_manager.collection.update_one(
+                        {"image_path": record_id},
+                        {"$set": {"patient_name": name, "notes": remark}}
+                    )
+                    msg_box = QMessageBox(self.ui)
+                    msg_box.setWindowTitle("Success")
+                    msg_box.setText("Changes saved successfully!")
+                    msg_box.setIcon(QMessageBox.Information)
+                    msg_box.setStyleSheet(
+                        """
+                        QMessageBox {
+                            background-color: white; /* Plain white background */
+                            color: black; /* Ensure text is black */
+                        }
+                        QLabel {
+                            color: black; /* Ensure text is black */
+                        }
+                        QPushButton {
+                            background-color: white; /* Plain button background */
+                            border: 1px solid #dcdcdc;
+                            color: black; /* Ensure button text is black */
+                            padding: 5px;
+                        }
+                        QPushButton:hover {
+                            background-color: #f0f0f0; /* Slight hover effect */
+                        }
+                        """
+                    )
+                    msg_box.exec()
+                except Exception as e:
+                    QMessageBox.critical(self.ui, "Error", f"Failed to save changes: {e}")
+            else:
+                QMessageBox.warning(self.ui, "Warning", "Database connection is not established.")
 
-        # Write the updated sample_data to database.py
-        with open('d:\\Qt\\Projects\\Test\\database.py', 'w') as f:
-            f.write("# Sample images (ensure these exist in your directory)\n")
-            f.write("image_paths = [\n")
-            for path in image_paths:
-                f.write(f'    "{path}",\n')
-            f.write("]\n\n")
-            f.write("# Sample Data with confidence scores\n")
-            f.write("sample_data = [\n")
-            for row in sample_data:
-                f.write(f'    {json.dumps(row)},\n')
-            f.write("]\n")
-
-        QMessageBox.information(self.ui, "Success", "Changes Saved!")
-
-        # Refresh the history table
-        self.refresh_history_table()
+            # Refresh the history table
+            self.refresh_history_table()
 
         # Disable editing
         self.ui.nameValue_2.setReadOnly(True)
