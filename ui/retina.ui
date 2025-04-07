@@ -720,7 +720,7 @@ background-position: center;
           <x>37</x>
           <y>50</y>
           <width>131</width>
-          <height>20</height>
+          <height>24</height>
          </rect>
         </property>
         <property name="font">
@@ -739,7 +739,7 @@ background-position: center;
 </string>
         </property>
         <property name="text">
-         <string/>
+         <string>a</string>
         </property>
        </widget>
        <widget class="QLabel" name="dateValue">
@@ -777,9 +777,9 @@ background-position: center;
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>250</y>
-          <width>91</width>
-          <height>31</height>
+          <y>255</y>
+          <width>61</width>
+          <height>14</height>
          </rect>
         </property>
         <property name="palette">
@@ -1856,7 +1856,7 @@ color: white;
           <x>37</x>
           <y>50</y>
           <width>131</width>
-          <height>20</height>
+          <height>24</height>
          </rect>
         </property>
         <property name="font">
@@ -1913,9 +1913,9 @@ color: white;
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>250</y>
-          <width>91</width>
-          <height>31</height>
+          <y>255</y>
+          <width>61</width>
+          <height>14</height>
          </rect>
         </property>
         <property name="palette">
