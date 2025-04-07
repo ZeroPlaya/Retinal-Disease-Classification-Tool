@@ -1,10 +1,9 @@
-from PySide6.QtWidgets import QMainWindow, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
+from PySide6.QtWidgets import QMainWindow, QTableWidget, QTableWidgetItem, QHeaderView
 from PySide6.QtGui import QFont, QPixmap
 from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
 from handlers import ButtonHandlers  # Import handlers for button logic
-import resources_rc
-from database import sample_data, image_paths  # Import sample data and image paths
+import rc_resources  # Resource file if you're using icons, etc.
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -21,20 +20,27 @@ class MainWindow(QMainWindow):
     def setup_table(self):
         """Configure the history table with a fixed layout (no resizing)."""
         self.table = self.ui.historyTable  # Ensure this matches your .ui object name
-        self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels(["Preview", "File", "Patient Name", "Results", "Date", "Comment"])
 
-        # Adjust column widths to fit within 631 pixels
-        column_widths = [94, 73, 107, 123, 92, 120]  # Predefined column widths
+        # Set the table to have 7 columns (the last column will store the record ID)
+        self.table.setColumnCount(7)
+        self.table.setHorizontalHeaderLabels([
+            "Preview", "File", "Patient Name", "Results", "Date", "Comment", "RecordID"
+        ])
+
+        # Optionally, hide the RecordID column so it's not visible to the user
+        self.table.setColumnHidden(6, True)
+
+        # Adjust column widths as needed (adjust the first 6 columns)
+        column_widths = [94, 73, 107, 123, 92, 120]
         for i, width in enumerate(column_widths):
             self.table.setColumnWidth(i, width)
 
-        # Disable column resizing
+        # Disable column resizing for consistency
         header = self.table.horizontalHeader()
         for i in range(6):
-            header.setSectionResizeMode(i, QHeaderView.Fixed)  # Prevents column resizing
+            header.setSectionResizeMode(i, QHeaderView.Fixed)
 
-        self.table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)  # Locks row heights
+        self.table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.table.verticalHeader().setVisible(False)
 
         # Apply bold font to column headers
@@ -128,36 +134,12 @@ class MainWindow(QMainWindow):
             """
         )
 
-        self.table.setSelectionBehavior(QTableWidget.SelectRows)  # Select full rows
-        self.table.setSelectionMode(QTableWidget.SingleSelection)  # One row at a time
-        self.table.setFocusPolicy(Qt.NoFocus)  # Disable focus outline
-
-        # Make the table read-only
-        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
-
-        # Enable smooth scrolling
+        self.table.setSelectionMode(QTableWidget.SingleSelection)
+        self.table.setFocusPolicy(Qt.NoFocus)
+        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
         self.table.setVerticalScrollMode(QTableWidget.ScrollPerPixel)
         self.table.setHorizontalScrollMode(QTableWidget.ScrollPerPixel)
 
-        self.table.setRowCount(len(sample_data))
-
-        for row_idx, row_data in enumerate(sample_data):
-            # Load and resize image for each row
-            pixmap = QPixmap(image_paths[row_idx])
-            scaled_pixmap = pixmap.scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-
-            # Insert image in first column
-            image_item = QTableWidgetItem()
-            image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
-            image_item.setData(Qt.UserRole, image_paths[row_idx])  # Store the file path in a custom data role
-            self.table.setItem(row_idx, 0, image_item)
-
-            # Insert other data into columns
-            for col_idx, text in enumerate(row_data[1:], start=1):
-                if col_idx == 3:  # If the column is for results
-                    text = ", ".join(row_data[3].keys())  # Join disease names without confidence scores
-                item = QTableWidgetItem(text)
-                item.setTextAlignment(Qt.AlignCenter)
-                self.table.setItem(row_idx, col_idx, item)
-
+        # Start with an empty table (no rows)
+        self.table.setRowCount(0)

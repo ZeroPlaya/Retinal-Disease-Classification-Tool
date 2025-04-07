@@ -47,7 +47,7 @@ background-position: center;
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="MenuPage">
       <layout class="QGridLayout" name="gridLayout">
@@ -125,10 +125,10 @@ background-position: center;
           <string notr="true"/>
          </property>
          <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
+          <enum>QFrame::Shape::NoFrame</enum>
          </property>
          <property name="frameShadow">
-          <enum>QFrame::Plain</enum>
+          <enum>QFrame::Shadow::Plain</enum>
          </property>
          <property name="lineWidth">
           <number>1</number>
@@ -137,7 +137,7 @@ background-position: center;
           <string/>
          </property>
          <property name="textFormat">
-          <enum>Qt::AutoText</enum>
+          <enum>Qt::TextFormat::AutoText</enum>
          </property>
          <property name="pixmap">
           <pixmap resource="../resources.qrc">:/images/assets/title.png</pixmap>
@@ -146,7 +146,7 @@ background-position: center;
           <bool>true</bool>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -651,7 +651,7 @@ background-position: center;
          <string>Placeholder (xx.x%)</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -711,7 +711,7 @@ background-position: center;
          <string>Date</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
        <widget class="QLabel" name="nameValue">
@@ -770,7 +770,7 @@ background-position: center;
          <string>March 18, 2025</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
        <widget class="QLabel" name="remarkLabel">
@@ -1230,7 +1230,7 @@ background-position: center;
          <string/>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -1282,7 +1282,7 @@ background-position: center;
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap>C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png</pixmap>
+         <pixmap>../../../../kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -1298,7 +1298,7 @@ background-position: center;
          </rect>
         </property>
         <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
+         <enum>Qt::LayoutDirection::LeftToRight</enum>
         </property>
         <property name="styleSheet">
          <string notr="true">QLabel {
@@ -1310,7 +1310,7 @@ color: white;
          <string>placeholder.png</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
       </widget>
@@ -1415,7 +1415,7 @@ color: white;
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap>C:/Users/kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png</pixmap>
+         <pixmap>../../../../kurtd/Desktop/New Dataset/Age-Related Macular Degeneration/25.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -1431,7 +1431,7 @@ color: white;
          </rect>
         </property>
         <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
+         <enum>Qt::LayoutDirection::LeftToRight</enum>
         </property>
         <property name="styleSheet">
          <string notr="true">QLabel {
@@ -1443,7 +1443,7 @@ color: white;
          <string>placeholder.png</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
        <widget class="QPushButton" name="xButton">
@@ -1787,7 +1787,7 @@ color: white;
          <string>Placeholder (xx.x%)</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -1847,7 +1847,7 @@ color: white;
          <string>Date</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
        <widget class="QLabel" name="nameValue_2">
@@ -1906,7 +1906,7 @@ color: white;
          <string>March 18, 2025</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
        <widget class="QLabel" name="remarkLabel_2">
@@ -2366,7 +2366,7 @@ color: white;
          <string>Placeholder</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -2426,7 +2426,7 @@ QTableCornerButton::section, QHeaderView::section:vertical {
 </string>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Sunken</enum>
+           <enum>QFrame::Shadow::Sunken</enum>
           </property>
           <property name="lineWidth">
            <number>0</number>
@@ -2435,7 +2435,7 @@ QTableCornerButton::section, QHeaderView::section:vertical {
            <bool>true</bool>
           </property>
           <property name="gridStyle">
-           <enum>Qt::SolidLine</enum>
+           <enum>Qt::PenStyle::SolidLine</enum>
           </property>
           <property name="columnCount">
            <number>6</number>
@@ -2548,7 +2548,7 @@ QTableCornerButton::section, QHeaderView::section:vertical {
            </rect>
           </property>
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
          </widget>
          <widget class="QPushButton" name="deleteButton">
@@ -2590,6 +2590,7 @@ QTableCornerButton::section, QHeaderView::section:vertical {
   </layout>
  </widget>
  <resources>
+  <include location="../resources.qrc"/>
   <include location="../resources.qrc"/>
  </resources>
  <connections/>
