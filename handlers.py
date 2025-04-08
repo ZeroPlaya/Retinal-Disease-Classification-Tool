@@ -255,6 +255,7 @@ class ButtonHandlers:
             "ODC": "Optic Disc Cupping",
             "TSLN": "Tessellation",
             "ARMD": "Age-Related Macular Degeneration",
+            "DN": "Drusen",
             "MYA": "Myopia",
             "BRVO": "Branch Retinal Vein Occlusion",
             "ODP": "Optic Disc Pallor",
@@ -292,6 +293,7 @@ class ButtonHandlers:
         image_path = self.ui.historyTable.item(row, 0).data(Qt.UserRole)  # Get the file path from the custom data role
         record = list(self.db_manager.collection.find())[row]  # Fetch the record from the database
         result_dict = record.get("diagnosis", {})  # Get the result dictionary
+        print(result_dict)  # Print the result dictionary for debugging
         name_text = record.get("patient_name", "")  # Get the name text
         date_text = record.get("date", "")  # Get the date text
         remark_text = record.get("notes", "")  # Get the remark text
@@ -304,6 +306,7 @@ class ButtonHandlers:
             "ODC": "Optic Disc Cupping",
             "TSLN": "Tessellation",
             "ARMD": "Age-Related Macular Degeneration",
+            "DN": "Drusen",
             "MYA": "Myopia",
             "BRVO": "Branch Retinal Vein Occlusion",
             "ODP": "Optic Disc Pallor",
@@ -321,7 +324,8 @@ class ButtonHandlers:
         # Format result text with disease names and confidence scores
         full_result_text = "\n\n".join(
             f"{disease_mapping.get(disease, disease)} ({data['probability'] * 100:.2f}%)"
-            for disease, data in result_dict.items() if data["prediction"] == 1
+            for disease, data in result_dict.items()
+            if isinstance(data, dict) and data.get("prediction") == 1
         )
 
         # Convert date to "Month Day, Year" format
@@ -333,6 +337,7 @@ class ButtonHandlers:
             self.ui.resultPlaceholder_2.setWordWrap(True)  # Enable word wrap
             self.ui.resultPlaceholder_2.setFixedWidth(191)  # Set fixed width to 191
             self.ui.resultPlaceholder_2.adjustSize()  # Adjust the size of the QLabel to fit the text
+            self.ui.resultPlaceholder_2.setVisible(True)  # Ensure the QLabel is visible
             self.ui.nameValue_2.setText(name_text)  # Set the name text in the nameValue_2 QLabel
             self.ui.dateValue_2.setText(formatted_date)  # Set the formatted date in the dateValue_2 QLabel
             self.ui.remarkValue_2.setText(remark_text)  # Set the remark text in the remarkValue_2 QLabel
