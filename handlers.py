@@ -212,7 +212,7 @@ class ButtonHandlers:
             self.set_image_placeholder_classification(file_path, result_dict["class_predictions"])
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
 
-    def set_image_placeholder_classification(self, image_path):
+    def set_image_placeholder_classification(self, image_path, result_dict):
         """Set the image in the imagePlaceholder QLabel for the classification page."""
         pixmap = QPixmap(image_path)
         label_size = self.ui.imagePlaceholder.size()
@@ -241,11 +241,11 @@ class ButtonHandlers:
         self.ui.nameValue.setPlaceholderText("Insert Name")
         self.ui.remarkValue.setPlaceholderText("Insert Remarks")
 
-        # Generate random diseases with random percentages
-        diseases = ["DR", "NORMAL", "MH", "ODC", "TSLN", "ARMD", "MYA", "BRVO", "ODP", "CRVO", "CNV", "RS", "ODE", "LS", "CSR", "HTR", "ASR", "CRS", "OTHER"]
-        num_diseases = random.choices([1, 2, 3], weights=[50, 30, 20], k=1)[0]  # More likely to output fewer diseases
-        selected_diseases = random.sample(diseases, num_diseases)  # Select random diseases
-        result_dict = {disease: round(random.uniform(0.5, 1.0), 2) for disease in selected_diseases}  # Assign random percentages
+        # # Generate random diseases with random percentages
+        # diseases = ["DR", "NORMAL", "MH", "ODC", "TSLN", "ARMD", "MYA", "BRVO", "ODP", "CRVO", "CNV", "RS", "ODE", "LS", "CSR", "HTR", "ASR", "CRS", "OTHER"]
+        # num_diseases = random.choices([1, 2, 3], weights=[50, 30, 20], k=1)[0]  # More likely to output fewer diseases
+        # selected_diseases = random.sample(diseases, num_diseases)  # Select random diseases
+        # result_dict = {disease: round(random.uniform(0.5, 1.0), 2) for disease in selected_diseases}  # Assign random percentages
 
         # Mapping of shortened names to full names
         disease_mapping = {
@@ -271,8 +271,8 @@ class ButtonHandlers:
 
         # Format result text with disease names and confidence scores
         full_result_text = "\n\n".join(
-            f"{disease_mapping.get(disease, disease)} ({confidence:.2f}%)"
-            for disease, confidence in result_dict.items()
+            f"{disease_mapping.get(disease, disease)} ({data['probability'] * 100:.2f}%)"
+            for disease, data in result_dict.items() if data["prediction"] == 1
         )
 
         # Set the result text in the resultPlaceholder QLabel
@@ -315,14 +315,13 @@ class ButtonHandlers:
             "CSR": "Central Serous Retinopathy",
             "HTR": "Hypertensive Retinopathy",
             "ASR": "Arteriosclerotic Retinopathy",
-            "CRS": "Chorioretinitis",
-            "OTHER": "Others"
+            "CRS": "Chorioretinitis"
         }
 
         # Format result text with disease names and confidence scores
         full_result_text = "\n\n".join(
-            f"{disease_mapping.get(disease, disease)} ({confidence:.2f}%)"
-            for disease, confidence in result_dict.items()
+            f"{disease_mapping.get(disease, disease)} ({data['probability'] * 100:.2f}%)"
+            for disease, data in result_dict.items() if data["prediction"] == 1
         )
 
         # Convert date to "Month Day, Year" format
