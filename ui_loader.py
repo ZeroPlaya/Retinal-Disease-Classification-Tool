@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
 from handlers import ButtonHandlers  # Import handlers for button logic
 import resources_rc
-from database import sample_data, image_paths  # Import sample data and image paths
+from database import DatabaseManager  # Import DatabaseManager
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -15,11 +15,12 @@ class MainWindow(QMainWindow):
 
         self.setFixedSize(720, 512)  # Set a fixed window size
         self.handlers = ButtonHandlers(self.ui)
+        self.db_manager = DatabaseManager()  # Initialize DatabaseManager
         
         self.setup_table()
 
     def setup_table(self):
-        """Configure the history table with a fixed layout (no resizing)."""
+        """Configure the history table and populate it with data from MongoDB."""
         self.table = self.ui.historyTable  # Ensure this matches your .ui object name
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels(["Preview", "File", "Patient Name", "Results", "Date", "Comment"])
@@ -42,7 +43,7 @@ class MainWindow(QMainWindow):
         header_font.setBold(True)
         self.table.horizontalHeader().setFont(header_font)
 
-        # Set header and row formatting
+        # Set table styling
         self.table.setStyleSheet(
             """
             QHeaderView::section {
@@ -96,13 +97,6 @@ class MainWindow(QMainWindow):
                 background-color: #555;
             }
 
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-                border: none;
-                background: none;
-                height: 0px;
-                width: 0px;
-            }
-
             QScrollBar:horizontal {
                 background-color: #f1f1f1;
                 height: 12px;
@@ -117,13 +111,6 @@ class MainWindow(QMainWindow):
 
             QScrollBar::handle:horizontal:hover {
                 background-color: #555;
-            }
-
-            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
-                border: none;
-                background: none;
-                height: 0px;
-                width: 0px;
             }
             """
         )
@@ -140,23 +127,35 @@ class MainWindow(QMainWindow):
         self.table.setVerticalScrollMode(QTableWidget.ScrollPerPixel)
         self.table.setHorizontalScrollMode(QTableWidget.ScrollPerPixel)
 
-        self.table.setRowCount(len(sample_data))
+        # Fetch data from MongoDB
+        if self.db_manager.collection is not None:  # Explicitly check if collection is not None
+            records = list(self.db_manager.collection.find())  # Convert cursor to list
+        else:
+            records = []
 
-        for row_idx, row_data in enumerate(sample_data):
+        self.table.setRowCount(len(records))
+
+        for row_idx, record in enumerate(records):
             # Load and resize image for each row
-            pixmap = QPixmap(image_paths[row_idx])
+            image_path = record.get("image_path", "")
+            pixmap = QPixmap(image_path)
             scaled_pixmap = pixmap.scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
             # Insert image in first column
             image_item = QTableWidgetItem()
             image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
-            image_item.setData(Qt.UserRole, image_paths[row_idx])  # Store the file path in a custom data role
+            image_item.setData(Qt.UserRole, image_path)  # Store the file path in a custom data role
             self.table.setItem(row_idx, 0, image_item)
 
             # Insert other data into columns
-            for col_idx, text in enumerate(row_data[1:], start=1):
-                if col_idx == 3:  # If the column is for results
-                    text = ", ".join(row_data[3].keys())  # Join disease names without confidence scores
+            file_name = record.get("file_name", "")
+            patient_name = record.get("patient_name", "")
+            diagnosis = ", ".join(record.get("diagnosis", {}).keys())  # Join disease names without confidence scores
+            date = record.get("date", "")
+            notes = record.get("notes", "")
+
+            row_data = [file_name, patient_name, diagnosis, date, notes]
+            for col_idx, text in enumerate(row_data, start=1):
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(row_idx, col_idx, item)
