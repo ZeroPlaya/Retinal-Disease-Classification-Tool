@@ -59,7 +59,7 @@ class RetinaDiseasePredictor:
         vit_model.head = nn.Identity()
         
         # Create combined model
-        model = CombinedModel(feature_extractor, vit_model, num_classes=19)
+        model = CombinedModel(feature_extractor, vit_model, num_classes=19, dropout_rate=0.3)
         
         # Load best model
         try:
@@ -236,24 +236,36 @@ class RetinaDiseasePredictor:
         return json_result
 
 class CombinedModel(nn.Module):
-    def __init__(self, feature_extractor, vit_model, num_classes=19):
+    def __init__(self, feature_extractor, vit_model, num_classes=19, dropout_rate=0.3):
         super(CombinedModel, self).__init__()
 
         self.feature_extractor = feature_extractor
+        # Add dropout after flattening
+        self.dropout1 = nn.Dropout(dropout_rate)
         self.fc = nn.Linear(2208 * 7 * 7, vit_model.config.hidden_size)
+        # Add dropout after FC layer
+        self.dropout2 = nn.Dropout(dropout_rate)
         self.vit_model = vit_model
+        # Add dropout before final classifier
+        self.dropout3 = nn.Dropout(dropout_rate)
         self.vit_model.classifier = nn.Linear(vit_model.config.hidden_size, num_classes)
 
     def forward(self, x):
-        features = self.feature_extractor(x)
+        features = torch.utils.checkpoint.checkpoint(self.feature_extractor, x, use_reentrant=False)
         flattened_features = features.view(features.size(0), -1)
-        adjusted_features = self.fc(flattened_features)
+        # Apply dropout after flattening
+        flattened_features = self.dropout1(flattened_features)
+        adjusted_features = torch.utils.checkpoint.checkpoint(self.fc, flattened_features, use_reentrant=False)
+        # Apply dropout after FC layer
+        adjusted_features = self.dropout2(adjusted_features)
         batch_size = adjusted_features.size(0)
         sequence_length = adjusted_features.size(1) // self.vit_model.config.hidden_size
         adjusted_features = adjusted_features.view(batch_size, sequence_length, self.vit_model.config.hidden_size)
         outputs = self.vit_model.vit.encoder(adjusted_features).last_hidden_state
-        outputs = self.vit_model.classifier(outputs[:, 0, :])
-        return outputs, features
+        # Apply dropout before classifier
+        outputs_cls = self.dropout3(outputs[:, 0, :])
+        outputs = self.vit_model.classifier(outputs_cls)
+        return outputs, features  # Return both classification and feature maps
 
 # def main():
 #     print("===== Retinal Disease Prediction =====")
