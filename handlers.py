@@ -207,7 +207,7 @@ class ButtonHandlers:
         if file_path:
             # Get prediction results from the predictor
             result_dict = self.predictor.predict(file_path)
-            
+
             # Display the image and results in the UI
             self.set_image_placeholder_classification(file_path, result_dict["class_predictions"])
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
@@ -236,16 +236,6 @@ class ButtonHandlers:
         # Set the image name in the imageName QLabel
         image_name = image_path.split("/")[-1]  # Extract the image name from the path
         self.ui.imageName.setText(image_name)
-
-        # Ensure placeholder text is set correctly
-        self.ui.nameValue.setPlaceholderText("Insert Name")
-        self.ui.remarkValue.setPlaceholderText("Insert Remarks")
-
-        # # Generate random diseases with random percentages
-        # diseases = ["DR", "NORMAL", "MH", "ODC", "TSLN", "ARMD", "MYA", "BRVO", "ODP", "CRVO", "CNV", "RS", "ODE", "LS", "CSR", "HTR", "ASR", "CRS", "OTHER"]
-        # num_diseases = random.choices([1, 2, 3], weights=[50, 30, 20], k=1)[0]  # More likely to output fewer diseases
-        # selected_diseases = random.sample(diseases, num_diseases)  # Select random diseases
-        # result_dict = {disease: round(random.uniform(0.5, 1.0), 2) for disease in selected_diseases}  # Assign random percentages
 
         # Mapping of shortened names to full names
         disease_mapping = {
@@ -322,11 +312,18 @@ class ButtonHandlers:
         }
 
         # Format result text with disease names and confidence scores
-        full_result_text = "\n\n".join(
-            f"{disease_mapping.get(disease, disease)} ({data['probability'] * 100:.2f}%)"
-            for disease, data in result_dict.items()
-            if isinstance(data, dict) and data.get("prediction") == 1
-        )
+        # The structure of result_dict from the database is different from prediction results
+        full_result_text = ""
+        for disease, probability in result_dict.items():
+            if isinstance(probability, (int, float)):
+                # For records saved in the new format where probability is directly a number
+                full_result_text += f"{disease} ({probability * 100:.2f}%)\n\n"
+            elif isinstance(probability, dict) and probability.get("prediction") == 1:
+                # For records saved in the old format where probability is a dict with prediction and probability keys
+                full_result_text += f"{disease} ({probability.get('probability', 0) * 100:.2f}%)\n\n"
+
+        # Remove trailing newlines
+        full_result_text = full_result_text.rstrip()
 
         # Convert date to "Month Day, Year" format
         formatted_date = datetime.strptime(date_text, "%Y-%m-%d").strftime("%B %d, %Y")
@@ -460,13 +457,37 @@ class ButtonHandlers:
             msg_box.exec()
             return
 
-        # Convert results text to dictionary
+        # Mapping of shortened names to full names
+        disease_mapping = {
+            "DR": "Diabetic Retinopathy",
+            "NORMAL": "Normal",
+            "MH": "Media Haze",
+            "ODC": "Optic Disc Cupping",
+            "TSLN": "Tessellation",
+            "ARMD": "Age-Related Macular Degeneration",
+            "DN": "Drusen",
+            "MYA": "Myopia",
+            "BRVO": "Branch Retinal Vein Occlusion",
+            "ODP": "Optic Disc Pallor",
+            "CRVO": "Central Retinal Vein Occlusion",
+            "CNV": "Choroidal Neovascularization",
+            "RS": "Retinitis",
+            "ODE": "Optic Disc Edema",
+            "LS": "Laser Scars",
+            "CSR": "Central Serous Retinopathy",
+            "HTR": "Hypertensive Retinopathy",
+            "ASR": "Arteriosclerotic Retinopathy",
+            "CRS": "Chorioretinitis"
+        }
+
+        # Convert results text to dictionary with full disease names
         result_dict = {}
         for line in results.split("\n\n"):
             if line:
                 disease, confidence = line.rsplit(" (", 1)
                 confidence = float(confidence.rstrip("%)"))
-                result_dict[disease] = confidence / 100
+                full_disease_name = disease_mapping.get(disease, disease)  # Map to full name
+                result_dict[full_disease_name] = confidence / 100
 
         # Prepare the record to save
         record = {
