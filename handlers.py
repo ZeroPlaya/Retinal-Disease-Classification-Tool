@@ -5,6 +5,10 @@ from datetime import datetime  # Import datetime for date formatting
 from database import DatabaseManager  # Import only DatabaseManager
 import random  # Import random for generating random diseases and percentages
 import json  # Import json for writing to file
+import os  # Import os for file operations
+import sys  # Import sys for platform detection
+import subprocess  # Import subprocess for opening files
+from fpdf import FPDF  # Import FPDF for PDF generation
 
 class ClickableLabel(QLabel):
     def __init__(self, parent=None):
@@ -48,6 +52,7 @@ class ButtonHandlers:
         self.ui.deleteButton.clicked.connect(self.delete_selected_record)  # Connect deleteButton to delete_selected_record method
         self.ui.modifyRecordButton.clicked.connect(self.enable_editing)  # Connect modifyRecordButton to enable_editing method
         self.ui.saveChangesButton.clicked.connect(self.save_changes)  # Connect saveChangesButton to save_changes method
+        self.ui.printButton.clicked.connect(self.print_selected_record)  # Connect printButton to print_selected_record method
 
         # Replace the existing QLabel with ClickableLabel
         self.replace_image_placeholder()
@@ -674,3 +679,146 @@ class ButtonHandlers:
         # Disable editing
         self.ui.nameValue_2.setReadOnly(True)
         self.ui.remarkValue_2.setReadOnly(True)
+
+    def print_selected_record(self):
+        """Generate a professional-looking PDF of the selected record with its details and image."""
+        selected_row = self.ui.historyTable.currentRow()
+        if selected_row >= 0:
+            record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)
+            record = self.db_manager.collection.find_one({"image_path": record_id}) if self.db_manager.collection is not None else None
+
+            if record:
+                class PDF(FPDF):
+                    def header(self):
+                        self.set_font("Arial", "B", 16)
+                        self.cell(0, 10, "Generated Report", border=False, ln=True, align="C")
+                        self.ln(2)
+                        self.set_draw_color(0, 0, 0)  # Black line
+                        self.set_line_width(0.5)
+                        self.line(10, self.get_y(), 200, self.get_y())  # Horizontal line
+                        self.ln(5)
+
+                    def footer(self):
+                        self.set_y(-15)
+                        self.set_font("Arial", "I", 8)
+                        self.cell(0, 10, f"Page {self.page_no()}", align="C")
+
+                pdf = PDF()
+                pdf.add_page()
+                pdf.set_font("Arial", size=12)
+
+                # Patient Name (Left) and Record Date (Right)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, f"Name: {record.get('patient_name', 'N/A')}", ln=False, align="L")
+                pdf.cell(0, 10, f"Record Date: {record.get('date', 'N/A')}", ln=True, align="R")
+
+                # Timestamp of Printing (Right)
+                pdf.set_font("Arial", size=10)
+                pdf.cell(0, 10, f"Printed On: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", ln=True, align="R")
+                pdf.ln(5)
+
+                # Diagnosis (Left)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "Diagnosis:", ln=True, align="L")
+                pdf.set_font("Arial", size=12)
+                for disease, confidence in record.get("diagnosis", {}).items():
+                    pdf.cell(0, 10, f"- {disease}: {confidence * 100:.2f}%", ln=True, align="L")
+                pdf.ln(5)
+
+                # Remarks (Left, only if not empty)
+                remarks = record.get("notes", "").strip()
+                if remarks:
+                    pdf.set_font("Arial", "B", 12)
+                    pdf.cell(0, 10, "Remarks:", ln=True, align="L")
+                    pdf.set_font("Arial", size=12)
+                    pdf.multi_cell(0, 10, remarks)
+                    pdf.ln(5)
+
+                # Uploaded Image Label (Center)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "Uploaded Image", ln=True, align="C")
+
+                # Fundus Image (Center Below Label)
+                image_path = record.get("image_path", "")
+                if os.path.exists(image_path):
+                    y_before_image = pdf.get_y()
+                    pdf.image(image_path, x=(210 - 100) // 2, y=y_before_image, w=100)  # Center the image
+                    pdf.ln(80)  # Adjust based on image height
+
+                # Move to the bottom of the page for "*** END OF RECORD ***"
+                pdf.set_y(-40)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "*** END OF RECORD ***", ln=True, align="C")
+
+                # Save the PDF
+                filename = f"{record.get('patient_name', 'record').replace(' ', '_')}.pdf"
+                output_path = os.path.join(os.getcwd(), filename)
+                pdf.output(output_path)
+
+                # Open the PDF file
+                try:
+                    if sys.platform == "win32":
+                        os.startfile(output_path)
+                    elif sys.platform == "darwin":
+                        subprocess.run(["open", output_path])
+                    else:
+                        subprocess.run(["xdg-open", output_path])
+                except Exception as e:
+                    QMessageBox.warning(self.ui, "Warning", f"Failed to open PDF: {e}")
+
+                # Show success message
+                msg_box = QMessageBox(self.ui)
+                msg_box.setWindowTitle("Success")
+                msg_box.setText(f"PDF saved successfully at {output_path}")
+                msg_box.setIcon(QMessageBox.Information)
+                msg_box.setStyleSheet(
+                    """
+                    QMessageBox {
+                        background-color: white; /* Plain white background */
+                        color: black; /* Ensure text is black */
+                    }
+                    QLabel {
+                        color: black; /* Ensure text is black */
+                    }
+                    QPushButton {
+                        background-color: white; /* Plain button background */
+                        border: 1px solid #dcdcdc;
+                        color: black; /* Ensure button text is black */
+                        padding: 5px;
+                    }
+                    QPushButton:hover {
+                        background-color: #f0f0f0; /* Slight hover effect */
+                    }
+                    """
+                )
+                msg_box.exec()
+            else:
+                self._show_message("Warning", "No record found for the selected row.")
+        else:
+            self._show_message("Warning", "Please select a record to print.")
+
+    def _show_message(self, title, message):
+        """Display a styled message box."""
+        msg_box = QMessageBox(self.ui)
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.setIcon(QMessageBox.Warning)
+        msg_box.setStyleSheet("""
+            QMessageBox {
+                background-color: white;
+                color: black;
+            }
+            QLabel {
+                color: black;
+            }
+            QPushButton {
+                background-color: white;
+                border: 1px solid #dcdcdc;
+                color: black;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #f0f0f0;
+            }
+        """)
+        msg_box.exec()
