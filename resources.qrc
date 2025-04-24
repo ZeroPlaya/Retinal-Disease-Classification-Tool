@@ -19,5 +19,7 @@
         <file>assets/deleterecord.png</file>
         <file>assets/savechanges.png</file>
         <file>assets/modifyrecord.png</file>
+        <file>assets/printrecord.png</file>
+        <file>assets/archiverecord.png</file>
     </qresource>
 </RCC>

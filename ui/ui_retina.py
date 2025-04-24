@@ -769,7 +769,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
         self.deleteButton = QPushButton(self.widget_2)
         self.deleteButton.setObjectName(u"deleteButton")
-        self.deleteButton.setGeometry(QRect(20, 390, 114, 54))
+        self.deleteButton.setGeometry(QRect(20, 390, 95, 47))
         self.deleteButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.deleteButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
@@ -779,10 +779,23 @@ class Ui_RetinalDiseaseClassifier(object):
 "    background-position: center;\n"
 "}\n"
 "")
+        self.printButton = QPushButton(self.widget_2)
+        self.printButton.setObjectName(u"printButton")
+        self.printButton.setGeometry(QRect(150, 390, 94, 47))
+        self.printButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.printButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/printrecord.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
         self.historyBackButton.raise_()
         self.line.raise_()
         self.historyTable.raise_()
         self.deleteButton.raise_()
+        self.printButton.raise_()
 
         self.verticalLayout.addWidget(self.widget_2)
 
@@ -793,7 +806,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
@@ -857,5 +870,6 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.historyBackButton.setText("")
         self.deleteButton.setText("")
+        self.printButton.setText("")
     # retranslateUi
 
