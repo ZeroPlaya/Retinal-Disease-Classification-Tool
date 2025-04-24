@@ -49,7 +49,7 @@ class ButtonHandlers:
         self.ui.uploadNewImageButton.clicked.connect(self.upload_new_image)
         self.ui.historyTable.itemDoubleClicked.connect(self.on_row_double_clicked)  # Connect double-click signal
         self.ui.saveResultsButton.clicked.connect(self.save_results)  # Connect saveResultsButton to save_results method
-        self.ui.deleteButton.clicked.connect(self.delete_selected_record)  # Connect deleteButton to delete_selected_record method
+        self.ui.archiveButton.clicked.connect(self.archive_selected_record)  # Connect archiveButton to archive_selected_record method
         self.ui.modifyRecordButton.clicked.connect(self.enable_editing)  # Connect modifyRecordButton to enable_editing method
         self.ui.saveChangesButton.clicked.connect(self.save_changes)  # Connect saveChangesButton to save_changes method
         self.ui.printButton.clicked.connect(self.print_selected_record)  # Connect printButton to print_selected_record method
@@ -554,7 +554,7 @@ class ButtonHandlers:
         current_date = datetime.now().strftime("%B %d, %Y")
         self.ui.dateValue.setText(current_date)
 
-    def delete_selected_record(self):
+    def archive_selected_record(self):
         """Delete the selected record from the history table and database."""
         selected_row = self.ui.historyTable.currentRow()
         if selected_row >= 0:
