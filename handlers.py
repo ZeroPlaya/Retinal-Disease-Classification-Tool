@@ -162,6 +162,44 @@ class ButtonHandlers:
             }
         """)
         self.ui.searchBar.setPlaceholderText("Search...")  # Set placeholder text
+        self.ui.searchBar.textChanged.connect(self.on_search_text_changed)  # Connect search bar to filter method
+
+    def on_search_text_changed(self, text):
+        """Filter the history table based on the search text and archived status."""
+        records = self.db_manager.fetch_records(show_archived=False)  # Fetch only non-archived records
+        filtered_records = [
+            record for record in records
+            if text.lower() in record.get("patient_name", "").lower() or
+               text.lower() in record.get("notes", "").lower() or
+               any(text.lower() in disease.lower() for disease in record.get("diagnosis", {}).keys())
+        ]
+
+        self.ui.historyTable.setRowCount(len(filtered_records))
+
+        for row_idx, record in enumerate(filtered_records):
+            # Load and resize image for each row
+            image_path = record.get("image_path", "")
+            pixmap = QPixmap(image_path)
+            scaled_pixmap = pixmap.scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+            # Insert image in first column
+            image_item = QTableWidgetItem()
+            image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
+            image_item.setData(Qt.UserRole, record.get("_id"))  # Store the unique _id in the custom data role
+            self.ui.historyTable.setItem(row_idx, 0, image_item)
+
+            # Insert other data into columns
+            file_name = record.get("file_name", "")
+            patient_name = record.get("patient_name", "")
+            diagnosis = ", ".join(record.get("diagnosis", {}).keys())  # Join disease names without confidence scores
+            date = record.get("date", "")
+            notes = record.get("notes", "")
+
+            row_data = [file_name, patient_name, diagnosis, date, notes]
+            for col_idx, text in enumerate(row_data, start=1):
+                item = QTableWidgetItem(text)
+                item.setTextAlignment(Qt.AlignCenter)
+                self.ui.historyTable.setItem(row_idx, col_idx, item)
 
     def update_placeholder_visibility(self):
         """Update the visibility of the placeholder text based on the content."""
