@@ -33,6 +33,7 @@ class ButtonHandlers:
         self.connect_buttons()
         self.setup_shortcuts()  # Setup shortcuts
         self.setup_editable_fields()  # Setup editable fields
+        self.setup_search_bar()  # Add method to set up the curved search bar
 
     def connect_buttons(self):
         """0 = titlepage, 1 = selectionpage, 2 = classificationpage, 3 = historyview, 4 = historypage"""
@@ -144,6 +145,24 @@ class ButtonHandlers:
         self.ui.remarkValue_2.setPlaceholderText("Insert Remarks")  # Set placeholder text
         self.ui.remarkValue_2.setFrame(False)  # Remove the frame to make it look like a QLabel
         self.ui.remarkValue_2.setReadOnly(True)  # Initially set to read-only
+
+    def setup_search_bar(self):
+        """Customize the appearance of the search bar."""
+        self.ui.searchBar.setStyleSheet("""
+            QLineEdit {
+                border: 2px solid #dcdcdc; /* Light gray border */
+                border-radius: 15px; /* Rounded corners */
+                padding: 8px 12px; /* Padding for text */
+                background-color: #f9f9f9; /* Light background */
+                font-size: 14px; /* Font size */
+                color: #333; /* Text color */
+            }
+            QLineEdit:focus {
+                border-color: #0078d7; /* Blue border on focus */
+                background-color: #ffffff; /* White background on focus */
+            }
+        """)
+        self.ui.searchBar.setPlaceholderText("Search...")  # Set placeholder text
 
     def update_placeholder_visibility(self):
         """Update the visibility of the placeholder text based on the content."""

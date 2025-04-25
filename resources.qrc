@@ -21,5 +21,6 @@
         <file>assets/modifyrecord.png</file>
         <file>assets/printrecord.png</file>
         <file>assets/archiverecord.png</file>
+        <file>assets/searchbar.png</file>
     </qresource>
 </RCC>
