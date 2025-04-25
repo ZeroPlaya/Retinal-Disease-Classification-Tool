@@ -280,17 +280,21 @@ class ButtonHandlers:
     @Slot()
     def on_row_double_clicked(self, item):
         """Switch to the classification page when a row is double-clicked and set the image, result, name, date, and remark."""
-        self.current_row = item.row()  # Update the current row
-        self.update_record(self.current_row)
+        record_id = self.ui.historyTable.item(item.row(), 0).data(Qt.UserRole)  # Get the _id from the custom data role
+        self.update_record(record_id)
 
-    def update_record(self, row):
-        """Update the labels with the data from the specified row."""
-        image_path = self.ui.historyTable.item(row, 0).data(Qt.UserRole)  # Get the file path from the custom data role
-        record = list(self.db_manager.collection.find())[row]  # Fetch the record from the database
-        result_dict = record.get("diagnosis", {})  # Get the result dictionary
-        name_text = record.get("patient_name", "")  # Get the name text
-        date_text = record.get("date", "")  # Get the date text
-        remark_text = record.get("notes", "")  # Get the remark text
+    def update_record(self, record_id):
+        """Update the labels with the data from the specified record."""
+        record = self.db_manager.collection.find_one({"_id": record_id})  # Fetch the record using _id
+        if not record:
+            QMessageBox.warning(self.ui, "Warning", "Record not found.")
+            return
+
+        image_path = record.get("image_path", "")
+        result_dict = record.get("diagnosis", {})
+        name_text = record.get("patient_name", "")
+        date_text = record.get("date", "")
+        remark_text = record.get("notes", "")
 
         # Mapping of shortened names to full names
         disease_mapping = {
@@ -326,14 +330,14 @@ class ButtonHandlers:
 
         if image_path:
             self.set_image_placeholder_history(image_path)
-            self.ui.resultPlaceholder_2.setText(full_result_text)  # Set the result text in the resultPlaceholder_2 QLabel
-            self.ui.resultPlaceholder_2.setWordWrap(True)  # Enable word wrap
-            self.ui.resultPlaceholder_2.setFixedWidth(191)  # Set fixed width to 191
-            self.ui.resultPlaceholder_2.adjustSize()  # Adjust the size of the QLabel to fit the text
-            self.ui.nameValue_2.setText(name_text)  # Set the name text in the nameValue_2 QLabel
-            self.ui.dateValue_2.setText(formatted_date)  # Set the formatted date in the dateValue_2 QLabel
-            self.ui.remarkValue_2.setText(remark_text)  # Set the remark text in the remarkValue_2 QLabel
-            self.ui.stackedWidget.setCurrentIndex(3)  # Move to history viewer
+            self.ui.resultPlaceholder_2.setText(full_result_text)
+            self.ui.resultPlaceholder_2.setWordWrap(True)
+            self.ui.resultPlaceholder_2.setFixedWidth(191)
+            self.ui.resultPlaceholder_2.adjustSize()
+            self.ui.nameValue_2.setText(name_text)
+            self.ui.dateValue_2.setText(formatted_date)
+            self.ui.remarkValue_2.setText(remark_text)
+            self.ui.stackedWidget.setCurrentIndex(3)
 
         # Update button visibility
         self.ui.leftButton.setVisible(self.current_row > 0)
@@ -369,14 +373,16 @@ class ButtonHandlers:
         """Navigate to the previous record."""
         if self.current_row > 0:
             self.current_row -= 1
-            self.update_record(self.current_row)
+            record_id = self.ui.historyTable.item(self.current_row, 0).data(Qt.UserRole)  # Get the _id from the table
+            self.update_record(record_id)
 
     @Slot()
     def navigate_right(self):
         """Navigate to the next record."""
         if self.current_row < self.ui.historyTable.rowCount() - 1:
             self.current_row += 1
-            self.update_record(self.current_row)
+            record_id = self.ui.historyTable.item(self.current_row, 0).data(Qt.UserRole)  # Get the _id from the table
+            self.update_record(record_id)
 
     @Slot()
     def open_image_preview(self, event):
@@ -467,7 +473,8 @@ class ButtonHandlers:
             "patient_name": name,
             "diagnosis": result_dict,
             "date": datetime.strptime(date, "%B %d, %Y").strftime("%Y-%m-%d"),
-            "notes": remark
+            "notes": remark,
+            "archived": False  # Ensure the new record is not archived
         }
 
         # Save the record to the database
@@ -501,12 +508,9 @@ class ButtonHandlers:
 
         self.refresh_history_table()
 
-    def refresh_history_table(self):
-        """Refresh the history table to show the updated records."""
-        if self.db_manager.collection is not None:  # Explicitly check if collection is not None
-            records = list(self.db_manager.collection.find())  # Fetch records from MongoDB
-        else:
-            records = []
+    def refresh_history_table(self, show_archived=False):
+        """Refresh the history table to show the updated records, excluding archived ones by default."""
+        records = self.db_manager.fetch_records(show_archived=show_archived)  # Use fetch_records method
 
         self.ui.historyTable.setRowCount(len(records))
 
@@ -519,7 +523,7 @@ class ButtonHandlers:
             # Insert image in first column
             image_item = QTableWidgetItem()
             image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
-            image_item.setData(Qt.UserRole, image_path)  # Store the file path in a custom data role
+            image_item.setData(Qt.UserRole, record.get("_id"))  # Store the unique _id in the custom data role
             self.ui.historyTable.setItem(row_idx, 0, image_item)
 
             # Insert other data into columns
@@ -555,43 +559,49 @@ class ButtonHandlers:
         self.ui.dateValue.setText(current_date)
 
     def archive_selected_record(self):
-        """Delete the selected record from the history table and database."""
+        """Mark the selected record as archived in the database and hide it from the table."""
         selected_row = self.ui.historyTable.currentRow()
         if selected_row >= 0:
-            if self.db_manager.collection is not None:
-                # Fetch the record to delete
-                record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)
+            record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)  # Get the _id from the table
+            if record_id:
                 try:
-                    self.db_manager.collection.delete_one({"image_path": record_id})
-                    msg_box = QMessageBox(self.ui)
-                    msg_box.setWindowTitle("Success")
-                    msg_box.setText("Record deleted successfully!")
-                    msg_box.setIcon(QMessageBox.Information)
-                    msg_box.setStyleSheet(
-                        """
-                        QMessageBox {
-                            background-color: white; /* Plain white background */
-                            color: black; /* Ensure text is black */
-                        }
-                        QLabel {
-                            color: black; /* Ensure text is black */
-                        }
-                        QPushButton {
-                            background-color: white; /* Plain button background */
-                            border: 1px solid #dcdcdc;
-                            color: black; /* Ensure button text is black */
-                            padding: 5px;
-                        }
-                        QPushButton:hover {
-                            background-color: #f0f0f0; /* Slight hover effect */
-                        }
-                        """
+                    # Update the 'archived' field to True in the database
+                    result = self.db_manager.collection.update_one(
+                        {"_id": record_id},
+                        {"$set": {"archived": True}}
                     )
-                    msg_box.exec()
+                    if result.modified_count > 0:
+                        msg_box = QMessageBox(self.ui)
+                        msg_box.setWindowTitle("Success")
+                        msg_box.setText("Record archived successfully!")
+                        msg_box.setIcon(QMessageBox.Information)
+                        msg_box.setStyleSheet(
+                            """
+                            QMessageBox {
+                                background-color: white; /* Plain white background */
+                                color: black; /* Ensure text is black */
+                            }
+                            QLabel {
+                                color: black; /* Ensure text is black */
+                            }
+                            QPushButton {
+                                background-color: white; /* Plain button background */
+                                border: 1px solid #dcdcdc;
+                                color: black; /* Ensure button text is black */
+                                padding: 5px;
+                            }
+                            QPushButton:hover {
+                                background-color: #f0f0f0; /* Slight hover effect */
+                            }
+                            """
+                        )
+                        msg_box.exec()
+                    else:
+                        QMessageBox.warning(self.ui, "Warning", "Failed to archive the record. It may not exist.")
                 except Exception as e:
-                    QMessageBox.critical(self.ui, "Error", f"Failed to delete record: {e}")
+                    QMessageBox.critical(self.ui, "Error", f"Failed to archive record: {e}")
             else:
-                QMessageBox.warning(self.ui, "Warning", "Database connection is not established.")
+                QMessageBox.warning(self.ui, "Warning", "Unable to find the record's unique identifier.")
 
             # Refresh the history table
             self.refresh_history_table()
@@ -640,7 +650,7 @@ class ButtonHandlers:
             if self.db_manager.collection is not None:
                 try:
                     self.db_manager.collection.update_one(
-                        {"image_path": record_id},
+                        {"_id": record_id},
                         {"$set": {"patient_name": name, "notes": remark}}
                     )
                     msg_box = QMessageBox(self.ui)
@@ -685,7 +695,7 @@ class ButtonHandlers:
         selected_row = self.ui.historyTable.currentRow()
         if selected_row >= 0:
             record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)
-            record = self.db_manager.collection.find_one({"image_path": record_id}) if self.db_manager.collection is not None else None
+            record = self.db_manager.collection.find_one({"_id": record_id}) if self.db_manager.collection is not None else None
 
             if record:
                 class PDF(FPDF):
