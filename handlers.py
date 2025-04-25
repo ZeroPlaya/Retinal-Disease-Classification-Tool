@@ -158,7 +158,6 @@ class ButtonHandlers:
                 color: #333; /* Text color */
             }
             QLineEdit:focus {
-                border-color: #0078d7; /* Blue border on focus */
                 background-color: #ffffff; /* White background on focus */
             }
         """)

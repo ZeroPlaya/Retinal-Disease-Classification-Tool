@@ -812,7 +812,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(4)
+        self.stackedWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)

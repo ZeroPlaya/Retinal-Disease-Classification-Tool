@@ -14,3 +14,4 @@ if __name__ == "__main__":
     window.setStyleSheet("QWidget#RetinalDiseaseClassifier { background: transparent; }")
 
     sys.exit(app.exec())
+    
