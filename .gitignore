@@ -13,3 +13,5 @@ resources_rc.py
 Test.pyproject.user
 Test.pyproject.user
 Test.pyproject.user
+/build
+/dist
