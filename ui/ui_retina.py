@@ -16,8 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHeaderView,
-    QLabel, QPushButton, QSizePolicy, QStackedWidget,
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
+    QLabel, QLineEdit, QPushButton, QSizePolicy,
+    QStackedWidget, QTableWidget, QTableWidgetItem, QVBoxLayout,
+    QWidget)
 import rc_resources
 
 class Ui_RetinalDiseaseClassifier(object):
@@ -767,22 +768,40 @@ class Ui_RetinalDiseaseClassifier(object):
         self.line.setGeometry(QRect(12, 60, 656, 20))
         self.line.setFrameShape(QFrame.Shape.HLine)
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
-        self.deleteButton = QPushButton(self.widget_2)
-        self.deleteButton.setObjectName(u"deleteButton")
-        self.deleteButton.setGeometry(QRect(20, 390, 114, 54))
-        self.deleteButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.deleteButton.setStyleSheet(u"QPushButton {\n"
+        self.archiveButton = QPushButton(self.widget_2)
+        self.archiveButton.setObjectName(u"archiveButton")
+        self.archiveButton.setGeometry(QRect(22, 400, 95, 47))
+        self.archiveButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.archiveButton.setStyleSheet(u"QPushButton {\n"
 "    border: none;\n"
 "    background: transparent;\n"
-"    background-image: url(:images/assets/deleterecord.png);\n"
+"    background-image: url(:images/assets/archiverecord.png);\n"
 "    background-repeat: no-repeat;\n"
 "    background-position: center;\n"
 "}\n"
 "")
+        self.printButton = QPushButton(self.widget_2)
+        self.printButton.setObjectName(u"printButton")
+        self.printButton.setGeometry(QRect(120, 400, 94, 47))
+        self.printButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.printButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/printrecord.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}\n"
+"")
+        self.searchBar = QLineEdit(self.widget_2)
+        self.searchBar.setObjectName(u"searchBar")
+        self.searchBar.setGeometry(QRect(434, 23, 221, 35))
+        self.searchBar.setStyleSheet(u"")
         self.historyBackButton.raise_()
         self.line.raise_()
         self.historyTable.raise_()
-        self.deleteButton.raise_()
+        self.archiveButton.raise_()
+        self.printButton.raise_()
+        self.searchBar.raise_()
 
         self.verticalLayout.addWidget(self.widget_2)
 
@@ -793,7 +812,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(4)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
@@ -856,6 +875,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.historyTable.setSortingEnabled(__sortingEnabled)
 
         self.historyBackButton.setText("")
-        self.deleteButton.setText("")
+        self.archiveButton.setText("")
+        self.printButton.setText("")
     # retranslateUi
 
