@@ -29,7 +29,7 @@ class ButtonHandlers:
         self.db_manager = DatabaseManager()  # Initialize DatabaseManager with default connection string
         self.connect_buttons()
         self.predictor = RetinaDiseasePredictor(
-                            model_path="retinal_model_best_no_other.pth", 
+                            model_path="non_augment_retinal_model_.pth", 
                             threshold=0.5, 
                             output_dir="predictions"
                             )      

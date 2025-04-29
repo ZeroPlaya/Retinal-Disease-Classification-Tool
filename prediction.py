@@ -9,8 +9,37 @@ from PIL import Image
 import cv2
 import os
 import json
-import time  # Add this import
+import time
+import warnings
 
+# Suppress specific warnings
+warnings.filterwarnings("ignore", category=UserWarning, message="Arguments other than a weight enum or `None` for 'weights' are deprecated")
+warnings.filterwarnings("ignore", category=UserWarning, message="torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly")
+
+class CombinedModel(nn.Module):
+    def __init__(self, feature_extractor, vit_model, num_classes=19):
+        super(CombinedModel, self).__init__()
+
+        self.feature_extractor = feature_extractor
+        # Use global average pooling instead of flattening to handle variable sizes
+        self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
+        # Adjust the input size of the linear layer based on feature_extractor output channels
+        self.fc = nn.Linear(2208, vit_model.config.hidden_size)  # 2208 is DenseNet161's output channels
+        self.vit_model = vit_model
+        self.vit_model.classifier = nn.Linear(vit_model.config.hidden_size, num_classes)
+
+    def forward(self, x):
+        features = torch.utils.checkpoint.checkpoint(self.feature_extractor, x, use_reentrant=False)
+        # Use global pooling to get fixed-size feature regardless of input size
+        pooled_features = self.global_pool(features).squeeze(-1).squeeze(-1)
+        adjusted_features = torch.utils.checkpoint.checkpoint(self.fc, pooled_features, use_reentrant=False)
+        batch_size = adjusted_features.size(0)
+        # Reshape for ViT
+        adjusted_features = adjusted_features.unsqueeze(1)  # Add sequence dimension
+        outputs = self.vit_model.vit.encoder(adjusted_features).last_hidden_state
+        outputs = self.vit_model.classifier(outputs[:, 0, :])
+        return outputs, features
+    
 class RetinaDiseasePredictor:
     def __init__(self, 
                  model_path=None, 
@@ -45,7 +74,7 @@ class RetinaDiseasePredictor:
     def _select_device(self):
         """Select the appropriate device for computation"""
         return torch.device("cuda" if torch.cuda.is_available() else
-                             "xpu" if hasattr(torch, "xpu") and torch.xpu.is_available() else "cpu")
+                           "xpu" if hasattr(torch, "xpu") and torch.xpu.is_available() else "cpu")
     
     def _initialize_model(self):
         """Initialize and load the combined model"""
@@ -59,14 +88,14 @@ class RetinaDiseasePredictor:
         vit_model.head = nn.Identity()
         
         # Create combined model
-        model = CombinedModel(feature_extractor, vit_model, num_classes=19, dropout_rate=0.3)
+        model = CombinedModel(feature_extractor, vit_model, num_classes=19)
         
         # Load best model
         try:
             checkpoint = torch.load(self.MODEL_PATH, map_location=self.device)
             model.load_state_dict(checkpoint['model_state_dict'])
             model.to(self.device)
-            print("Model loaded successfully!")
+            print(f"Model loaded successfully from {self.MODEL_PATH}!")
         except Exception as e:
             print(f"Error loading model: {e}")
             raise
@@ -202,6 +231,10 @@ class RetinaDiseasePredictor:
         """Save result to JSON file"""
         # If no save path is provided, generate one
         if save_path is None:
+            if self.OUTPUT_DIR is None:
+                print("Warning: No output directory specified. Results will not be saved.")
+                return
+            
             os.makedirs(self.OUTPUT_DIR, exist_ok=True)
             base_name = os.path.splitext(os.path.basename(result['image_file']))[0]
             save_path = os.path.join(self.OUTPUT_DIR, f"{base_name}_result.json")
@@ -214,9 +247,6 @@ class RetinaDiseasePredictor:
         """Main prediction method"""
         print(f"Processing image: {image_path}")
         
-        # Add delay before prediction
-        time.sleep(5)
-        
         # Predict probabilities
         probabilities = self.predict_single_image(image_path)
         
@@ -227,62 +257,74 @@ class RetinaDiseasePredictor:
         
         # Create JSON output
         json_result = self.create_json_output(image_path, probabilities)
-        print(json_result)
         
-        # Save JSON result
-        self.save_json_result(json_result)
+        # Save JSON result if output directory is specified
+        if self.OUTPUT_DIR:
+            self.save_json_result(json_result)
         
         # Return the JSON result
         return json_result
 
-class CombinedModel(nn.Module):
-    def __init__(self, feature_extractor, vit_model, num_classes=19, dropout_rate=0.3):
-        super(CombinedModel, self).__init__()
+    def predict_multiple_images(self, folder_path):
+        """Predict probabilities for all images in a folder and save results in separate folders based on results"""
+        # Ensure folder path exists
+        if not os.path.exists(folder_path):
+            raise FileNotFoundError(f"Folder not found: {folder_path}")
+            
+        # Get all image paths from the folder
+        image_paths = [os.path.join(folder_path, f) for f in os.listdir(folder_path) 
+                      if f.lower().endswith(('png', 'jpg', 'jpeg', 'bmp', 'tif', 'tiff'))]
 
-        self.feature_extractor = feature_extractor
-        # Add dropout after flattening
-        self.dropout1 = nn.Dropout(dropout_rate)
-        self.fc = nn.Linear(2208 * 7 * 7, vit_model.config.hidden_size)
-        # Add dropout after FC layer
-        self.dropout2 = nn.Dropout(dropout_rate)
-        self.vit_model = vit_model
-        # Add dropout before final classifier
-        self.dropout3 = nn.Dropout(dropout_rate)
-        self.vit_model.classifier = nn.Linear(vit_model.config.hidden_size, num_classes)
+        print(f"Found {len(image_paths)} images in folder: {folder_path}")
 
-    def forward(self, x):
-        features = torch.utils.checkpoint.checkpoint(self.feature_extractor, x, use_reentrant=False)
-        flattened_features = features.view(features.size(0), -1)
-        # Apply dropout after flattening
-        flattened_features = self.dropout1(flattened_features)
-        adjusted_features = torch.utils.checkpoint.checkpoint(self.fc, flattened_features, use_reentrant=False)
-        # Apply dropout after FC layer
-        adjusted_features = self.dropout2(adjusted_features)
-        batch_size = adjusted_features.size(0)
-        sequence_length = adjusted_features.size(1) // self.vit_model.config.hidden_size
-        adjusted_features = adjusted_features.view(batch_size, sequence_length, self.vit_model.config.hidden_size)
-        outputs = self.vit_model.vit.encoder(adjusted_features).last_hidden_state
-        # Apply dropout before classifier
-        outputs_cls = self.dropout3(outputs[:, 0, :])
-        outputs = self.vit_model.classifier(outputs_cls)
-        return outputs, features  # Return both classification and feature maps
+        # Ensure output directory exists if specified
+        if self.OUTPUT_DIR:
+            os.makedirs(self.OUTPUT_DIR, exist_ok=True)
 
-# def main():
-#     print("===== Retinal Disease Prediction =====")
-    
-#     # Path to the model and image
-#     MODEL_PATH = "retinal_model_best.pth"
-#     INPUT_PATH = "Evaluation_Set\\Validation\\138.png"
-    
-#     # Create predictor
+        # Set model to evaluation mode
+        self.model.eval()
+        
+        results = []
+
+        # Process each image
+        for image_path in image_paths:
+            try:
+                # Predict probabilities for the image
+                probabilities = self.predict_single_image(image_path)
+
+                # Create JSON output
+                json_result = self.create_json_output(image_path, probabilities)
+                results.append(json_result)
+
+                # If output directory is specified, save results
+                if self.OUTPUT_DIR:
+                    # Determine folder based on positive classes
+                    positive_classes = json_result["positive_classes"]
+                    folder_name = "_".join(positive_classes) if positive_classes else "Unclassified"
+                    result_folder = os.path.join(self.OUTPUT_DIR, folder_name)
+                    os.makedirs(result_folder, exist_ok=True)
+
+                    # Save JSON result in the folder
+                    base_name = os.path.splitext(os.path.basename(image_path))[0]
+                    save_path = os.path.join(result_folder, f"{base_name}_result.json")
+                    self.save_json_result(json_result, save_path)
+
+            except Exception as e:
+                print(f"Error processing image {image_path}: {e}")
+        
+        return results
+
+
+# # Usage example
+# if __name__ == "__main__":
+#     # Set up the predictor
 #     predictor = RetinaDiseasePredictor(
-#         model_path=MODEL_PATH, 
-#         threshold=0.5, 
-#         output_dir="predictions"
+#         model_path="path/to/best_model.pth",
+#         output_dir="./results"
 #     )
     
-#     # Predict
-#     predictor.predict(INPUT_PATH)
-
-# if __name__ == "__main__":
-#     main()
+#     # Example single image prediction
+#     # result = predictor.predict("path/to/image.jpg")
+    
+#     # Example folder prediction
+#     # results = predictor.predict_multiple_images("path/to/images_folder")
