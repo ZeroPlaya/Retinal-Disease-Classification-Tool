@@ -172,4 +172,4 @@ class MainWindow(QMainWindow):
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(row_idx, col_idx, item)
-
+                self.table.setItem(row_idx, col_idx, item)
