@@ -2551,13 +2551,13 @@ QTableCornerButton::section, QHeaderView::section:vertical {
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
-         <widget class="QPushButton" name="deleteButton">
+         <widget class="QPushButton" name="archiveButton">
           <property name="geometry">
            <rect>
-            <x>20</x>
-            <y>390</y>
-            <width>114</width>
-            <height>54</height>
+            <x>22</x>
+            <y>400</y>
+            <width>95</width>
+            <height>47</height>
            </rect>
           </property>
           <property name="cursor">
@@ -2567,7 +2567,7 @@ QTableCornerButton::section, QHeaderView::section:vertical {
            <string notr="true">QPushButton {
     border: none;
     background: transparent;
-    background-image: url(:images/assets/deleterecord.png);
+    background-image: url(:images/assets/archiverecord.png);
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -2577,10 +2577,51 @@ QTableCornerButton::section, QHeaderView::section:vertical {
            <string/>
           </property>
          </widget>
+         <widget class="QPushButton" name="printButton">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>400</y>
+            <width>94</width>
+            <height>47</height>
+           </rect>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+    border: none;
+    background: transparent;
+    background-image: url(:images/assets/printrecord.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="searchBar">
+          <property name="geometry">
+           <rect>
+            <x>434</x>
+            <y>23</y>
+            <width>221</width>
+            <height>35</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+         </widget>
          <zorder>historyBackButton</zorder>
          <zorder>line</zorder>
          <zorder>historyTable</zorder>
-         <zorder>deleteButton</zorder>
+         <zorder>archiveButton</zorder>
+         <zorder>printButton</zorder>
+         <zorder>searchBar</zorder>
         </widget>
        </item>
       </layout>

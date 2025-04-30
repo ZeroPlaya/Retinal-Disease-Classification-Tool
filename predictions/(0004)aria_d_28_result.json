@@ -1,83 +1,83 @@
 {
     "image_file": "(0004)aria_d_28.png",
     "positive_classes": [
-        "ARMD"
+        "DR"
     ],
     "class_predictions": {
         "DR": {
-            "probability": 0.0013056197203695774,
-            "prediction": 0
+            "probability": 0.9992766976356506,
+            "prediction": 1
         },
         "NORMAL": {
-            "probability": 8.0002286040326e-07,
+            "probability": 0.055564552545547485,
             "prediction": 0
         },
         "MH": {
-            "probability": 9.091599844566815e-24,
+            "probability": 0.031073765829205513,
             "prediction": 0
         },
         "ODC": {
-            "probability": 4.212672868235572e-18,
+            "probability": 1.2090399650332984e-05,
             "prediction": 0
         },
         "TSLN": {
-            "probability": 5.73186136615801e-15,
+            "probability": 3.8067928471718915e-06,
             "prediction": 0
         },
         "ARMD": {
-            "probability": 0.8016304969787598,
-            "prediction": 1
+            "probability": 0.002076860284432769,
+            "prediction": 0
         },
         "DN": {
-            "probability": 1.8243190477171208e-17,
+            "probability": 2.0577626855811104e-05,
             "prediction": 0
         },
         "MYA": {
-            "probability": 4.983667016393578e-13,
+            "probability": 2.2786628051107982e-06,
             "prediction": 0
         },
         "BRVO": {
-            "probability": 9.657716091323449e-23,
+            "probability": 7.457994399828749e-08,
             "prediction": 0
         },
         "ODP": {
-            "probability": 9.948532731124375e-21,
+            "probability": 2.8335647161981115e-09,
             "prediction": 0
         },
         "CRVO": {
-            "probability": 6.005781543580939e-19,
+            "probability": 6.635384011133283e-07,
             "prediction": 0
         },
         "CNV": {
-            "probability": 0.0,
+            "probability": 1.5320465251988935e-07,
             "prediction": 0
         },
         "RS": {
-            "probability": 2.595958781270724e-09,
+            "probability": 1.1077626368205529e-05,
             "prediction": 0
         },
         "ODE": {
-            "probability": 5.472552393751473e-15,
+            "probability": 1.7463109998061555e-06,
             "prediction": 0
         },
         "LS": {
-            "probability": 2.1714888683879946e-16,
+            "probability": 3.3150677154480945e-06,
             "prediction": 0
         },
         "CSR": {
-            "probability": 4.1606495538356464e-14,
+            "probability": 5.194199559355184e-08,
             "prediction": 0
         },
         "HTR": {
-            "probability": 4.8760903666098e-21,
+            "probability": 9.024827818393533e-08,
             "prediction": 0
         },
         "ASR": {
-            "probability": 5.397278293997576e-36,
+            "probability": 5.970356937723409e-07,
             "prediction": 0
         },
         "CRS": {
-            "probability": 1.086858537006922e-20,
+            "probability": 4.639465487343841e-07,
             "prediction": 0
         }
     }

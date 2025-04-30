@@ -1,3 +1,5 @@
+import os
+import sys
 from PySide6.QtWidgets import QMainWindow, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 from PySide6.QtGui import QFont, QPixmap
 from PySide6.QtCore import Qt
@@ -10,7 +12,18 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         loader = QUiLoader()
-        self.ui = loader.load("ui/retina.ui", self)  # Load UI from the `ui` folder
+
+        # Adjust path resolution for PyInstaller
+        if getattr(sys, 'frozen', False):  # Check if running in a PyInstaller bundle
+            base_path = sys._MEIPASS  # Temporary folder created by PyInstaller
+        else:
+            base_path = os.path.dirname(__file__)
+
+        # Load the .ui file and assign it to self.ui
+        ui_file_path = os.path.join(base_path, "ui", "retina.ui")
+        self.ui = loader.load(ui_file_path, self)
+
+        # Set the loaded UI as the central widget
         self.setCentralWidget(self.ui)
 
         self.setFixedSize(720, 512)  # Set a fixed window size
@@ -159,4 +172,3 @@ class MainWindow(QMainWindow):
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(row_idx, col_idx, item)
-
