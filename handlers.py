@@ -32,12 +32,23 @@ class ButtonHandlers:
         self.ui = ui
         self.current_row = 0  # Track the current row for navigation
         self.db_manager = DatabaseManager()  # Initialize DatabaseManager with default connection string
-        self.connect_buttons()
+
+        # Adjust path resolution for PyInstaller
+        if getattr(sys, 'frozen', False):  # Check if running in a PyInstaller bundle
+            base_path = sys._MEIPASS  # Temporary folder created by PyInstaller
+        else:
+            base_path = os.path.dirname(__file__)
+
+        # Resolve the model path
+        model_path = os.path.join(base_path, "model", "augmented_retinal_model.pth")
+
         self.predictor = RetinaDiseasePredictor(
-                            model_path="model\\augmented_retinal_model.pth", 
-                            threshold=0.5, 
-                            output_dir="predictions"
-                            )      
+            model_path=model_path, 
+            threshold=0.5, 
+            output_dir=os.path.join(base_path, "predictions")
+        )
+
+        self.connect_buttons()
         self.setup_shortcuts()  # Setup shortcuts
         self.setup_editable_fields()  # Setup editable fields
         self.setup_search_bar()  # Add method to set up the curved search bar
