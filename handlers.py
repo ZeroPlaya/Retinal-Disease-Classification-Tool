@@ -6,6 +6,11 @@ from database import DatabaseManager  # Import only DatabaseManager
 import random  # Import random for generating random diseases and percentages
 import json  # Import json for writing to file
 from prediction import RetinaDiseasePredictor
+from fpdf import FPDF
+import sys
+import os
+from bson import ObjectId  # Import ObjectId for MongoDB queries
+
 
 class ClickableLabel(QLabel):
     def __init__(self, parent=None):
@@ -29,13 +34,14 @@ class ButtonHandlers:
         self.db_manager = DatabaseManager()  # Initialize DatabaseManager with default connection string
         self.connect_buttons()
         self.predictor = RetinaDiseasePredictor(
-                            model_path="non_augment_retinal_model_.pth", 
+                            model_path="model\\augmented_retinal_model.pth", 
                             threshold=0.5, 
                             output_dir="predictions"
                             )      
         self.setup_shortcuts()  # Setup shortcuts
         self.setup_editable_fields()  # Setup editable fields
         self.setup_search_bar()  # Add method to set up the curved search bar
+        self.refresh_history_table()  # Populate the history table on startup
 
     def connect_buttons(self):
         """0 = titlepage, 1 = selectionpage, 2 = classificationpage, 3 = historyview, 4 = historypage"""
@@ -241,25 +247,25 @@ class ButtonHandlers:
             # Insert image in first column
             image_item = QTableWidgetItem()
             image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
-            image_item.setData(Qt.UserRole, record.get("_id"))  # Store the unique _id in the custom data role
+            image_item.setData(Qt.UserRole, record["_id"])  # Store the unique _id in the custom data role
             self.ui.historyTable.setItem(row_idx, 0, image_item)
 
             # Insert other data into columns
-            file_name = record.get("file_name", "")
-            patient_name = record.get("patient_name", "")
-            diagnosis = ", ".join(record.get("diagnosis", {}).keys())  # Join disease names without confidence scores
-            date = record.get("date", "")
-            notes = record.get("notes", "")
-
-            row_data = [file_name, patient_name, diagnosis, date, notes]
+            row_data = [
+                record.get("file_name", ""),
+                record.get("patient_name", ""),
+                ", ".join(record.get("diagnosis", {}).keys()),
+                record.get("date", ""),
+                record.get("notes", "")
+            ]
             for col_idx, text in enumerate(row_data, start=1):
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.ui.historyTable.setItem(row_idx, col_idx, item)
 
     def refresh_history_table(self, show_archived=False):
-        """Refresh the history table to show the updated records, excluding archived ones by default."""
-        records = self.db_manager.fetch_records(show_archived=show_archived)  # Use fetch_records method
+        """Refresh the history table to show all records, excluding archived ones by default."""
+        records = self.db_manager.fetch_records(show_archived=show_archived)
 
         self.ui.historyTable.setRowCount(len(records))
 
@@ -272,69 +278,67 @@ class ButtonHandlers:
             # Insert image in first column
             image_item = QTableWidgetItem()
             image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
-            image_item.setData(Qt.UserRole, record.get("_id"))  # Store the unique _id in the custom data role
+            image_item.setData(Qt.UserRole, record["_id"])  # Store the unique _id in the custom data role
             self.ui.historyTable.setItem(row_idx, 0, image_item)
 
             # Insert other data into columns
-            file_name = record.get("file_name", "")
-            patient_name = record.get("patient_name", "")
-            diagnosis = ", ".join(record.get("diagnosis", {}).keys())  # Join disease names without confidence scores
-            date = record.get("date", "")
-            notes = record.get("notes", "")
-
-            row_data = [file_name, patient_name, diagnosis, date, notes]
+            row_data = [
+                record.get("file_name", ""),
+                record.get("patient_name", ""),
+                ", ".join(record.get("diagnosis", {}).keys()),
+                record.get("date", ""),
+                record.get("notes", "")
+            ]
             for col_idx, text in enumerate(row_data, start=1):
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.ui.historyTable.setItem(row_idx, col_idx, item)
 
     def archive_selected_record(self):
-        """Mark the selected record as archived in the database and hide it from the table."""
+        """Prompt the user for confirmation before archiving the selected record."""
         selected_row = self.ui.historyTable.currentRow()
         if selected_row >= 0:
-            record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)  # Get the _id from the table
+            record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)
             if record_id:
-                try:
-                    # Update the 'archived' field to True in the database
-                    result = self.db_manager.collection.update_one(
-                        {"_id": record_id},
-                        {"$set": {"archived": True}}
-                    )
-                    if result.modified_count > 0:
-                        msg_box = QMessageBox(self.ui)
-                        msg_box.setWindowTitle("Success")
-                        msg_box.setText("Record archived successfully!")
-                        msg_box.setIcon(QMessageBox.Information)
-                        msg_box.setStyleSheet(
-                            """
-                            QMessageBox {
-                                background-color: white; /* Plain white background */
-                                color: black; /* Ensure text is black */
-                            }
-                            QLabel {
-                                color: black; /* Ensure text is black */
-                            }
-                            QPushButton {
-                                background-color: white; /* Plain button background */
-                                border: 1px solid #dcdcdc;
-                                color: black; /* Ensure button text is black */
-                                padding: 5px;
-                            }
-                            QPushButton:hover {
-                                background-color: #f0f0f0; /* Slight hover effect */
-                            }
-                            """
+                # Confirmation prompt
+                reply = QMessageBox.question(
+                    self.ui,
+                    "Confirm Archive",
+                    "<span style='color: black;'>Are you sure you want to archive this record?</span>",
+                    QMessageBox.Yes | QMessageBox.No
+                )
+                if reply == QMessageBox.Yes:
+                    try:
+                        result = self.db_manager.collection.update_one(
+                            {"_id": ObjectId(record_id)},
+                            {"$set": {"archived": True}}
                         )
-                        msg_box.exec()
-                    else:
-                        QMessageBox.warning(self.ui, "Warning", "Failed to archive the record. It may not exist.")
-                except Exception as e:
-                    QMessageBox.critical(self.ui, "Error", f"Failed to archive record: {e}")
+                        if result.modified_count > 0:
+                            QMessageBox.information(
+                                self.ui,
+                                "Success",
+                                "<span style='color: black;'>Record archived successfully!</span>",
+                                QMessageBox.Ok
+                            )
+                        else:
+                            QMessageBox.warning(
+                                self.ui,
+                                "Warning",
+                                "<span style='color: black;'>Failed to archive the record.</span>",
+                                QMessageBox.Ok
+                            )
+                    except Exception as e:
+                        QMessageBox.critical(
+                            self.ui,
+                            "Error",
+                            f"<span style='color: black;'>Failed to archive record: {e}</span>",
+                            QMessageBox.Ok
+                        )
+                    # Refresh the history table
+                    self.refresh_history_table()
             else:
-                QMessageBox.warning(self.ui, "Warning", "Unable to find the record's unique identifier.")
-
-            # Refresh the history table
-            self.refresh_history_table()
+                # Do not show a warning if the user cancels the action
+                pass
 
     @Slot()
     def open_file_explorer_classification(self):
@@ -416,69 +420,80 @@ class ButtonHandlers:
 
     def update_record(self, row):
         """Update the labels with the data from the specified row."""
-        image_path = self.ui.historyTable.item(row, 0).data(Qt.UserRole)  # Get the file path from the custom data role
-        record = list(self.db_manager.collection.find())[row]  # Fetch the record from the database
-        result_dict = record.get("diagnosis", {})  # Get the result dictionary
-        print(result_dict)  # Print the result dictionary for debugging
-        name_text = record.get("patient_name", "")  # Get the name text
-        date_text = record.get("date", "")  # Get the date text
-        remark_text = record.get("notes", "")  # Get the remark text
+        record_id = self.ui.historyTable.item(row, 0).data(Qt.UserRole)  # Get the _id from the custom data role
+        print(f"Record ID for row {row}: {record_id}")  # Debug: Log the record ID
 
-        # Mapping of shortened names to full names
-        disease_mapping = {
-            "DR": "Diabetic Retinopathy",
-            "NORMAL": "Normal",
-            "MH": "Media Haze",
-            "ODC": "Optic Disc Cupping",
-            "TSLN": "Tessellation",
-            "ARMD": "Age-Related Macular Degeneration",
-            "DN": "Drusen",
-            "MYA": "Myopia",
-            "BRVO": "Branch Retinal Vein Occlusion",
-            "ODP": "Optic Disc Pallor",
-            "CRVO": "Central Retinal Vein Occlusion",
-            "CNV": "Choroidal Neovascularization",
-            "RS": "Retinitis",
-            "ODE": "Optic Disc Edema",
-            "LS": "Laser Scars",
-            "CSR": "Central Serous Retinopathy",
-            "HTR": "Hypertensive Retinopathy",
-            "ASR": "Arteriosclerotic Retinopathy",
-            "CRS": "Chorioretinitis"
-        }
+        try:
+            # Fetch the record from the database using the _id
+            record = self.db_manager.collection.find_one({"_id": ObjectId(record_id)})
+        except Exception as e:
+            print(f"Error fetching record for row {row}: {e}")
+            record = None
 
-        # Format result text with disease names and confidence scores
-        # The structure of result_dict from the database is different from prediction results
-        full_result_text = ""
-        for disease, probability in result_dict.items():
-            if isinstance(probability, (int, float)):
-                # For records saved in the new format where probability is directly a number
-                full_result_text += f"{disease} ({probability * 100:.2f}%)\n\n"
-            elif isinstance(probability, dict) and probability.get("prediction") == 1:
-                # For records saved in the old format where probability is a dict with prediction and probability keys
-                full_result_text += f"{disease} ({probability.get('probability', 0) * 100:.2f}%)\n\n"
+        print(f"Record fetched for row {row}: {record}")  # Debug: Log the fetched record
 
-        # Remove trailing newlines
-        full_result_text = full_result_text.rstrip()
+        if record:
+            result_dict = record.get("diagnosis", {})  # Get the result dictionary
+            name_text = record.get("patient_name", "")  # Get the name text
+            date_text = record.get("date", "")  # Get the date text
+            remark_text = record.get("notes", "")  # Get the remark text
 
-        # Convert date to "Month Day, Year" format
-        formatted_date = datetime.strptime(date_text, "%Y-%m-%d").strftime("%B %d, %Y")
+            # Mapping of shortened names to full names
+            disease_mapping = {
+                "DR": "Diabetic Retinopathy",
+                "NORMAL": "Normal",
+                "MH": "Media Haze",
+                "ODC": "Optic Disc Cupping",
+                "TSLN": "Tessellation",
+                "ARMD": "Age-Related Macular Degeneration",
+                "DN": "Drusen",
+                "MYA": "Myopia",
+                "BRVO": "Branch Retinal Vein Occlusion",
+                "ODP": "Optic Disc Pallor",
+                "CRVO": "Central Retinal Vein Occlusion",
+                "CNV": "Choroidal Neovascularization",
+                "RS": "Retinitis",
+                "ODE": "Optic Disc Edema",
+                "LS": "Laser Scars",
+                "CSR": "Central Serous Retinopathy",
+                "HTR": "Hypertensive Retinopathy",
+                "ASR": "Arteriosclerotic Retinopathy",
+                "CRS": "Chorioretinitis"
+            }
 
-        if image_path:
-            self.set_image_placeholder_history(image_path)
-            self.ui.resultPlaceholder_2.setText(full_result_text)  # Set the result text in the resultPlaceholder_2 QLabel
-            self.ui.resultPlaceholder_2.setWordWrap(True)  # Enable word wrap
-            self.ui.resultPlaceholder_2.setFixedWidth(191)  # Set fixed width to 191
-            self.ui.resultPlaceholder_2.adjustSize()  # Adjust the size of the QLabel to fit the text
-            self.ui.resultPlaceholder_2.setVisible(True)  # Ensure the QLabel is visible
-            self.ui.nameValue_2.setText(name_text)  # Set the name text in the nameValue_2 QLabel
-            self.ui.dateValue_2.setText(formatted_date)  # Set the formatted date in the dateValue_2 QLabel
-            self.ui.remarkValue_2.setText(remark_text)  # Set the remark text in the remarkValue_2 QLabel
-            self.ui.stackedWidget.setCurrentIndex(3)  # Move to history viewer
+            # Format result text with disease names and confidence scores
+            full_result_text = ""
+            for disease, probability in result_dict.items():
+                if isinstance(probability, (int, float)):
+                    full_result_text += f"{disease} ({probability * 100:.2f}%)\n\n"
+                elif isinstance(probability, dict) and probability.get("prediction") == 1:
+                    full_result_text += f"{disease} ({probability.get('probability', 0) * 100:.2f}%)\n\n"
 
-        # Update button visibility
-        self.ui.leftButton.setVisible(self.current_row > 0)
-        self.ui.rightButton.setVisible(self.current_row < self.ui.historyTable.rowCount() - 1)
+            # Remove trailing newlines
+            full_result_text = full_result_text.rstrip()
+
+            # Convert date to "Month Day, Year" format
+            formatted_date = datetime.strptime(date_text, "%Y-%m-%d").strftime("%B %d, %Y")
+
+            # Update UI elements
+            image_path = record.get("image_path", "")
+            if image_path:
+                self.set_image_placeholder_history(image_path)
+                self.ui.resultPlaceholder_2.setText(full_result_text)
+                self.ui.resultPlaceholder_2.setWordWrap(True)
+                self.ui.resultPlaceholder_2.setFixedWidth(191)
+                self.ui.resultPlaceholder_2.adjustSize()
+                self.ui.resultPlaceholder_2.setVisible(True)
+                self.ui.nameValue_2.setText(name_text)
+                self.ui.dateValue_2.setText(formatted_date)
+                self.ui.remarkValue_2.setText(remark_text)
+                self.ui.stackedWidget.setCurrentIndex(3)  # Move to history viewer
+
+            # Update button visibility
+            self.ui.leftButton.setVisible(self.current_row > 0)
+            self.ui.rightButton.setVisible(self.current_row < self.ui.historyTable.rowCount() - 1)
+        else:
+            print(f"No record found for row {row}.")  # Debug: Log if no record is found
 
     def set_image_placeholder_history(self, image_path):
         """Set the image in the imagePlaceholder_2 QLabel for the history viewer page."""
@@ -566,31 +581,12 @@ class ButtonHandlers:
         image_path = self.ui.imagePlaceholder.property("imagePath")
 
         if not name:
-            msg_box = QMessageBox(self.ui)
-            msg_box.setWindowTitle("Warning")
-            msg_box.setText("Name cannot be empty!")
-            msg_box.setIcon(QMessageBox.Warning)
-            msg_box.setStyleSheet(
-                """
-                QMessageBox {
-                    background-color: white; /* Plain white background */
-                    color: black; /* Ensure text is black */
-                }
-                QLabel {
-                    color: black; /* Ensure text is black */
-                }
-                QPushButton {
-                    background-color: white; /* Plain button background */
-                    border: 1px solid #dcdcdc;
-                    color: black; /* Ensure button text is black */
-                    padding: 5px;
-                }
-                QPushButton:hover {
-                    background-color: #f0f0f0; /* Slight hover effect */
-                }
-                """
+            QMessageBox.warning(
+                self.ui,
+                "Warning",
+                "<span style='color: black;'>Name cannot be empty!</span>",
+                QMessageBox.Ok
             )
-            msg_box.exec()
             return
 
         # Mapping of shortened names to full names
@@ -638,31 +634,12 @@ class ButtonHandlers:
         # Save the record to the database
         self.db_manager.save_record(record)
 
-        msg_box = QMessageBox(self.ui)
-        msg_box.setWindowTitle("Success")
-        msg_box.setText("Record Saved!")
-        msg_box.setIcon(QMessageBox.Information)
-        msg_box.setStyleSheet(
-            """
-            QMessageBox {
-                background-color: white; /* Plain white background */
-                color: black; /* Ensure text is black */
-            }
-            QLabel {
-                color: black; /* Ensure text is black */
-            }
-            QPushButton {
-                background-color: white; /* Plain button background */
-                border: 1px solid #dcdcdc;
-                color: black; /* Ensure button text is black */
-                padding: 5px;
-            }
-            QPushButton:hover {
-                background-color: #f0f0f0; /* Slight hover effect */
-            }
-            """
+        QMessageBox.information(
+            self.ui,
+            "Success",
+            "<span style='color: black;'>Record saved successfully!</span>",
+            QMessageBox.Ok
         )
-        msg_box.exec()
 
         self.refresh_history_table()
 
@@ -700,31 +677,12 @@ class ButtonHandlers:
         remark = self.ui.remarkValue_2.text()
 
         if not name:
-            msg_box = QMessageBox(self.ui)
-            msg_box.setWindowTitle("Warning")
-            msg_box.setText("Name cannot be empty!")
-            msg_box.setIcon(QMessageBox.Warning)
-            msg_box.setStyleSheet(
-                """
-                QMessageBox {
-                    background-color: white; /* Plain white background */
-                    color: black; /* Ensure text is black */
-                }
-                QLabel {
-                    color: black; /* Ensure text is black */
-                }
-                QPushButton {
-                    background-color: white; /* Plain button background */
-                    border: 1px solid #dcdcdc;
-                    color: black; /* Ensure button text is black */
-                    padding: 5px;
-                }
-                QPushButton:hover {
-                    background-color: #f0f0f0; /* Slight hover effect */
-                }
-                """
+            QMessageBox.warning(
+                self.ui,
+                "Warning",
+                "<span style='color: black;'>Name cannot be empty!</span>",
+                QMessageBox.Ok
             )
-            msg_box.exec()
             return
 
         selected_row = self.current_row
@@ -732,39 +690,39 @@ class ButtonHandlers:
             record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)
             if self.db_manager.collection is not None:
                 try:
-                    self.db_manager.collection.update_one(
-                        {"image_path": record_id},
+                    # Update the record in the database
+                    result = self.db_manager.collection.update_one(
+                        {"_id": ObjectId(record_id)},
                         {"$set": {"patient_name": name, "notes": remark}}
                     )
-                    msg_box = QMessageBox(self.ui)
-                    msg_box.setWindowTitle("Success")
-                    msg_box.setText("Changes saved successfully!")
-                    msg_box.setIcon(QMessageBox.Information)
-                    msg_box.setStyleSheet(
-                        """
-                        QMessageBox {
-                            background-color: white; /* Plain white background */
-                            color: black; /* Ensure text is black */
-                        }
-                        QLabel {
-                            color: black; /* Ensure text is black */
-                        }
-                        QPushButton {
-                            background-color: white; /* Plain button background */
-                            border: 1px solid #dcdcdc;
-                            color: black; /* Ensure button text is black */
-                            padding: 5px;
-                        }
-                        QPushButton:hover {
-                            background-color: #f0f0f0; /* Slight hover effect */
-                        }
-                        """
-                    )
-                    msg_box.exec()
+                    if result.modified_count > 0:
+                        QMessageBox.information(
+                            self.ui,
+                            "Success",
+                            "<span style='color: black;'>Changes saved successfully!</span>",
+                            QMessageBox.Ok
+                        )
+                    else:
+                        QMessageBox.warning(
+                            self.ui,
+                            "Warning",
+                            "<span style='color: black;'>No changes were made to the record.</span>",
+                            QMessageBox.Ok
+                        )
                 except Exception as e:
-                    QMessageBox.critical(self.ui, "Error", f"Failed to save changes: {e}")
+                    QMessageBox.critical(
+                        self.ui,
+                        "Error",
+                        f"<span style='color: black;'>Failed to save changes: {e}</span>",
+                        QMessageBox.Ok
+                    )
             else:
-                QMessageBox.warning(self.ui, "Warning", "Database connection is not established.")
+                QMessageBox.warning(
+                    self.ui,
+                    "Warning",
+                    "<span style='color: black;'>Database connection is not established.</span>",
+                    QMessageBox.Ok
+                )
 
             # Refresh the history table
             self.refresh_history_table()
@@ -774,144 +732,116 @@ class ButtonHandlers:
         self.ui.remarkValue_2.setReadOnly(True)
 
     def print_selected_record(self):
-        """Generate a professional-looking PDF of the selected record with its details and image."""
+        """Prompt the user for confirmation before printing the selected record."""
         selected_row = self.ui.historyTable.currentRow()
         if selected_row >= 0:
-            record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)
-            record = self.db_manager.collection.find_one({"_id": record_id}) if self.db_manager.collection is not None else None
+            reply = QMessageBox.question(
+                self.ui,
+                "Confirm Print",
+                "<span style='color: black;'>Are you sure you want to print this record?</span>",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if reply == QMessageBox.Yes:
+                record_id = self.ui.historyTable.item(selected_row, 0).data(Qt.UserRole)
+                record = self.db_manager.collection.find_one({"_id": ObjectId(record_id)}) if self.db_manager.collection is not None else None
 
-            if record:
-                class PDF(FPDF):
-                    def header(self):
-                        self.set_font("Arial", "B", 16)
-                        self.cell(0, 10, "Generated Report", border=False, ln=True, align="C")
-                        self.ln(2)
-                        self.set_draw_color(0, 0, 0)  # Black line
-                        self.set_line_width(0.5)
-                        self.line(10, self.get_y(), 200, self.get_y())  # Horizontal line
-                        self.ln(5)
+                if record:
+                    class PDF(FPDF):
+                        def header(self):
+                            self.set_font("Arial", "B", 16)
+                            self.cell(0, 10, "Generated Report", border=False, ln=True, align="C")
+                            self.ln(2)
+                            self.set_draw_color(0, 0, 0)  # Black line
+                            self.set_line_width(0.5)
+                            self.line(10, self.get_y(), 200, self.get_y())  # Horizontal line
+                            self.ln(5)
 
-                    def footer(self):
-                        self.set_y(-15)
-                        self.set_font("Arial", "I", 8)
-                        self.cell(0, 10, f"Page {self.page_no()}", align="C")
+                        def footer(self):
+                            self.set_y(-15)
+                            self.set_font("Arial", "I", 8)
+                            self.cell(0, 10, f"Page {self.page_no()}", align="C")
 
-                pdf = PDF()
-                pdf.add_page()
-                pdf.set_font("Arial", size=12)
-
-                # Patient Name (Left) and Record Date (Right)
-                pdf.set_font("Arial", "B", 12)
-                pdf.cell(0, 10, f"Name: {record.get('patient_name', 'N/A')}", ln=False, align="L")
-                pdf.cell(0, 10, f"Record Date: {record.get('date', 'N/A')}", ln=True, align="R")
-
-                # Timestamp of Printing (Right)
-                pdf.set_font("Arial", size=10)
-                pdf.cell(0, 10, f"Printed On: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", ln=True, align="R")
-                pdf.ln(5)
-
-                # Diagnosis (Left)
-                pdf.set_font("Arial", "B", 12)
-                pdf.cell(0, 10, "Diagnosis:", ln=True, align="L")
-                pdf.set_font("Arial", size=12)
-                for disease, confidence in record.get("diagnosis", {}).items():
-                    pdf.cell(0, 10, f"- {disease}: {confidence * 100:.2f}%", ln=True, align="L")
-                pdf.ln(5)
-
-                # Remarks (Left, only if not empty)
-                remarks = record.get("notes", "").strip()
-                if remarks:
-                    pdf.set_font("Arial", "B", 12)
-                    pdf.cell(0, 10, "Remarks:", ln=True, align="L")
+                    pdf = PDF()
+                    pdf.add_page()
                     pdf.set_font("Arial", size=12)
-                    pdf.multi_cell(0, 10, remarks)
+
+                    # Patient Name (Left) and Record Date (Right)
+                    pdf.set_font("Arial", "B", 12)
+                    pdf.cell(0, 10, f"Name: {record.get('patient_name', 'N/A')}", ln=False, align="L")
+                    pdf.cell(0, 10, f"Record Date: {record.get('date', 'N/A')}", ln=True, align="R")
+
+                    # Timestamp of Printing (Right)
+                    pdf.set_font("Arial", size=10)
+                    pdf.cell(0, 10, f"Printed On: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", ln=True, align="R")
                     pdf.ln(5)
 
-                # Uploaded Image Label (Center)
-                pdf.set_font("Arial", "B", 12)
-                pdf.cell(0, 10, "Uploaded Image", ln=True, align="C")
+                    # Diagnosis (Left)
+                    pdf.set_font("Arial", "B", 12)
+                    pdf.cell(0, 10, "Diagnosis:", ln=True, align="L")
+                    pdf.set_font("Arial", size=12)
+                    for disease, confidence in record.get("diagnosis", {}).items():
+                        pdf.cell(0, 10, f"- {disease}: {confidence * 100:.2f}%", ln=True, align="L")
+                    pdf.ln(5)
 
-                # Fundus Image (Center Below Label)
-                image_path = record.get("image_path", "")
-                if os.path.exists(image_path):
-                    y_before_image = pdf.get_y()
-                    pdf.image(image_path, x=(210 - 100) // 2, y=y_before_image, w=100)  # Center the image
-                    pdf.ln(80)  # Adjust based on image height
+                    # Remarks (Left, only if not empty)
+                    remarks = record.get("notes", "").strip()
+                    if remarks:
+                        pdf.set_font("Arial", "B", 12)
+                        pdf.cell(0, 10, "Remarks:", ln=True, align="L")
+                        pdf.set_font("Arial", size=12)
+                        pdf.multi_cell(0, 10, remarks)
+                        pdf.ln(5)
 
-                # Move to the bottom of the page for "*** END OF RECORD ***"
-                pdf.set_y(-40)
-                pdf.set_font("Arial", "B", 12)
-                pdf.cell(0, 10, "*** END OF RECORD ***", ln=True, align="C")
+                    # Uploaded Image Label (Center)
+                    pdf.set_font("Arial", "B", 12)
+                    pdf.cell(0, 10, "Uploaded Image", ln=True, align="C")
 
-                # Save the PDF
-                filename = f"{record.get('patient_name', 'record').replace(' ', '_')}.pdf"
-                output_path = os.path.join(os.getcwd(), filename)
-                pdf.output(output_path)
+                    # Fundus Image (Center Below Label)
+                    image_path = record.get("image_path", "")
+                    if os.path.exists(image_path):
+                        y_before_image = pdf.get_y()
+                        pdf.image(image_path, x=(210 - 100) // 2, y=y_before_image, w=100)  # Center the image
+                        pdf.ln(80)  # Adjust based on image height
 
-                # Open the PDF file
-                try:
-                    if sys.platform == "win32":
-                        os.startfile(output_path)
-                    elif sys.platform == "darwin":
-                        subprocess.run(["open", output_path])
-                    else:
-                        subprocess.run(["xdg-open", output_path])
-                except Exception as e:
-                    QMessageBox.warning(self.ui, "Warning", f"Failed to open PDF: {e}")
+                    # Move to the bottom of the page for "*** END OF RECORD ***"
+                    pdf.set_y(-40)
+                    pdf.set_font("Arial", "B", 12)
+                    pdf.cell(0, 10, "*** END OF RECORD ***", ln=True, align="C")
 
-                # Show success message
-                msg_box = QMessageBox(self.ui)
-                msg_box.setWindowTitle("Success")
-                msg_box.setText(f"PDF saved successfully at {output_path}")
-                msg_box.setIcon(QMessageBox.Information)
-                msg_box.setStyleSheet(
-                    """
-                    QMessageBox {
-                        background-color: white; /* Plain white background */
-                        color: black; /* Ensure text is black */
-                    }
-                    QLabel {
-                        color: black; /* Ensure text is black */
-                    }
-                    QPushButton {
-                        background-color: white; /* Plain button background */
-                        border: 1px solid #dcdcdc;
-                        color: black; /* Ensure button text is black */
-                        padding: 5px;
-                    }
-                    QPushButton:hover {
-                        background-color: #f0f0f0; /* Slight hover effect */
-                    }
-                    """
-                )
-                msg_box.exec()
-            else:
-                self._show_message("Warning", "No record found for the selected row.")
+                    # Save the PDF
+                    filename = f"{record.get('patient_name', 'record').replace(' ', '_')}.pdf"
+                    output_path = os.path.join(os.getcwd(), filename)
+                    pdf.output(output_path)
+
+                    # Open the PDF file
+                    try:
+                        if sys.platform == "win32":
+                            os.startfile(output_path)
+                        elif sys.platform == "darwin":
+                            subprocess.run(["open", output_path])
+                        else:
+                            subprocess.run(["xdg-open", output_path])
+                    except Exception as e:
+                        QMessageBox.warning(self.ui, "Warning", f"Failed to open PDF: {e}", QMessageBox.Ok)
+
+                    # Show success message
+                    QMessageBox.information(
+                        self.ui,
+                        "Success",
+                        f"<span style='color: black;'>PDF saved successfully at {output_path}</span>",
+                        QMessageBox.Ok
+                    )
+                else:
+                    QMessageBox.warning(
+                        self.ui,
+                        "Warning",
+                        "<span style='color: black;'>No record found for the selected row.</span>",
+                        QMessageBox.Ok
+                    )
         else:
-            self._show_message("Warning", "Please select a record to print.")
-
-    def _show_message(self, title, message):
-        """Display a styled message box."""
-        msg_box = QMessageBox(self.ui)
-        msg_box.setWindowTitle(title)
-        msg_box.setText(message)
-        msg_box.setIcon(QMessageBox.Warning)
-        msg_box.setStyleSheet("""
-            QMessageBox {
-                background-color: white;
-                color: black;
-            }
-            QLabel {
-                color: black;
-            }
-            QPushButton {
-                background-color: white;
-                border: 1px solid #dcdcdc;
-                color: black;
-                padding: 5px;
-            }
-            QPushButton:hover {
-                background-color: #f0f0f0;
-            }
-        """)
-        msg_box.exec()
+            QMessageBox.warning(
+                self.ui,
+                "Warning",
+                "<span style='color: black;'>Please select a record to print.</span>",
+                QMessageBox.Ok
+            )

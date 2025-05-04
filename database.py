@@ -30,7 +30,11 @@ class DatabaseManager:
         if self.collection is not None:  # Explicitly check if collection is not None
             query = {} if show_archived else {"archived": {"$ne": True}}
             try:
-                return list(self.collection.find(query))
+                records = list(self.collection.find(query))
+                # Convert ObjectId to string for compatibility with UI
+                for record in records:
+                    record["_id"] = str(record["_id"])
+                return records
             except Exception as e:
                 print(f"Error fetching records: {e}")
                 return []

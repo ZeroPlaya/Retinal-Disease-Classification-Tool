@@ -10,4 +10,7 @@ if __name__ == "__main__":
     # Set the main widget's background to transparent
     window.setStyleSheet("QWidget#RetinalDiseaseClassifier { background: transparent; }")
 
+    # Refresh the history table on startup
+    window.handlers.refresh_history_table()
+
     sys.exit(app.exec())

@@ -11,6 +11,7 @@ import os
 import json
 import time
 import warnings
+import sys
 
 # Suppress specific warnings
 warnings.filterwarnings("ignore", category=UserWarning, message="Arguments other than a weight enum or `None` for 'weights' are deprecated")
@@ -55,13 +56,22 @@ class RetinaDiseasePredictor:
             threshold (float): Prediction threshold for positive classification
             output_dir (str): Directory to save JSON results
         """
+        
+        if getattr(sys, 'frozen', False):  # Check if running in a PyInstaller bundle
+            base_path = sys._MEIPASS  # Temporary folder created by PyInstaller
+        else:
+            base_path = os.path.dirname(__file__)
+
+        # Ensure the model path includes the _internal subdirectory
+        self.MODEL_PATH = model_path or os.path.join(base_path, "model", "non_augment_retinal_model_.pth")
+                
+                
         # Default class names if not provided
         self.CLASS_NAMES = class_names or [
             "DR", "NORMAL", "MH", "ODC", "TSLN", "ARMD", "DN", "MYA", "BRVO", "ODP",
             "CRVO", "CNV", "RS", "ODE", "LS", "CSR", "HTR", "ASR", "CRS"
         ]
         
-        self.MODEL_PATH = model_path
         self.THRESHOLD = threshold
         self.OUTPUT_DIR = output_dir
         
@@ -70,6 +80,8 @@ class RetinaDiseasePredictor:
         
         # Initialize and load the model
         self.model = self._initialize_model()
+        print(f"Resolved model path: {self.MODEL_PATH}")
+        print(f"Looking for model at: {self.MODEL_PATH}")
         
     def _select_device(self):
         """Select the appropriate device for computation"""

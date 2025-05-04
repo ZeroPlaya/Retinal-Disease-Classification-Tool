@@ -15,3 +15,8 @@ Test.pyproject.user
 Test.pyproject.user
 /Evaluation_Set
 *.pth
+/build
+/output
+*.spec
+*.json
+/predictions
