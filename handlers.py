@@ -353,13 +353,13 @@ class ButtonHandlers:
 
     @Slot()
     def open_file_explorer_classification(self):
-        """Opens a file dialog and switches to the classification page if a file is selected."""
+        """File dialog before switching to classification page"""
         file_path, _ = QFileDialog.getOpenFileName(None, "Select an Image", "", "Images (*.tiff *.png *.jpeg *.jpg)")
         if file_path:
-            # Get prediction results from the predictor
+            # Obtain prediction results 
             result_dict = self.predictor.predict(file_path)
 
-            # Display the image and results in the UI
+            # Display the image and results
             self.set_image_placeholder_classification(file_path, result_dict["class_predictions"])
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
 
