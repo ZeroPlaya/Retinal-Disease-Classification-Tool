@@ -318,6 +318,7 @@ class ButtonHandlers:
             }
         """)  # Style the dropdown
         self.ui.dropdown_2.setCurrentIndex(0)  # Set the default selection to "Select Eye"
+        self.ui.dropdown_2.setEnabled(False)  # Initially lock the dropdown
         self.ui.dropdown_2.raise_()  # Ensure the dropdown appears on top
 
     def on_search_text_changed(self, text):
@@ -901,14 +902,16 @@ class ButtonHandlers:
             dialog.exec()
 
     def enable_editing(self):
-        """Enable editing of nameValue_2 and remarkValue_2 in the history viewer."""
+        """Enable editing of nameValue_2, remarkValue_2, and dropdown_2 in the history viewer."""
         self.ui.nameValue_2.setReadOnly(False)
         self.ui.remarkValue_2.setReadOnly(False)
+        self.ui.dropdown_2.setEnabled(True)  # Unlock dropdown_2 for editing
 
     def save_changes(self):
         """Save changes to the selected record in the history viewer."""
         name = self.ui.nameValue_2.text()
         remark = self.ui.remarkValue_2.text()
+        eye_value = self.ui.dropdown_2.currentText()  # Get the selected value from dropdown_2
 
         selected_row = self.current_row
         if selected_row >= 0:
@@ -918,7 +921,7 @@ class ButtonHandlers:
                     # Update the record in the database
                     result = self.db_manager.collection.update_one(
                         {"_id": ObjectId(record_id)},
-                        {"$set": {"patient_name": name, "notes": remark}}
+                        {"$set": {"patient_name": name, "notes": remark, "eye": eye_value}}  # Save changes to "eye"
                     )
                     if result.modified_count > 0:
                         QMessageBox.information(
@@ -955,6 +958,7 @@ class ButtonHandlers:
         # Disable editing
         self.ui.nameValue_2.setReadOnly(True)
         self.ui.remarkValue_2.setReadOnly(True)
+        self.ui.dropdown_2.setEnabled(False)  # Lock dropdown_2 after saving
 
     def print_selected_record(self):
         """Prompt the user for confirmation before printing the selected record."""
