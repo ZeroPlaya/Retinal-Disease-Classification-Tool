@@ -47,7 +47,7 @@ background-position: center;
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="MenuPage">
       <layout class="QGridLayout" name="gridLayout">
@@ -1309,7 +1309,7 @@ color: white;
 }</string>
         </property>
         <property name="text">
-         <string>&lt;-</string>
+         <string/>
         </property>
        </widget>
        <widget class="QPushButton" name="classificationLeftButton">
@@ -1360,6 +1360,16 @@ color: white;
         </property>
         <property name="text">
          <string/>
+        </property>
+       </widget>
+       <widget class="QWidget" name="dropdownBox" native="true">
+        <property name="geometry">
+         <rect>
+          <x>6</x>
+          <y>256</y>
+          <width>141</width>
+          <height>31</height>
+         </rect>
         </property>
        </widget>
       </widget>

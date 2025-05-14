@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QFileDialog, QLabel, QDialog, QVBoxLayout, QWidget, QLineEdit, QMessageBox, QTableWidget, QTableWidgetItem  # Import QTableWidget and QTableWidgetItem
+from PySide6.QtWidgets import QFileDialog, QLabel, QDialog, QVBoxLayout, QWidget, QLineEdit, QMessageBox, QTableWidget, QTableWidgetItem, QComboBox  # Import QTableWidget, QTableWidgetItem, and QComboBox
 from PySide6.QtCore import Slot, Qt, QEvent, QDate  # Import QDate
 from PySide6.QtGui import QPixmap, QPainter, QCursor, QFont, QKeySequence, QShortcut  # Import QShortcut from PySide6.QtGui
 from datetime import datetime  # Import datetime for date formatting
@@ -32,6 +32,11 @@ class ButtonHandlers:
         self.ui = ui
         self.current_row = 0  # Track the current row for navigation
         self.db_manager = DatabaseManager()  # Initialize DatabaseManager with default connection string
+        self.image_paths = []  # Store paths of up to two images
+        self.current_image_index = 0  # Track the currently displayed image
+        self.shared_name = ""  # Shared name for both images
+        self.shared_date = ""  # Shared date for both images
+        self.shared_remarks = ""  # Shared remarks for both images
 
         # Adjust path resolution for PyInstaller
         if getattr(sys, 'frozen', False):  # Check if running in a PyInstaller bundle
@@ -52,6 +57,7 @@ class ButtonHandlers:
         self.setup_shortcuts()  # Setup shortcuts
         self.setup_editable_fields()  # Setup editable fields
         self.setup_search_bar()  # Add method to set up the curved search bar
+        self.setup_dropdown()  # Add method to set up the dropdown
         self.refresh_history_table()  # Populate the history table on startup
 
     def connect_buttons(self):
@@ -81,6 +87,9 @@ class ButtonHandlers:
         # Reset placeholders when exiting
         self.ui.uploadBackButton.clicked.connect(self.reset_placeholders)
         self.ui.classificationBackButton.clicked.connect(self.reset_placeholders)
+
+        self.ui.classificationLeftButton.clicked.connect(self.navigate_classification_left)
+        self.ui.classificationRightButton.clicked.connect(self.navigate_classification_right)
 
     def setup_shortcuts(self):
         """Setup keyboard shortcuts."""
@@ -218,6 +227,8 @@ class ButtonHandlers:
         self.ui.classificationBackButton.raise_()
         self.ui.classificationLeftButton.raise_()
         self.ui.classificationRightButton.raise_()
+        self.ui.dropdownBox.raise_()  # Raise the dropdown to ensure it appears on top
+
 
         self.ui.leftButton.raise_()
         self.ui.rightButton.raise_()
@@ -243,6 +254,41 @@ class ButtonHandlers:
         """)
         self.ui.searchBar.setPlaceholderText("Search...")  # Set placeholder text
         self.ui.searchBar.textChanged.connect(self.on_search_text_changed)  # Connect search bar to filter method
+
+    def setup_dropdown(self):
+        """Set up the dropdown for selecting OD (Left Eye) or OS (Right Eye)."""
+        self.ui.dropdown = QComboBox(self.ui.dropdownBox)  # Create a QComboBox inside dropdownBox
+        self.ui.dropdown.setGeometry(0, 0, self.ui.dropdownBox.width(), self.ui.dropdownBox.height())  # Match the size of dropdownBox
+        self.ui.dropdown.addItem("Select Eye")  # Add a placeholder item
+        self.ui.dropdown.addItems(["OD (Left Eye)", "OS (Right Eye)"])  # Add options to the dropdown
+        self.ui.dropdown.setStyleSheet("""
+            QComboBox {
+                border: 2px solid #dcdcdc; /* Light gray border */
+                border-radius: 15px; /* Rounded corners */
+                padding: 8px 12px; /* Padding for text */
+                background-color: #f9f9f9; /* Light background */
+                font-size: 14px; /* Font size */
+                color: #333; /* Text color */
+            }
+            QComboBox::drop-down {
+                border: none;
+            }
+            QComboBox QAbstractItemView {
+                border: 1px solid #dcdcdc;
+                selection-background-color: #f0f0f0;
+            }
+        """)  # Style the dropdown
+        self.ui.dropdown.setCurrentIndex(0)  # Set the default selection to "Select Eye"
+        self.ui.dropdown.raise_()  # Raise the dropdown to ensure it appears on top
+
+        # Apply a similar style to the dropdownBox
+        self.ui.dropdownBox.setStyleSheet("""
+            QWidget {
+                border: 2px solid #dcdcdc; /* Light gray border */
+                border-radius: 15px; /* Rounded corners */
+                background-color: #f9f9f9; /* Light background */
+            }
+        """)
 
     def on_search_text_changed(self, text):
         """Filter the history table based on the search text and archived status."""
@@ -270,7 +316,7 @@ class ButtonHandlers:
 
             # Insert other data into columns
             row_data = [
-                record.get("file_name", ""),
+                record.get("eye", ""),  # Replace "file_name" with "eye"
                 record.get("patient_name", ""),
                 ", ".join(record.get("diagnosis", {}).keys()),
                 record.get("date", ""),
@@ -283,11 +329,40 @@ class ButtonHandlers:
 
     def refresh_history_table(self, show_archived=False):
         """Refresh the history table to show all records, excluding archived ones by default."""
-        records = self.db_manager.fetch_records(show_archived=show_archived)
+        # Define a mapping of full diagnosis names to their shortcuts
+        diagnosis_shortcuts = {
+            "Diabetic Retinopathy": "DR",
+            "Normal": "NORMAL",
+            "Media Haze": "MH",
+            "Optic Disc Cupping": "ODC",
+            "Tessellation": "TSLN",
+            "Age-Related Macular Degeneration": "ARMD",
+            "Drusen": "DN",
+            "Myopia": "MYA",
+            "Branch Retinal Vein Occlusion": "BRVO",
+            "Optic Disc Pallor": "ODP",
+            "Central Retinal Vein Occlusion": "CRVO",
+            "Choroidal Neovascularization": "CNV",
+            "Retinitis": "RS",
+            "Optic Disc Edema": "ODE",
+            "Laser Scars": "LS",
+            "Central Serous Retinopathy": "CSR",
+            "Hypertensive Retinopathy": "HTR",
+            "Arteriosclerotic Retinopathy": "ASR",
+            "Chorioretinitis": "CRS"
+        }
 
-        self.ui.historyTable.setRowCount(len(records))
+        # Fetch all records from the database
+        records = self.db_manager.fetch_records()
 
-        for row_idx, record in enumerate(records):
+        # Filter records based on the archived status
+        filtered_records = [
+            record for record in records if record.get("archived", False) == show_archived
+        ]
+
+        self.ui.historyTable.setRowCount(len(filtered_records))
+
+        for row_idx, record in enumerate(filtered_records):
             # Load and resize image for each row
             image_path = record.get("image_path", "")
             pixmap = QPixmap(image_path)
@@ -299,11 +374,17 @@ class ButtonHandlers:
             image_item.setData(Qt.UserRole, record["_id"])  # Store the unique _id in the custom data role
             self.ui.historyTable.setItem(row_idx, 0, image_item)
 
+            # Reverse map diagnosis names to shortcuts
+            diagnosis = record.get("diagnosis", {})
+            diagnosis_shortcuts_list = [
+                diagnosis_shortcuts.get(name, name) for name in diagnosis.keys()
+            ]
+
             # Insert other data into columns
             row_data = [
-                record.get("file_name", ""),
+                record.get("eye", ""),
                 record.get("patient_name", ""),
-                ", ".join(record.get("diagnosis", {}).keys()),
+                ", ".join(diagnosis_shortcuts_list),  # Use shortcuts for diagnosis
                 record.get("date", ""),
                 record.get("notes", "")
             ]
@@ -360,40 +441,89 @@ class ButtonHandlers:
 
     @Slot()
     def open_file_explorer_classification(self):
-        """File dialog before switching to classification page"""
+        """Allow selecting up to two images and display the first one."""
+        file_paths, _ = QFileDialog.getOpenFileNames(
+            None, "Select Images", "", "Images (*.tiff *.png *.jpeg *.jpg)"
+        )
+        if file_paths:
+            if len(file_paths) > 2:
+                QMessageBox.warning(
+                    self.ui,
+                    "Warning",
+                    "<span style='color: black;'>You can only select up to two images.</span>",
+                    QMessageBox.Ok
+                )
+                return
+
+            self.image_paths = file_paths  # Store the selected images
+            self.current_image_index = 0  # Start with the first image
+
+            # Display the first image and its diagnosis
+            result_dict = self.predictor.predict(self.image_paths[self.current_image_index])
+            self.set_image_placeholder_classification(
+                self.image_paths[self.current_image_index], result_dict["class_predictions"]
+            )
+
+            # Store shared name, date, and remarks
+            self.shared_name = self.ui.nameValue.text()
+            self.shared_date = self.ui.dateValue.text()
+            self.shared_remarks = self.ui.remarkValue.text()
+
+            self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
+            self.update_classification_navigation_buttons()
+
+    @Slot()
+    def upload_new_image(self):
+        """Handle uploading a single image and reset placeholders if successful."""
         file_path, _ = QFileDialog.getOpenFileName(None, "Select an Image", "", "Images (*.tiff *.png *.jpeg *.jpg)")
         if file_path:
-            # Obtain prediction results 
+            self.image_paths = [file_path]  # Replace the list with the single uploaded image
+            self.current_image_index = 0  # Reset to the first image
             result_dict = self.predictor.predict(file_path)
-
-            # Display the image and results
             self.set_image_placeholder_classification(file_path, result_dict["class_predictions"])
+            
+            # Store shared name, date, and remarks
+            self.shared_name = self.ui.nameValue.text()
+            self.shared_date = self.ui.dateValue.text()
+            self.shared_remarks = self.ui.remarkValue.text()
+
+            # Do not save the record here; saving should only happen explicitly
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
+            self.update_classification_navigation_buttons()
 
-    def set_image_placeholder_classification(self, image_path, result_dict):
-        """Set the image in the imagePlaceholder QLabel for the classification page."""
-        pixmap = QPixmap(image_path)
-        label_size = self.ui.imagePlaceholder.size()
-        scaled_pixmap = pixmap.scaledToHeight(292, Qt.SmoothTransformation)  # Restrict height to 292 and keep aspect ratio
+    def save_results(self):
+        """Save all uploaded images and their respective diagnoses to the database."""
+        if not self.image_paths:
+            QMessageBox.warning(
+                self.ui,
+                "Warning",
+                "<span style='color: black;'>No images to save!</span>",
+                QMessageBox.Ok
+            )
+            return
 
-        # Create a new pixmap with the label's size and fill it with a transparent background
-        final_pixmap = QPixmap(label_size)
-        final_pixmap.fill(Qt.transparent)
+        name = self.ui.nameValue.text()
+        if not name.strip():  # Check if the name is empty
+            QMessageBox.warning(
+                self.ui,
+                "Warning",
+                "<span style='color: black;'>Name cannot be empty!</span>",
+                QMessageBox.Ok
+            )
+            return
 
-        # Draw the scaled pixmap centered within the final_pixmap
-        painter = QPainter(final_pixmap)
-        x = (label_size.width() - scaled_pixmap.width()) // 2
-        y = (label_size.height() - scaled_pixmap.height()) // 2
-        painter.drawPixmap(x, y, scaled_pixmap)
-        painter.end()
+        date = self.ui.dateValue.text()
+        remark = self.ui.remarkValue.text()
+        selected_eye = self.ui.dropdown.currentText()  # Get the selected value from the dropdown
 
-        self.ui.imagePlaceholder.setPixmap(final_pixmap)
-        self.ui.imagePlaceholder.setScaledContents(False)  # Ensure QLabel does not scale the pixmap further
-        self.ui.imagePlaceholder.setProperty("imagePath", image_path)  # Store the image path in the QLabel
-
-        # Set the image name in the imageName QLabel
-        image_name = image_path.split("/")[-1]  # Extract the image name from the path
-        self.ui.imageName.setText(image_name)
+        if selected_eye == "Select Eye":  # Ensure a valid option is selected
+            QMessageBox.warning(
+                self.ui,
+                "Warning",
+                "<span style='color: black;'>Please select an eye (OD or OS)!</span>",
+                QMessageBox.Ok
+            )
+            return
 
         # Mapping of shortened names to full names
         disease_mapping = {
@@ -418,17 +548,98 @@ class ButtonHandlers:
             "CRS": "Chorioretinitis"
         }
 
-        # Format result text with disease names and confidence scores
-        full_result_text = "\n\n".join(
-            f"{disease_mapping.get(disease, disease)} ({data['probability'] * 100:.2f}%)"
-            for disease, data in result_dict.items() if data["prediction"] == 1
+        # Save each image and its diagnosis
+        for image_path in self.image_paths:
+            if not image_path.strip():  # Skip blank or invalid paths
+                continue
+
+            result_dict = self.predictor.predict(image_path)
+            formatted_results = {
+                disease_mapping.get(disease, disease): data["probability"]
+                for disease, data in result_dict["class_predictions"].items() if data["prediction"] == 1
+            }
+
+            # Prepare the record to save
+            record = {
+                "image_path": image_path,
+                "file_name": os.path.basename(image_path),
+                "patient_name": name,
+                "eye": selected_eye,  # Include the selected eye
+                "diagnosis": formatted_results,
+                "date": datetime.strptime(date, "%B %d, %Y").strftime("%Y-%m-%d"),
+                "notes": remark,
+                "archived": False  # Set archived status to False by default
+            }
+
+            # Save the record to the database
+            self.db_manager.save_record(record)
+
+        # Refresh the history table after saving
+        self.refresh_history_table()  # Ensure the table is updated after saving
+
+        QMessageBox.information(
+            self.ui,
+            "Success",
+            "<span style='color: black;'>All records saved successfully!</span>",
+            QMessageBox.Ok
         )
 
-        # Set the result text in the resultPlaceholder QLabel
-        self.ui.resultPlaceholder.setText(full_result_text)
-        self.ui.resultPlaceholder.setWordWrap(True)  # Enable word wrap
-        self.ui.resultPlaceholder.setFixedWidth(191)  # Set fixed width to 191
-        self.ui.resultPlaceholder.adjustSize()  # Adjust the size of the QLabel to fit the text
+    @Slot()
+    def navigate_classification_left(self):
+        """Navigate to the previous image in the classification view."""
+        if self.current_image_index > 0:
+            # Save the current name and remarks before switching
+            self.shared_name = self.ui.nameValue.text()
+            self.shared_remarks = self.ui.remarkValue.text()
+
+            self.current_image_index -= 1
+            file_path = self.image_paths[self.current_image_index]
+            result_dict = self.predictor.predict(file_path)
+            self.set_image_placeholder_classification(file_path, result_dict["class_predictions"])
+            self.update_classification_navigation_buttons()
+            self.restore_shared_fields()
+
+    @Slot()
+    def navigate_classification_right(self):
+        """Navigate to the next image in the classification view."""
+        if self.current_image_index < len(self.image_paths) - 1:
+            # Save the current name and remarks before switching
+            self.shared_name = self.ui.nameValue.text()
+            self.shared_remarks = self.ui.remarkValue.text()
+
+            self.current_image_index += 1
+            file_path = self.image_paths[self.current_image_index]
+            result_dict = self.predictor.predict(file_path)
+            self.set_image_placeholder_classification(file_path, result_dict["class_predictions"])
+            self.update_classification_navigation_buttons()
+            self.restore_shared_fields()
+
+    def restore_shared_fields(self):
+        """Restore the shared name, date, and remarks for the current image."""
+        self.ui.nameValue.setText(self.shared_name)
+        self.ui.dateValue.setText(self.shared_date)
+        self.ui.remarkValue.setText(self.shared_remarks)
+
+    def update_classification_navigation_buttons(self):
+        """Update the visibility of classification navigation buttons."""
+        self.ui.classificationLeftButton.setVisible(self.current_image_index > 0)
+        self.ui.classificationRightButton.setVisible(self.current_image_index < len(self.image_paths) - 1)
+
+    def reset_placeholders(self):
+        """Reset the placeholders when exiting the upload or classification page."""
+        self.ui.nameValue.clear()
+        self.ui.remarkValue.clear()
+        self.ui.resultPlaceholder.clear()
+        self.ui.imagePlaceholder.clear()
+        self.ui.imageName.clear()
+        current_date = datetime.now().strftime("%B %d, %Y")
+        self.ui.dateValue.setText(current_date)
+        self.image_paths.clear()
+        self.current_image_index = 0
+        self.shared_name = ""
+        self.shared_date = ""
+        self.shared_remarks = ""
+        self.update_classification_navigation_buttons()
 
     @Slot()
     def on_row_double_clicked(self, item):
@@ -538,6 +749,66 @@ class ButtonHandlers:
         image_name = image_path.split("/")[-1]  # Extract the image name from the path
         self.ui.imageName_2.setText(image_name)
 
+    def set_image_placeholder_classification(self, image_path, result_dict):
+        """Set the image and classification results in the classification page."""
+        pixmap = QPixmap(image_path)
+        label_size = self.ui.imagePlaceholder.size()
+        scaled_pixmap = pixmap.scaledToHeight(292, Qt.SmoothTransformation)  # Restrict height to 292 and keep aspect ratio
+
+        # Create a new pixmap with the label's size and fill it with a transparent background
+        final_pixmap = QPixmap(label_size)
+        final_pixmap.fill(Qt.transparent)
+
+        # Draw the scaled pixmap centered within the final_pixmap
+        painter = QPainter(final_pixmap)
+        x = (label_size.width() - scaled_pixmap.width()) // 2
+        y = (label_size.height() - scaled_pixmap.height()) // 2
+        painter.drawPixmap(x, y, scaled_pixmap)
+        painter.end()
+
+        self.ui.imagePlaceholder.setPixmap(final_pixmap)
+        self.ui.imagePlaceholder.setScaledContents(False)  # Ensure QLabel does not scale the pixmap further
+        self.ui.imagePlaceholder.setProperty("imagePath", image_path)  # Store the image path in the QLabel
+
+        # Set the image name in the imageName QLabel
+        image_name = os.path.basename(image_path)  # Extract the image name from the path
+        self.ui.imageName.setText(image_name)
+
+        # Mapping of shortened names to full names
+        disease_mapping = {
+            "DR": "Diabetic Retinopathy",
+            "NORMAL": "Normal",
+            "MH": "Media Haze",
+            "ODC": "Optic Disc Cupping",
+            "TSLN": "Tessellation",
+            "ARMD": "Age-Related Macular Degeneration",
+            "DN": "Drusen",
+            "MYA": "Myopia",
+            "BRVO": "Branch Retinal Vein Occlusion",
+            "ODP": "Optic Disc Pallor",
+            "CRVO": "Central Retinal Vein Occlusion",
+            "CNV": "Choroidal Neovascularization",
+            "RS": "Retinitis",
+            "ODE": "Optic Disc Edema",
+            "LS": "Laser Scars",
+            "CSR": "Central Serous Retinopathy",
+            "HTR": "Hypertensive Retinopathy",
+            "ASR": "Arteriosclerotic Retinopathy",
+            "CRS": "Chorioretinitis"
+        }
+
+        # Format result text with full disease names and confidence scores
+        result_text = "\n\n".join(
+            f"{disease_mapping.get(disease, disease)} ({data['probability'] * 100:.2f}%)"
+            for disease, data in result_dict.items() if data["prediction"] == 1
+        )
+
+        # Set the result text in the resultPlaceholder QLabel
+        self.ui.resultPlaceholder.setText(result_text)
+        self.ui.resultPlaceholder.setWordWrap(True)  # Enable word wrap
+        self.ui.resultPlaceholder.setFixedWidth(191)  # Set fixed width to 191
+        self.ui.resultPlaceholder.adjustSize()  # Adjust the size of the QLabel to fit the text
+
     @Slot()
     def navigate_left(self):
         """Navigate to the previous record."""
@@ -590,100 +861,6 @@ class ButtonHandlers:
 
             dialog.exec()
 
-    def save_results(self):
-        """Save the current data to the database."""
-        name = self.ui.nameValue.text()
-        date = self.ui.dateValue.text()
-        remark = self.ui.remarkValue.text()
-        results = self.ui.resultPlaceholder.text()
-        image_path = self.ui.imagePlaceholder.property("imagePath")
-
-        if not name:
-            QMessageBox.warning(
-                self.ui,
-                "Warning",
-                "<span style='color: black;'>Name cannot be empty!</span>",
-                QMessageBox.Ok
-            )
-            return
-
-        # Mapping of shortened names to full names
-        disease_mapping = {
-            "DR": "Diabetic Retinopathy",
-            "NORMAL": "Normal",
-            "MH": "Media Haze",
-            "ODC": "Optic Disc Cupping",
-            "TSLN": "Tessellation",
-            "ARMD": "Age-Related Macular Degeneration",
-            "DN": "Drusen",
-            "MYA": "Myopia",
-            "BRVO": "Branch Retinal Vein Occlusion",
-            "ODP": "Optic Disc Pallor",
-            "CRVO": "Central Retinal Vein Occlusion",
-            "CNV": "Choroidal Neovascularization",
-            "RS": "Retinitis",
-            "ODE": "Optic Disc Edema",
-            "LS": "Laser Scars",
-            "CSR": "Central Serous Retinopathy",
-            "HTR": "Hypertensive Retinopathy",
-            "ASR": "Arteriosclerotic Retinopathy",
-            "CRS": "Chorioretinitis"
-        }
-
-        # Convert results text to dictionary with full disease names
-        result_dict = {}
-        for line in results.split("\n\n"):
-            if line:
-                disease, confidence = line.rsplit(" (", 1)
-                confidence = float(confidence.rstrip("%)"))
-                full_disease_name = disease_mapping.get(disease, disease)  # Map to full name
-                result_dict[full_disease_name] = confidence / 100
-
-        # Prepare the record to save
-        record = {
-            "image_path": image_path,
-            "file_name": image_path.split("/")[-1] if image_path else "",
-            "patient_name": name,
-            "diagnosis": result_dict,
-            "date": datetime.strptime(date, "%B %d, %Y").strftime("%Y-%m-%d"),
-            "notes": remark
-        }
-
-        # Save the record to the database
-        self.db_manager.save_record(record)
-
-        QMessageBox.information(
-            self.ui,
-            "Success",
-            "<span style='color: black;'>Record saved successfully!</span>",
-            QMessageBox.Ok
-        )
-
-        self.refresh_history_table()
-
-    @Slot()
-    def upload_new_image(self):
-        """Handle uploading a new image and reset placeholders if successful."""
-        file_path, _ = QFileDialog.getOpenFileName(None, "Select an Image", "", "Images (*.tiff *.png *.jpeg *.jpg)")
-        if file_path:
-            self.reset_placeholders()
-            # Get prediction results from the predictor
-            result_dict = self.predictor.predict(file_path)
-            
-            # Display the image and results in the UI
-            self.set_image_placeholder_classification(file_path, result_dict["class_predictions"])
-            self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
-
-    def reset_placeholders(self):
-        """Reset the placeholders when exiting the upload or classification page."""
-        self.ui.nameValue.clear()
-        self.ui.remarkValue.clear()
-        self.ui.resultPlaceholder.clear()
-        self.ui.imagePlaceholder.clear()
-        self.ui.imageName.clear()
-        current_date = datetime.now().strftime("%B %d, %Y")
-        self.ui.dateValue.setText(current_date)
-
     def enable_editing(self):
         """Enable editing of nameValue_2 and remarkValue_2 in the history viewer."""
         self.ui.nameValue_2.setReadOnly(False)
@@ -693,15 +870,6 @@ class ButtonHandlers:
         """Save changes to the selected record in the history viewer."""
         name = self.ui.nameValue_2.text()
         remark = self.ui.remarkValue_2.text()
-
-        if not name:
-            QMessageBox.warning(
-                self.ui,
-                "Warning",
-                "<span style='color: black;'>Name cannot be empty!</span>",
-                QMessageBox.Ok
-            )
-            return
 
         selected_row = self.current_row
         if selected_row >= 0:

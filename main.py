@@ -20,7 +20,8 @@ if __name__ == "__main__":
     window.setStyleSheet("QWidget#RetinalDiseaseClassifier { background: transparent; }")
 
     # Refresh the history table on startup
-    window.handlers.refresh_history_table()
+    window.handlers.refresh_history_table()  # Ensure this is called to populate the table initially
+    window.handlers.ui.historyTable.setHorizontalHeaderLabels(["Image", "Eye", "Patient Name", "Diagnosis", "Date", "Notes"])  # Update column headers
 
     sys.exit(app.exec())
 

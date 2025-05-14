@@ -832,7 +832,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
@@ -856,7 +856,7 @@ class Ui_RetinalDiseaseClassifier(object):
         self.remarkValue.setText("")
         self.imagePlaceholder.setText("")
         self.imageName.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"placeholder.png", None))
-        self.classificationBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
+        self.classificationBackButton.setText("")
         self.classificationLeftButton.setText("")
         self.classificationRightButton.setText("")
         self.modifyRecordButton.setText("")
