@@ -37,6 +37,7 @@ class ButtonHandlers:
         self.shared_name = ""  # Shared name for both images
         self.shared_date = ""  # Shared date for both images
         self.shared_remarks = ""  # Shared remarks for both images
+        self.shared_dropdown_values = {}  # Store dropdown values for each image
 
         # Adjust path resolution for PyInstaller
         if getattr(sys, 'frozen', False):  # Check if running in a PyInstaller bundle
@@ -58,6 +59,7 @@ class ButtonHandlers:
         self.setup_editable_fields()  # Setup editable fields
         self.setup_search_bar()  # Add method to set up the curved search bar
         self.setup_dropdown()  # Add method to set up the dropdown
+        self.setup_dropdown_box_2()  # Add method to set up dropdownBox_2
         self.refresh_history_table()  # Populate the history table on startup
 
     def connect_buttons(self):
@@ -228,6 +230,7 @@ class ButtonHandlers:
         self.ui.classificationLeftButton.raise_()
         self.ui.classificationRightButton.raise_()
         self.ui.dropdownBox.raise_()  # Raise the dropdown to ensure it appears on top
+        self.ui.dropdownBox_2.raise_()  # Raise the dropdown to ensure it appears on top
 
 
         self.ui.leftButton.raise_()
@@ -289,6 +292,33 @@ class ButtonHandlers:
                 background-color: #f9f9f9; /* Light background */
             }
         """)
+
+    def setup_dropdown_box_2(self):
+        """Set up the dropdown_2 for the history viewer."""
+        self.ui.dropdown_2 = QComboBox(self.ui.dropdownBox_2)  # Create a QComboBox inside dropdownBox_2
+        self.ui.dropdown_2.setGeometry(0, 0, self.ui.dropdownBox_2.width(), self.ui.dropdownBox_2.height())  # Match the size of dropdownBox_2
+        self.ui.dropdown_2.setObjectName("dropdown_2")
+        self.ui.dropdown_2.addItem("Select Eye")  # Add a placeholder item
+        self.ui.dropdown_2.addItems(["OD (Left Eye)", "OS (Right Eye)"])  # Add options to the dropdown
+        self.ui.dropdown_2.setStyleSheet("""
+            QComboBox {
+                border: 2px solid #dcdcdc; /* Light gray border */
+                border-radius: 15px; /* Rounded corners */
+                padding: 8px 12px; /* Padding for text */
+                background-color: #f9f9f9; /* Light background */
+                font-size: 14px; /* Font size */
+                color: #333; /* Text color */
+            }
+            QComboBox::drop-down {
+                border: none;
+            }
+            QComboBox QAbstractItemView {
+                border: 1px solid #dcdcdc;
+                selection-background-color: #f0f0f0;
+            }
+        """)  # Style the dropdown
+        self.ui.dropdown_2.setCurrentIndex(0)  # Set the default selection to "Select Eye"
+        self.ui.dropdown_2.raise_()  # Ensure the dropdown appears on top
 
     def on_search_text_changed(self, text):
         """Filter the history table based on the search text and archived status."""
@@ -514,16 +544,20 @@ class ButtonHandlers:
 
         date = self.ui.dateValue.text()
         remark = self.ui.remarkValue.text()
-        selected_eye = self.ui.dropdown.currentText()  # Get the selected value from the dropdown
 
-        if selected_eye == "Select Eye":  # Ensure a valid option is selected
-            QMessageBox.warning(
-                self.ui,
-                "Warning",
-                "<span style='color: black;'>Please select an eye (OD or OS)!</span>",
-                QMessageBox.Ok
-            )
-            return
+        # Ensure each image has a corresponding dropdown value
+        eye_selections = []
+        for i, image_path in enumerate(self.image_paths):
+            selected_eye = self.shared_dropdown_values.get(i, "Select Eye")
+            if selected_eye == "Select Eye":  # Ensure a valid option is selected
+                QMessageBox.warning(
+                    self.ui,
+                    "Warning",
+                    f"<span style='color: black;'>Please select an eye (OD or OS) for image {i+1}!</span>",
+                    QMessageBox.Ok
+                )
+                return
+            eye_selections.append(selected_eye)
 
         # Mapping of shortened names to full names
         disease_mapping = {
@@ -549,7 +583,7 @@ class ButtonHandlers:
         }
 
         # Save each image and its diagnosis
-        for image_path in self.image_paths:
+        for i, image_path in enumerate(self.image_paths):
             if not image_path.strip():  # Skip blank or invalid paths
                 continue
 
@@ -564,7 +598,7 @@ class ButtonHandlers:
                 "image_path": image_path,
                 "file_name": os.path.basename(image_path),
                 "patient_name": name,
-                "eye": selected_eye,  # Include the selected eye
+                "eye": eye_selections[i],  # Use the corresponding eye selection for each image
                 "diagnosis": formatted_results,
                 "date": datetime.strptime(date, "%B %d, %Y").strftime("%Y-%m-%d"),
                 "notes": remark,
@@ -588,9 +622,8 @@ class ButtonHandlers:
     def navigate_classification_left(self):
         """Navigate to the previous image in the classification view."""
         if self.current_image_index > 0:
-            # Save the current name and remarks before switching
-            self.shared_name = self.ui.nameValue.text()
-            self.shared_remarks = self.ui.remarkValue.text()
+            # Save the current dropdown value before switching
+            self.shared_dropdown_values[self.current_image_index] = self.ui.dropdown.currentText()
 
             self.current_image_index -= 1
             file_path = self.image_paths[self.current_image_index]
@@ -603,9 +636,8 @@ class ButtonHandlers:
     def navigate_classification_right(self):
         """Navigate to the next image in the classification view."""
         if self.current_image_index < len(self.image_paths) - 1:
-            # Save the current name and remarks before switching
-            self.shared_name = self.ui.nameValue.text()
-            self.shared_remarks = self.ui.remarkValue.text()
+            # Save the current dropdown value before switching
+            self.shared_dropdown_values[self.current_image_index] = self.ui.dropdown.currentText()
 
             self.current_image_index += 1
             file_path = self.image_paths[self.current_image_index]
@@ -615,10 +647,11 @@ class ButtonHandlers:
             self.restore_shared_fields()
 
     def restore_shared_fields(self):
-        """Restore the shared name, date, and remarks for the current image."""
+        """Restore the shared name, date, remarks, and dropdown value for the current image."""
         self.ui.nameValue.setText(self.shared_name)
         self.ui.dateValue.setText(self.shared_date)
         self.ui.remarkValue.setText(self.shared_remarks)
+        self.ui.dropdown.setCurrentText(self.shared_dropdown_values.get(self.current_image_index, "Select Eye"))
 
     def update_classification_navigation_buttons(self):
         """Update the visibility of classification navigation buttons."""
@@ -639,6 +672,7 @@ class ButtonHandlers:
         self.shared_name = ""
         self.shared_date = ""
         self.shared_remarks = ""
+        self.shared_dropdown_values.clear()
         self.update_classification_navigation_buttons()
 
     @Slot()
@@ -666,6 +700,7 @@ class ButtonHandlers:
             name_text = record.get("patient_name", "")  # Get the name text
             date_text = record.get("date", "")  # Get the date text
             remark_text = record.get("notes", "")  # Get the remark text
+            eye_value = record.get("eye", "Select Eye")  # Get the eye value from the record
 
             # Mapping of shortened names to full names
             disease_mapping = {
@@ -716,6 +751,10 @@ class ButtonHandlers:
                 self.ui.nameValue_2.setText(name_text)
                 self.ui.dateValue_2.setText(formatted_date)
                 self.ui.remarkValue_2.setText(remark_text)
+                if isinstance(self.ui.dropdown_2, QComboBox):  # Ensure dropdown_2 is a QComboBox
+                    self.ui.dropdown_2.setCurrentText(eye_value)  # Set the dropdown_2 value
+                else:
+                    print("dropdown_2 is not a QComboBox.")  # Debugging message
                 self.ui.stackedWidget.setCurrentIndex(3)  # Move to history viewer
 
             # Update button visibility
