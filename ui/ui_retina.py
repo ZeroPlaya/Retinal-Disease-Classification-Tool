@@ -166,22 +166,6 @@ class Ui_RetinalDiseaseClassifier(object):
 "    background-position: center;\n"
 "}\n"
 "")
-        self.classificationBackButton = QPushButton(self.ClassificationPage)
-        self.classificationBackButton.setObjectName(u"classificationBackButton")
-        self.classificationBackButton.setGeometry(QRect(8, 8, 66, 66))
-        sizePolicy.setHeightForWidth(self.classificationBackButton.sizePolicy().hasHeightForWidth())
-        self.classificationBackButton.setSizePolicy(sizePolicy)
-        self.classificationBackButton.setMinimumSize(QSize(66, 66))
-        self.classificationBackButton.setMaximumSize(QSize(66, 66))
-        self.classificationBackButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.classificationBackButton.setStyleSheet(u"QPushButton {\n"
-"    border: none;\n"
-"    background: transparent;\n"
-"    background-image: url(:images/assets/back.png);\n"
-"    background-repeat: no-repeat;\n"
-"    background-position: center;\n"
-"}\n"
-"")
         self.widget = QWidget(self.ClassificationPage)
         self.widget.setObjectName(u"widget")
         self.widget.setGeometry(QRect(400, 50, 311, 367))
@@ -413,11 +397,47 @@ class Ui_RetinalDiseaseClassifier(object):
 "color: white;\n"
 "}")
         self.imageName.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.classificationBackButton = QPushButton(self.blackbg)
+        self.classificationBackButton.setObjectName(u"classificationBackButton")
+        self.classificationBackButton.setGeometry(QRect(9, 9, 34, 33))
+        sizePolicy.setHeightForWidth(self.classificationBackButton.sizePolicy().hasHeightForWidth())
+        self.classificationBackButton.setSizePolicy(sizePolicy)
+        self.classificationBackButton.setMinimumSize(QSize(34, 33))
+        self.classificationBackButton.setMaximumSize(QSize(34, 33))
+        self.classificationBackButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.classificationBackButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/x.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}")
+        self.classificationLeftButton = QPushButton(self.blackbg)
+        self.classificationLeftButton.setObjectName(u"classificationLeftButton")
+        self.classificationLeftButton.setGeometry(QRect(313, 9, 34, 33))
+        self.classificationLeftButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.classificationLeftButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/left.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}")
+        self.classificationRightButton = QPushButton(self.blackbg)
+        self.classificationRightButton.setObjectName(u"classificationRightButton")
+        self.classificationRightButton.setGeometry(QRect(349, 9, 34, 33))
+        self.classificationRightButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.classificationRightButton.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"    background-image: url(:images/assets/right.png);\n"
+"    background-repeat: no-repeat;\n"
+"    background-position: center;\n"
+"}")
         self.stackedWidget.addWidget(self.ClassificationPage)
         self.blackbg.raise_()
         self.uploadNewImageButton.raise_()
         self.saveResultsButton.raise_()
-        self.classificationBackButton.raise_()
         self.widget.raise_()
         self.historyViewer = QWidget()
         self.historyViewer.setObjectName(u"historyViewer")
@@ -812,7 +832,7 @@ class Ui_RetinalDiseaseClassifier(object):
 
         self.retranslateUi(RetinalDiseaseClassifier)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(RetinalDiseaseClassifier)
@@ -827,7 +847,6 @@ class Ui_RetinalDiseaseClassifier(object):
         self.historyButton.setText("")
         self.uploadNewImageButton.setText("")
         self.saveResultsButton.setText("")
-        self.classificationBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
         self.resultPlaceholder.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Placeholder (xx.x%)", None))
         self.nameLabel.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Patient's Name", None))
         self.dateLabel.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"Date", None))
@@ -837,6 +856,9 @@ class Ui_RetinalDiseaseClassifier(object):
         self.remarkValue.setText("")
         self.imagePlaceholder.setText("")
         self.imageName.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"placeholder.png", None))
+        self.classificationBackButton.setText(QCoreApplication.translate("RetinalDiseaseClassifier", u"<-", None))
+        self.classificationLeftButton.setText("")
+        self.classificationRightButton.setText("")
         self.modifyRecordButton.setText("")
         self.saveChangesButton.setText("")
         self.imagePlaceholder_2.setText("")

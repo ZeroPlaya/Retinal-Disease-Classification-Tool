@@ -47,7 +47,7 @@ background-position: center;
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="MenuPage">
       <layout class="QGridLayout" name="gridLayout">
@@ -340,50 +340,6 @@ background-position: center;
        </property>
        <property name="text">
         <string/>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="classificationBackButton">
-       <property name="geometry">
-        <rect>
-         <x>8</x>
-         <y>8</y>
-         <width>66</width>
-         <height>66</height>
-        </rect>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>66</width>
-         <height>66</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>66</width>
-         <height>66</height>
-        </size>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton {
-    border: none;
-    background: transparent;
-    background-image: url(:images/assets/back.png);
-    background-repeat: no-repeat;
-    background-position: center;
-}
-</string>
-       </property>
-       <property name="text">
-        <string>&lt;-</string>
        </property>
       </widget>
       <widget class="QWidget" name="widget" native="true">
@@ -1313,11 +1269,103 @@ color: white;
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
+       <widget class="QPushButton" name="classificationBackButton">
+        <property name="geometry">
+         <rect>
+          <x>9</x>
+          <y>9</y>
+          <width>34</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>34</width>
+          <height>33</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>34</width>
+          <height>33</height>
+         </size>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    border: none;
+    background: transparent;
+    background-image: url(:images/assets/x.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}</string>
+        </property>
+        <property name="text">
+         <string>&lt;-</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="classificationLeftButton">
+        <property name="geometry">
+         <rect>
+          <x>313</x>
+          <y>9</y>
+          <width>34</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    border: none;
+    background: transparent;
+    background-image: url(:images/assets/left.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="classificationRightButton">
+        <property name="geometry">
+         <rect>
+          <x>349</x>
+          <y>9</y>
+          <width>34</width>
+          <height>33</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    border: none;
+    background: transparent;
+    background-image: url(:images/assets/right.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </widget>
       <zorder>blackbg</zorder>
       <zorder>uploadNewImageButton</zorder>
       <zorder>saveResultsButton</zorder>
-      <zorder>classificationBackButton</zorder>
       <zorder>widget</zorder>
      </widget>
      <widget class="QWidget" name="historyViewer">

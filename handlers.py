@@ -214,6 +214,13 @@ class ButtonHandlers:
         self.ui.imageName.setStyleSheet("color: white; text-align: right; font: 450 italic 13pt 'SF Pro Display';")  # Set text color to white, right-align, and font style
         self.ui.imageName.setAlignment(Qt.AlignRight | Qt.AlignVCenter)  # Ensure text is right-aligned
 
+        # Ensure buttons are raised to the front
+        self.ui.classificationBackButton.raise_()
+        self.ui.classificationLeftButton.raise_()
+        self.ui.classificationRightButton.raise_()
+
+        self.ui.leftButton.raise_()
+        self.ui.rightButton.raise_()
         self.ui.imageName.raise_()  # Bring imageName QLabel to the front
 
         # Ensure the imagePlaceholder is visible
