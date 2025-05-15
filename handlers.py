@@ -39,6 +39,11 @@ class ButtonHandlers:
         self.shared_remarks = ""  # Shared remarks for both images
         self.shared_dropdown_values = {}  # Store dropdown values for each image
 
+        self.per_image_name = {}
+        self.per_image_date = {}
+        self.per_image_remarks = {}
+        
+
         # Adjust path resolution for PyInstaller
         if getattr(sys, 'frozen', False):  # Check if running in a PyInstaller bundle
             base_path = sys._MEIPASS  # Temporary folder created by PyInstaller
@@ -473,6 +478,13 @@ class ButtonHandlers:
     @Slot()
     def open_file_explorer_classification(self):
         """Allow selecting up to two images and display the first one."""
+        # --- Clear dropdown and per-image fields before new upload ---
+        self.shared_dropdown_values.clear()
+        self.per_image_name.clear()
+        self.per_image_date.clear()
+        self.per_image_remarks.clear()
+        # ------------------------------------------------------------
+
         file_paths, _ = QFileDialog.getOpenFileNames(
             None, "Select Images", "", "Images (*.tiff *.png *.jpeg *.jpg)"
         )
@@ -500,12 +512,26 @@ class ButtonHandlers:
             self.shared_date = self.ui.dateValue.text()
             self.shared_remarks = self.ui.remarkValue.text()
 
+            # --- Initialize per-image fields for all images ---
+            for idx, _ in enumerate(self.image_paths):
+                self.per_image_name[idx] = self.shared_name
+                self.per_image_date[idx] = self.shared_date
+                self.per_image_remarks[idx] = self.shared_remarks
+            # --------------------------------------------------
+
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
             self.update_classification_navigation_buttons()
 
     @Slot()
     def upload_new_image(self):
         """Handle uploading a single image and reset placeholders if successful."""
+        # --- Clear dropdown and per-image fields before new upload ---
+        self.shared_dropdown_values.clear()
+        self.per_image_name.clear()
+        self.per_image_date.clear()
+        self.per_image_remarks.clear()
+        # ------------------------------------------------------------
+
         file_path, _ = QFileDialog.getOpenFileName(None, "Select an Image", "", "Images (*.tiff *.png *.jpeg *.jpg)")
         if file_path:
             self.image_paths = [file_path]  # Replace the list with the single uploaded image
@@ -517,6 +543,12 @@ class ButtonHandlers:
             self.shared_name = self.ui.nameValue.text()
             self.shared_date = self.ui.dateValue.text()
             self.shared_remarks = self.ui.remarkValue.text()
+
+            # --- Initialize per-image fields for the single image ---
+            self.per_image_name[0] = self.shared_name
+            self.per_image_date[0] = self.shared_date
+            self.per_image_remarks[0] = self.shared_remarks
+            # -------------------------------------------------------
 
             # Do not save the record here; saving should only happen explicitly
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
@@ -533,6 +565,13 @@ class ButtonHandlers:
             )
             return
 
+        # --- Save current fields for the current image before saving ---
+        self.shared_dropdown_values[self.current_image_index] = self.ui.dropdown.currentText()
+        self.per_image_name[self.current_image_index] = self.ui.nameValue.text()
+        self.per_image_date[self.current_image_index] = self.ui.dateValue.text()
+        self.per_image_remarks[self.current_image_index] = self.ui.remarkValue.text()
+        # --------------------------------------------------------------
+
         name = self.ui.nameValue.text()
         if not name.strip():  # Check if the name is empty
             QMessageBox.warning(
@@ -545,6 +584,9 @@ class ButtonHandlers:
 
         date = self.ui.dateValue.text()
         remark = self.ui.remarkValue.text()
+
+        if self.image_paths:
+            self.shared_dropdown_values[self.current_image_index] = self.ui.dropdown.currentText()
 
         # Ensure each image has a corresponding dropdown value
         eye_selections = []
@@ -598,11 +640,11 @@ class ButtonHandlers:
             record = {
                 "image_path": image_path,
                 "file_name": os.path.basename(image_path),
-                "patient_name": name,
+                "patient_name": self.per_image_name.get(i, self.shared_name),
                 "eye": eye_selections[i],  # Use the corresponding eye selection for each image
                 "diagnosis": formatted_results,
-                "date": datetime.strptime(date, "%B %d, %Y").strftime("%Y-%m-%d"),
-                "notes": remark,
+                "date": datetime.strptime(self.per_image_date.get(i, self.shared_date), "%B %d, %Y").strftime("%Y-%m-%d"),
+                "notes": self.per_image_remarks.get(i, self.shared_remarks),
                 "archived": False  # Set archived status to False by default
             }
 
@@ -623,8 +665,12 @@ class ButtonHandlers:
     def navigate_classification_left(self):
         """Navigate to the previous image in the classification view."""
         if self.current_image_index > 0:
-            # Save the current dropdown value before switching
+            # --- Save current fields before switching ---
             self.shared_dropdown_values[self.current_image_index] = self.ui.dropdown.currentText()
+            self.per_image_name[self.current_image_index] = self.ui.nameValue.text()
+            self.per_image_date[self.current_image_index] = self.ui.dateValue.text()
+            self.per_image_remarks[self.current_image_index] = self.ui.remarkValue.text()
+            # --------------------------------------------
 
             self.current_image_index -= 1
             file_path = self.image_paths[self.current_image_index]
@@ -637,8 +683,12 @@ class ButtonHandlers:
     def navigate_classification_right(self):
         """Navigate to the next image in the classification view."""
         if self.current_image_index < len(self.image_paths) - 1:
-            # Save the current dropdown value before switching
+            # --- Save current fields before switching ---
             self.shared_dropdown_values[self.current_image_index] = self.ui.dropdown.currentText()
+            self.per_image_name[self.current_image_index] = self.ui.nameValue.text()
+            self.per_image_date[self.current_image_index] = self.ui.dateValue.text()
+            self.per_image_remarks[self.current_image_index] = self.ui.remarkValue.text()
+            # --------------------------------------------
 
             self.current_image_index += 1
             file_path = self.image_paths[self.current_image_index]
@@ -649,15 +699,12 @@ class ButtonHandlers:
 
     def restore_shared_fields(self):
         """Restore the shared name, date, remarks, and dropdown value for the current image."""
-        self.ui.nameValue.setText(self.shared_name)
-        self.ui.dateValue.setText(self.shared_date)
-        self.ui.remarkValue.setText(self.shared_remarks)
+        # --- Restore per-image fields if available, else use shared values ---
+        self.ui.nameValue.setText(self.per_image_name.get(self.current_image_index, self.shared_name))
+        self.ui.dateValue.setText(self.per_image_date.get(self.current_image_index, self.shared_date))
+        self.ui.remarkValue.setText(self.per_image_remarks.get(self.current_image_index, self.shared_remarks))
         self.ui.dropdown.setCurrentText(self.shared_dropdown_values.get(self.current_image_index, "Select Eye"))
-
-    def update_classification_navigation_buttons(self):
-        """Update the visibility of classification navigation buttons."""
-        self.ui.classificationLeftButton.setVisible(self.current_image_index > 0)
-        self.ui.classificationRightButton.setVisible(self.current_image_index < len(self.image_paths) - 1)
+        # ---------------------------------------------------------------------
 
     def reset_placeholders(self):
         """Reset the placeholders when exiting the upload or classification page."""
@@ -674,7 +721,17 @@ class ButtonHandlers:
         self.shared_date = ""
         self.shared_remarks = ""
         self.shared_dropdown_values.clear()
+        # --- Clear per-image fields as well ---
+        self.per_image_name.clear()
+        self.per_image_date.clear()
+        self.per_image_remarks.clear()
+        # --------------------------------------
         self.update_classification_navigation_buttons()
+
+    def update_classification_navigation_buttons(self):
+        """Update the visibility of classification navigation buttons."""
+        self.ui.classificationLeftButton.setVisible(self.current_image_index > 0)
+        self.ui.classificationRightButton.setVisible(self.current_image_index < len(self.image_paths) - 1)
 
     @Slot()
     def on_row_double_clicked(self, item):
