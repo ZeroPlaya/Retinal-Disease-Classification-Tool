@@ -1,12 +1,12 @@
 import pymongo
 
 class DatabaseManager:
-    def __init__(self, connection_string="mongodb://localhost:27017/"):
+    def __init__(self, connection_string = "mongodb+srv://hwardless:TsRcste10JqBozQX@cluster-1.8f4stfm.mongodb.net/retina?retryWrites=true&w=majority&tls=true"):
         """Initialize the database manager with MongoDB connection string."""
         try:
             self.client = pymongo.MongoClient(connection_string)
-            self.db = self.client["medical_database"]
-            self.collection = self.db["prediction_records"]
+            self.db = self.client["retina"]
+            self.collection = self.db["records"]
             print("Connected to MongoDB")
         except Exception as e:
             print(f"Error connecting to MongoDB: {e}")

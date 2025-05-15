@@ -3,7 +3,7 @@ from PySide6.QtGui import QFont, QPixmap
 from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
 from handlers import ButtonHandlers  # Import handlers for button logic
-import resources_rc
+import rc_resources
 from database import DatabaseManager  # Import DatabaseManager
 
 class MainWindow(QMainWindow):

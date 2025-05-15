@@ -8,7 +8,12 @@ import json  # Import json for writing to file
 import os  # Import os for file operations
 import sys  # Import sys for platform detection
 import subprocess  # Import subprocess for opening files
+import re
 from fpdf import FPDF  # Import FPDF for PDF generation
+
+def strip_html_tags(text):
+    """Remove HTML tags from a string."""
+    return re.sub(r'<[^>]*>', '', text)
 
 class ClickableLabel(QLabel):
     def __init__(self, parent=None):
@@ -24,7 +29,9 @@ class TransparentLabel(QLabel):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAttribute(Qt.WA_TranslucentBackground, True)  # Set transparent background
+        
 
+    
 class ButtonHandlers:
     def __init__(self, ui):
         self.ui = ui
@@ -61,6 +68,7 @@ class ButtonHandlers:
         # Reset placeholders when exiting
         self.ui.uploadBackButton.clicked.connect(self.reset_placeholders)
         self.ui.classificationBackButton.clicked.connect(self.reset_placeholders)
+
 
     def setup_shortcuts(self):
         """Setup keyboard shortcuts."""
@@ -244,38 +252,46 @@ class ButtonHandlers:
 
         # Mapping of shortened names to full names
         disease_mapping = {
-            "DR": "Diabetic Retinopathy",
-            "NORMAL": "Normal",
-            "MH": "Media Haze",
-            "ODC": "Optic Disc Cupping",
-            "TSLN": "Tessellation",
-            "ARMD": "Age-Related Macular Degeneration",
-            "MYA": "Myopia",
-            "BRVO": "Branch Retinal Vein Occlusion",
-            "ODP": "Optic Disc Pallor",
-            "CRVO": "Central Retinal Vein Occlusion",
-            "CNV": "Choroidal Neovascularization",
-            "RS": "Retinitis",
-            "ODE": "Optic Disc Edema",
-            "LS": "Laser Scars",
-            "CSR": "Central Serous Retinopathy",
-            "HTR": "Hypertensive Retinopathy",
-            "ASR": "Arteriosclerotic Retinopathy",
-            "CRS": "Chorioretinitis",
-            "OTHER": "Others"
-        }
+            "DR": ("Diabetic Retinopathy", "A complication of diabetes that damages the retina's blood vessels."),
+            "NORMAL": ("Normal", "No detectable abnormalities in the retinal image."),
+            "MH": ("Media Haze", "Clouding or opacity in the eye's media, often affecting image clarity."),
+            "ODC": ("Optic Disc Cupping", "Enlargement of the optic disc cup, often associated with glaucoma."),
+            "TSLN": ("Tessellation", "A retinal appearance with prominent choroidal vessels, often linked to myopia."),
+            "ARMD": ("Age-Related Macular Degeneration", "Degeneration of the macula causing vision loss in older adults."),
+            "MYA": ("Myopia", "Nearsightedness; distant objects appear blurry."),
+            "BRVO": ("Branch Retinal Vein Occlusion", "Blockage of a small vein in the retina, causing vision issues."),
+            "ODP": ("Optic Disc Pallor", "Pale appearance of the optic disc, indicating optic nerve damage."),
+            "CRVO": ("Central Retinal Vein Occlusion", "Blockage of the main retinal vein, leading to vision loss."),
+            "CNV": ("Choroidal Neovascularization", "Growth of abnormal blood vessels under the retina, causing leakage and vision loss."),
+            "RS": ("Retinitis", "Inflammation of the retina, possibly from infection or autoimmune causes."),
+            "ODE": ("Optic Disc Edema", "Swelling of the optic disc due to increased intracranial pressure or inflammation."),
+            "LS": ("Laser Scars", "Scarring from previous laser treatments in the retina."),
+            "CSR": ("Central Serous Retinopathy", "Fluid buildup under the retina that distorts vision."),
+            "HTR": ("Hypertensive Retinopathy", "Retinal damage caused by high blood pressure."),
+            "ASR": ("Arteriosclerotic Retinopathy", "Changes in the retinal arteries due to arteriosclerosis."),
+            "CRS": ("Chorioretinitis", "Inflammation of both the choroid and retina, often due to infection."),
+            "OTHER": ("Others", "Other retinal or ocular abnormalities not classified above.")
+}
+
 
         # Format result text with disease names and confidence scores
-        full_result_text = "\n\n".join(
-            f"{disease_mapping.get(disease, disease)} ({confidence:.2f}%)"
+        full_result_text = "<br><br>".join(
+            f"<span style='font-size:11pt; font-weight:bold'>{disease_mapping[disease][0]} ({confidence:.2f}%)</span><br>"
+            f"<span style='font-size:9pt;'>{disease_mapping[disease][1]}</span>"
             for disease, confidence in result_dict.items()
-        )
+            if disease in disease_mapping
+)
+
+
 
         # Set the result text in the resultPlaceholder QLabel
+        self.ui.resultPlaceholder.setTextFormat(Qt.RichText)
         self.ui.resultPlaceholder.setText(full_result_text)
         self.ui.resultPlaceholder.setWordWrap(True)  # Enable word wrap
         self.ui.resultPlaceholder.setFixedWidth(191)  # Set fixed width to 191
         self.ui.resultPlaceholder.adjustSize()  # Adjust the size of the QLabel to fit the text
+    
+
 
     @Slot()
     def on_row_double_clicked(self, item):
@@ -321,7 +337,9 @@ class ButtonHandlers:
 
         # Format result text with disease names and confidence scores
         full_result_text = "\n\n".join(
-            f"{disease_mapping.get(disease, disease)} ({confidence:.2f}%)"
+            f"{disease_mapping[disease][0]} ({confidence:.2f}%)\n{disease_mapping[disease][1]}"
+            if disease in disease_mapping else
+            f"{disease} ({confidence:.2f}%)"
             for disease, confidence in result_dict.items()
         )
 
@@ -460,11 +478,18 @@ class ButtonHandlers:
 
         # Convert results text to dictionary
         result_dict = {}
-        for line in results.split("\n\n"):
-            if line:
-                disease, confidence = line.rsplit(" (", 1)
-                confidence = float(confidence.rstrip("%)"))
-                result_dict[disease] = confidence / 100
+        for block in results.strip().split("\n\n"):
+            lines = block.strip().split("\n")
+            if not lines:
+                continue
+
+            header = lines[0]  # e.g., "Diabetic Retinopathy (92.00%)"
+            match = re.match(r"(.+?)\s+\(([\d.]+)%\)", header)
+            if match:
+                disease_name = match.group(1)
+                confidence = float(match.group(2)) / 100
+                result_dict[disease_name] = confidence
+
 
         # Prepare the record to save
         record = {
@@ -701,11 +726,11 @@ class ButtonHandlers:
                 class PDF(FPDF):
                     def header(self):
                         self.set_font("Arial", "B", 16)
-                        self.cell(0, 10, "Generated Report", border=False, ln=True, align="C")
+                        self.cell(0, 10, "Fundus Analysis Report ", border=False, ln=True, align="C")
                         self.ln(2)
-                        self.set_draw_color(0, 0, 0)  # Black line
+                        self.set_draw_color(0, 0, 0)
                         self.set_line_width(0.5)
-                        self.line(10, self.get_y(), 200, self.get_y())  # Horizontal line
+                        self.line(10, self.get_y(), 200, self.get_y())
                         self.ln(5)
 
                     def footer(self):
@@ -713,29 +738,83 @@ class ButtonHandlers:
                         self.set_font("Arial", "I", 8)
                         self.cell(0, 10, f"Page {self.page_no()}", align="C")
 
+                # Disease Description Dictionary
+                disease_description = {
+                    "DR": ("Diabetic Retinopathy", "A complication of diabetes that damages the retina's blood vessels.", "Disease"),
+                    "NORMAL": ("Normal", "No detectable abnormalities in the retinal image.", "Condition"),
+                    "MH": ("Media Haze", "Clouding or opacity in the eye's media, often affecting image clarity.", "Condition"),
+                    "ODC": ("Optic Disc Cupping", "Enlargement of the optic disc cup, often associated with glaucoma.", "Condition"),
+                    "TSLN": ("Tessellation", "A retinal appearance with prominent choroidal vessels, often linked to myopia.", "Condition"),
+                    "ARMD": ("Age-Related Macular Degeneration", "Degeneration of the macula causing vision loss in older adults.", "Disease"),
+                    "MYA": ("Myopia", "Nearsightedness; distant objects appear blurry.", "Condition"),
+                    "BRVO": ("Branch Retinal Vein Occlusion", "Blockage of a small vein in the retina, causing vision issues.", "Disease"),
+                    "ODP": ("Optic Disc Pallor", "Pale appearance of the optic disc, indicating optic nerve damage.", "Condition"),
+                    "CRVO": ("Central Retinal Vein Occlusion", "Blockage of the main retinal vein, leading to vision loss.", "Disease"),
+                    "CNV": ("Choroidal Neovascularization", "Growth of abnormal blood vessels under the retina, causing leakage and vision loss.", "Disease"),
+                    "RS": ("Retinitis", "Inflammation of the retina, possibly from infection or autoimmune causes.", "Disease"),
+                    "ODE": ("Optic Disc Edema", "Swelling of the optic disc due to increased intracranial pressure or inflammation.", "Condition"),
+                    "LS": ("Laser Scars", "Scarring from previous laser treatments in the retina.", "Condition"),
+                    "CSR": ("Central Serous Retinopathy", "Fluid buildup under the retina that distorts vision.", "Condition"),
+                    "HTR": ("Hypertensive Retinopathy", "Retinal damage caused by high blood pressure.", "Disease"),
+                    "ASR": ("Arteriosclerotic Retinopathy", "Changes in the retinal arteries due to arteriosclerosis.", "Disease"),
+                    "CRS": ("Chorioretinitis", "Inflammation of both the choroid and retina, often due to infection.", "Disease"),
+                    "OTHER": ("Others", "Other retinal or ocular abnormalities not classified above.")
+                }
+
                 pdf = PDF()
                 pdf.add_page()
                 pdf.set_font("Arial", size=12)
 
-                # Patient Name (Left) and Record Date (Right)
+                # Patient Name and Record Date
                 pdf.set_font("Arial", "B", 12)
                 pdf.cell(0, 10, f"Name: {record.get('patient_name', 'N/A')}", ln=False, align="L")
                 pdf.cell(0, 10, f"Record Date: {record.get('date', 'N/A')}", ln=True, align="R")
 
-                # Timestamp of Printing (Right)
+                # Timestamp of Printing
                 pdf.set_font("Arial", size=10)
                 pdf.cell(0, 10, f"Printed On: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", ln=True, align="R")
                 pdf.ln(5)
 
-                # Diagnosis (Left)
+                # Diagnosis
                 pdf.set_font("Arial", "B", 12)
                 pdf.cell(0, 10, "Diagnosis:", ln=True, align="L")
                 pdf.set_font("Arial", size=12)
+                diagnosed_conditions = []
+                
                 for disease, confidence in record.get("diagnosis", {}).items():
-                    pdf.cell(0, 10, f"- {disease}: {confidence * 100:.2f}%", ln=True, align="L")
+                    clean_disease = strip_html_tags(disease)
+                    pdf.cell(0, 10, f"- {clean_disease}: {confidence * 100:.2f}%", ln=True, align="L")
+                    diagnosed_conditions.append(clean_disease)
+                    
                 pdf.ln(5)
 
-                # Remarks (Left, only if not empty)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "Disease Descriptions:", ln=True, align="L")
+                pdf.set_font("Arial", size=12)
+                
+                for condition in diagnosed_conditions:
+                    for desc_code, (name, description, category) in disease_description.items():
+                        if name.lower() in condition.lower():
+                            pdf.set_font("Arial", "B", 11)
+                            pdf.cell(0, 10, f"- {name} ({category}):", ln=True)
+                            pdf.set_font("Arial", size=11)
+                            pdf.multi_cell(0, 10, f"  {description}")
+                            pdf.ln(1)
+                            break
+
+
+            # Disease Descriptions Section
+                #pdf.set_font("Arial", "B", 10)
+                #pdf.cell(0, 10, "Disease Descriptions:", ln=True, align="L")
+                #pdf.set_font("Arial", size=12)
+                #for code, (name, description) in disease_description.items():
+                    #pdf.set_font("Arial", "B", 11)
+                    #pdf.cell(0, 10, f"- {name}:", ln=True)
+                    #pdf.set_font("Arial", size=11)
+                    #pdf.multi_cell(0, 10, f"  {description}")
+                    #pdf.ln(1)
+
+                # Remarks
                 remarks = record.get("notes", "").strip()
                 if remarks:
                     pdf.set_font("Arial", "B", 12)
@@ -744,28 +823,34 @@ class ButtonHandlers:
                     pdf.multi_cell(0, 10, remarks)
                     pdf.ln(5)
 
-                # Uploaded Image Label (Center)
+                # Uploaded Image
                 pdf.set_font("Arial", "B", 12)
                 pdf.cell(0, 10, "Uploaded Image", ln=True, align="C")
-
-                # Fundus Image (Center Below Label)
                 image_path = record.get("image_path", "")
                 if os.path.exists(image_path):
-                    y_before_image = pdf.get_y()
-                    pdf.image(image_path, x=(210 - 100) // 2, y=y_before_image, w=100)  # Center the image
-                    pdf.ln(80)  # Adjust based on image height
+                    current_y = pdf.get_y()
+                    image_width = 80
+                    x_center = (210 - image_width) // 2
+                    pdf.image(image_path, x=x_center, y=current_y, w=image_width)
+                    pdf.set_y(current_y + 80)  # Move cursor below image
+                    pdf.ln(10)
 
-                # Move to the bottom of the page for "*** END OF RECORD ***"
-                pdf.set_y(-40)
+                # Doctor Name
+                pdf.set_y(-70)
                 pdf.set_font("Arial", "B", 12)
-                pdf.cell(0, 10, "*** END OF RECORD ***", ln=True, align="C")
+                pdf.cell(0, 10, "Doctor's Name:", ln=True)
+                pdf.set_font("Arial", "", 12)
+                pdf.cell(0, 10, "______________________________", ln=True)
+                pdf.cell(0,10, "Ophthalmologist", ln=True) 
+                
 
-                # Save the PDF
+
+                # Save PDF
                 filename = f"{record.get('patient_name', 'record').replace(' ', '_')}.pdf"
                 output_path = os.path.join(os.getcwd(), filename)
                 pdf.output(output_path)
 
-                # Open the PDF file
+                # Open PDF
                 try:
                     if sys.platform == "win32":
                         os.startfile(output_path)
@@ -776,7 +861,7 @@ class ButtonHandlers:
                 except Exception as e:
                     QMessageBox.warning(self.ui, "Warning", f"Failed to open PDF: {e}")
 
-                # Show success message
+                # Show Success Message
                 msg_box = QMessageBox(self.ui)
                 msg_box.setWindowTitle("Success")
                 msg_box.setText(f"PDF saved successfully at {output_path}")
@@ -784,51 +869,21 @@ class ButtonHandlers:
                 msg_box.setStyleSheet(
                     """
                     QMessageBox {
-                        background-color: white; /* Plain white background */
-                        color: black; /* Ensure text is black */
+                        background-color: white;
+                        color: black;
                     }
                     QLabel {
-                        color: black; /* Ensure text is black */
+                        color: black;
                     }
                     QPushButton {
-                        background-color: white; /* Plain button background */
+                        background-color: white;
                         border: 1px solid #dcdcdc;
-                        color: black; /* Ensure button text is black */
+                        color: black;
                         padding: 5px;
                     }
                     QPushButton:hover {
-                        background-color: #f0f0f0; /* Slight hover effect */
+                        background-color: #f0f0f0;
                     }
                     """
                 )
                 msg_box.exec()
-            else:
-                self._show_message("Warning", "No record found for the selected row.")
-        else:
-            self._show_message("Warning", "Please select a record to print.")
-
-    def _show_message(self, title, message):
-        """Display a styled message box."""
-        msg_box = QMessageBox(self.ui)
-        msg_box.setWindowTitle(title)
-        msg_box.setText(message)
-        msg_box.setIcon(QMessageBox.Warning)
-        msg_box.setStyleSheet("""
-            QMessageBox {
-                background-color: white;
-                color: black;
-            }
-            QLabel {
-                color: black;
-            }
-            QPushButton {
-                background-color: white;
-                border: 1px solid #dcdcdc;
-                color: black;
-                padding: 5px;
-            }
-            QPushButton:hover {
-                background-color: #f0f0f0;
-            }
-        """)
-        msg_box.exec()
