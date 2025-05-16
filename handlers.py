@@ -329,35 +329,52 @@ class ButtonHandlers:
     def on_search_text_changed(self, text):
         """Filter the history table based on the search text and archived status."""
         records = self.db_manager.fetch_records(show_archived=False)  # Fetch only non-archived records
-        filtered_records = [
-            record for record in records
-            if text.lower() in record.get("patient_name", "").lower() or
-               text.lower() in record.get("notes", "").lower() or
-               any(text.lower() in disease.lower() for disease in record.get("diagnosis", {}).keys())
-        ]
+        filtered_records = []
+        for record in records:
+            # Gather all diagnosis names from all eyes
+            all_diseases = []
+            if isinstance(record.get("diagnosis", {}), dict):
+                for diag in record["diagnosis"].values():
+                    if isinstance(diag, dict):
+                        all_diseases.extend(diag.keys())
+            # Search in patient_name, notes, or any diagnosis
+            if (
+                text.lower() in record.get("patient_name", "").lower()
+                or text.lower() in record.get("notes", "").lower()
+                or any(text.lower() in disease.lower() for disease in all_diseases)
+            ):
+                filtered_records.append(record)
 
         self.ui.historyTable.setRowCount(len(filtered_records))
 
         for row_idx, record in enumerate(filtered_records):
-            # Load and resize image for each row
+            # Use the first image for thumbnail
             image_path = record.get("image_path", "")
             pixmap = QPixmap(image_path)
             scaled_pixmap = pixmap.scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
             # Insert image in first column
             image_item = QTableWidgetItem()
-            image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
-            image_item.setData(Qt.UserRole, record["_id"])  # Store the unique _id in the custom data role
+            image_item.setData(Qt.DecorationRole, scaled_pixmap)
+            image_item.setData(Qt.UserRole, record["_id"])
             self.ui.historyTable.setItem(row_idx, 0, image_item)
 
-            # Insert other data into columns
-            row_data = [
-                record.get("eye", ""),  # Replace "file_name" with "eye"
-                record.get("patient_name", ""),
-                ", ".join(record.get("diagnosis", {}).keys()),
-                record.get("date", ""),
-                record.get("notes", "")
-            ]
+            # Eyes (comma-separated)
+            eyes = ", ".join(img.get("eye", "") for img in record.get("images", []))
+            # Patient name
+            patient_name = record.get("patient_name", "")
+            # Diagnoses (all, comma-separated)
+            all_diseases = []
+            if isinstance(record.get("diagnosis", {}), dict):
+                for diag in record["diagnosis"].values():
+                    if isinstance(diag, dict):
+                        all_diseases.extend(diag.keys())
+            diagnoses = ", ".join(all_diseases)
+            # Date and notes
+            date = record.get("date", "")
+            notes = record.get("notes", "")
+
+            row_data = [eyes, patient_name, diagnoses, date, notes]
             for col_idx, text in enumerate(row_data, start=1):
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
@@ -365,65 +382,39 @@ class ButtonHandlers:
 
     def refresh_history_table(self, show_archived=False):
         """Refresh the history table to show all records, excluding archived ones by default."""
-        # Define a mapping of full diagnosis names to their shortcuts
-        diagnosis_shortcuts = {
-            "Diabetic Retinopathy": "DR",
-            "Normal": "NORMAL",
-            "Media Haze": "MH",
-            "Optic Disc Cupping": "ODC",
-            "Tessellation": "TSLN",
-            "Age-Related Macular Degeneration": "ARMD",
-            "Drusen": "DN",
-            "Myopia": "MYA",
-            "Branch Retinal Vein Occlusion": "BRVO",
-            "Optic Disc Pallor": "ODP",
-            "Central Retinal Vein Occlusion": "CRVO",
-            "Choroidal Neovascularization": "CNV",
-            "Retinitis": "RS",
-            "Optic Disc Edema": "ODE",
-            "Laser Scars": "LS",
-            "Central Serous Retinopathy": "CSR",
-            "Hypertensive Retinopathy": "HTR",
-            "Arteriosclerotic Retinopathy": "ASR",
-            "Chorioretinitis": "CRS"
-        }
-
-        # Fetch all records from the database
         records = self.db_manager.fetch_records()
-
-        # Filter records based on the archived status
         filtered_records = [
             record for record in records if record.get("archived", False) == show_archived
         ]
-
         self.ui.historyTable.setRowCount(len(filtered_records))
 
         for row_idx, record in enumerate(filtered_records):
-            # Load and resize image for each row
+            # Use the first image for thumbnail
             image_path = record.get("image_path", "")
             pixmap = QPixmap(image_path)
             scaled_pixmap = pixmap.scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
-            # Insert image in first column
             image_item = QTableWidgetItem()
-            image_item.setData(Qt.DecorationRole, scaled_pixmap)  # Set image as decoration
-            image_item.setData(Qt.UserRole, record["_id"])  # Store the unique _id in the custom data role
+            image_item.setData(Qt.DecorationRole, scaled_pixmap)
+            image_item.setData(Qt.UserRole, record["_id"])
             self.ui.historyTable.setItem(row_idx, 0, image_item)
 
-            # Reverse map diagnosis names to shortcuts
-            diagnosis = record.get("diagnosis", {})
-            diagnosis_shortcuts_list = [
-                diagnosis_shortcuts.get(name, name) for name in diagnosis.keys()
-            ]
+            # Eyes (comma-separated)
+            eyes = ", ".join(img.get("eye", "") for img in record.get("images", []))
+            # Patient name
+            patient_name = record.get("patient_name", "")
+            # Diagnoses (all, comma-separated)
+            all_diseases = []
+            if isinstance(record.get("diagnosis", {}), dict):
+                for diag in record["diagnosis"].values():
+                    if isinstance(diag, dict):
+                        all_diseases.extend(diag.keys())
+            diagnoses = ", ".join(all_diseases)
+            # Date and notes
+            date = record.get("date", "")
+            notes = record.get("notes", "")
 
-            # Insert other data into columns
-            row_data = [
-                record.get("eye", ""),
-                record.get("patient_name", ""),
-                ", ".join(diagnosis_shortcuts_list),  # Use shortcuts for diagnosis
-                record.get("date", ""),
-                record.get("notes", "")
-            ]
+            row_data = [eyes, patient_name, diagnoses, date, notes]
             for col_idx, text in enumerate(row_data, start=1):
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
@@ -518,6 +509,9 @@ class ButtonHandlers:
                 self.per_image_date[idx] = self.shared_date
                 self.per_image_remarks[idx] = self.shared_remarks
             # --------------------------------------------------
+            # Ensure name/remarks fields are always shared
+            self.ui.nameValue.setText(self.shared_name)
+            self.ui.remarkValue.setText(self.shared_remarks)
 
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
             self.update_classification_navigation_buttons()
@@ -549,13 +543,15 @@ class ButtonHandlers:
             self.per_image_date[0] = self.shared_date
             self.per_image_remarks[0] = self.shared_remarks
             # -------------------------------------------------------
+            self.ui.nameValue.setText(self.shared_name)
+            self.ui.remarkValue.setText(self.shared_remarks)
 
             # Do not save the record here; saving should only happen explicitly
             self.ui.stackedWidget.setCurrentIndex(2)  # Move to the classification page
             self.update_classification_navigation_buttons()
 
     def save_results(self):
-        """Save all uploaded images and their respective diagnoses to the database."""
+        """Save all uploaded images and their respective diagnoses to the database as a single record."""
         if not self.image_paths:
             QMessageBox.warning(
                 self.ui,
@@ -566,13 +562,17 @@ class ButtonHandlers:
             return
 
         # --- Save current fields for the current image before saving ---
+        # Always update shared fields for both images before saving
+        self.shared_name = self.ui.nameValue.text()
+        self.shared_remarks = self.ui.remarkValue.text()
+        for idx in range(len(self.image_paths)):
+            self.per_image_name[idx] = self.shared_name
+            self.per_image_remarks[idx] = self.shared_remarks
         self.shared_dropdown_values[self.current_image_index] = self.ui.dropdown.currentText()
-        self.per_image_name[self.current_image_index] = self.ui.nameValue.text()
         self.per_image_date[self.current_image_index] = self.ui.dateValue.text()
-        self.per_image_remarks[self.current_image_index] = self.ui.remarkValue.text()
         # --------------------------------------------------------------
 
-        name = self.ui.nameValue.text()
+        name = self.shared_name
         if not name.strip():  # Check if the name is empty
             QMessageBox.warning(
                 self.ui,
@@ -583,10 +583,7 @@ class ButtonHandlers:
             return
 
         date = self.ui.dateValue.text()
-        remark = self.ui.remarkValue.text()
-
-        if self.image_paths:
-            self.shared_dropdown_values[self.current_image_index] = self.ui.dropdown.currentText()
+        remark = self.shared_remarks
 
         # Ensure each image has a corresponding dropdown value
         eye_selections = []
@@ -625,39 +622,43 @@ class ButtonHandlers:
             "CRS": "Chorioretinitis"
         }
 
-        # Save each image and its diagnosis
+        # Prepare combined record
+        images = []
+        diagnosis = {}
         for i, image_path in enumerate(self.image_paths):
-            if not image_path.strip():  # Skip blank or invalid paths
+            if not image_path.strip():
                 continue
-
             result_dict = self.predictor.predict(image_path)
             formatted_results = {
                 disease_mapping.get(disease, disease): data["probability"]
                 for disease, data in result_dict["class_predictions"].items() if data["prediction"] == 1
             }
-
-            # Prepare the record to save
-            record = {
+            images.append({
                 "image_path": image_path,
                 "file_name": os.path.basename(image_path),
-                "patient_name": self.per_image_name.get(i, self.shared_name),
-                "eye": eye_selections[i],  # Use the corresponding eye selection for each image
-                "diagnosis": formatted_results,
-                "date": datetime.strptime(self.per_image_date.get(i, self.shared_date), "%B %d, %Y").strftime("%Y-%m-%d"),
-                "notes": self.per_image_remarks.get(i, self.shared_remarks),
-                "archived": False  # Set archived status to False by default
-            }
+                "eye": eye_selections[i]
+            })
+            diagnosis[eye_selections[i]] = formatted_results
 
-            # Save the record to the database
-            self.db_manager.save_record(record)
+        # Use the first image for thumbnail/preview
+        record = {
+            "images": images,
+            "image_path": images[0]["image_path"] if images else "",
+            "file_name": images[0]["file_name"] if images else "",
+            "patient_name": name,
+            "diagnosis": diagnosis,
+            "date": datetime.strptime(self.per_image_date.get(0, self.shared_date), "%B %d, %Y").strftime("%Y-%m-%d"),
+            "notes": remark,
+            "archived": False
+        }
 
-        # Refresh the history table after saving
+        self.db_manager.save_record(record)
         self.refresh_history_table()  # Ensure the table is updated after saving
 
         QMessageBox.information(
             self.ui,
             "Success",
-            "<span style='color: black;'>All records saved successfully!</span>",
+            "<span style='color: black;'>Record saved successfully!</span>",
             QMessageBox.Ok
         )
 
@@ -666,10 +667,14 @@ class ButtonHandlers:
         """Navigate to the previous image in the classification view."""
         if self.current_image_index > 0:
             # --- Save current fields before switching ---
+            # Always update shared fields for both images
+            self.shared_name = self.ui.nameValue.text()
+            self.shared_remarks = self.ui.remarkValue.text()
+            for idx in range(len(self.image_paths)):
+                self.per_image_name[idx] = self.shared_name
+                self.per_image_remarks[idx] = self.shared_remarks
             self.shared_dropdown_values[self.current_image_index] = self.ui.dropdown.currentText()
-            self.per_image_name[self.current_image_index] = self.ui.nameValue.text()
             self.per_image_date[self.current_image_index] = self.ui.dateValue.text()
-            self.per_image_remarks[self.current_image_index] = self.ui.remarkValue.text()
             # --------------------------------------------
 
             self.current_image_index -= 1
@@ -684,10 +689,14 @@ class ButtonHandlers:
         """Navigate to the next image in the classification view."""
         if self.current_image_index < len(self.image_paths) - 1:
             # --- Save current fields before switching ---
+            # Always update shared fields for both images
+            self.shared_name = self.ui.nameValue.text()
+            self.shared_remarks = self.ui.remarkValue.text()
+            for idx in range(len(self.image_paths)):
+                self.per_image_name[idx] = self.shared_name
+                self.per_image_remarks[idx] = self.shared_remarks
             self.shared_dropdown_values[self.current_image_index] = self.ui.dropdown.currentText()
-            self.per_image_name[self.current_image_index] = self.ui.nameValue.text()
             self.per_image_date[self.current_image_index] = self.ui.dateValue.text()
-            self.per_image_remarks[self.current_image_index] = self.ui.remarkValue.text()
             # --------------------------------------------
 
             self.current_image_index += 1
@@ -699,10 +708,10 @@ class ButtonHandlers:
 
     def restore_shared_fields(self):
         """Restore the shared name, date, remarks, and dropdown value for the current image."""
-        # --- Restore per-image fields if available, else use shared values ---
-        self.ui.nameValue.setText(self.per_image_name.get(self.current_image_index, self.shared_name))
+        # --- Always use shared name and remarks for both images ---
+        self.ui.nameValue.setText(self.shared_name)
+        self.ui.remarkValue.setText(self.shared_remarks)
         self.ui.dateValue.setText(self.per_image_date.get(self.current_image_index, self.shared_date))
-        self.ui.remarkValue.setText(self.per_image_remarks.get(self.current_image_index, self.shared_remarks))
         self.ui.dropdown.setCurrentText(self.shared_dropdown_values.get(self.current_image_index, "Select Eye"))
         # ---------------------------------------------------------------------
 
@@ -735,91 +744,92 @@ class ButtonHandlers:
 
     @Slot()
     def on_row_double_clicked(self, item):
-        """Switch to the classification page when a row is double-clicked and set the image, result, name, date, and remark."""
-        self.current_row = item.row()  # Update the current row
-        self.update_record(self.current_row)
+        """Switch to the history viewer when a row is double-clicked and set the image, result, name, date, and remark."""
+        self.current_row = item.row()
+        self.load_record_view(self.current_row, image_index=0)
 
-    def update_record(self, row):
-        """Update the labels with the data from the specified row."""
-        record_id = self.ui.historyTable.item(row, 0).data(Qt.UserRole)  # Get the _id from the custom data role
-        print(f"Record ID for row {row}: {record_id}")  # Debug: Log the record ID
-
+    def load_record_view(self, row, image_index=0):
+        """Load the selected record and display the image at image_index (for multi-image records)."""
+        record_id = self.ui.historyTable.item(row, 0).data(Qt.UserRole)
         try:
-            # Fetch the record from the database using the _id
             record = self.db_manager.collection.find_one({"_id": ObjectId(record_id)})
         except Exception as e:
             print(f"Error fetching record for row {row}: {e}")
             record = None
 
-        print(f"Record fetched for row {row}: {record}")  # Debug: Log the fetched record
-
         if record:
-            result_dict = record.get("diagnosis", {})  # Get the result dictionary
-            name_text = record.get("patient_name", "")  # Get the name text
-            date_text = record.get("date", "")  # Get the date text
-            remark_text = record.get("notes", "")  # Get the remark text
-            eye_value = record.get("eye", "Select Eye")  # Get the eye value from the record
+            self.selected_record = record
+            self.selected_record_image_index = image_index
+            images = record.get("images", [])
+            if not images:
+                return
 
-            # Mapping of shortened names to full names
-            disease_mapping = {
-                "DR": "Diabetic Retinopathy",
-                "NORMAL": "Normal",
-                "MH": "Media Haze",
-                "ODC": "Optic Disc Cupping",
-                "TSLN": "Tessellation",
-                "ARMD": "Age-Related Macular Degeneration",
-                "DN": "Drusen",
-                "MYA": "Myopia",
-                "BRVO": "Branch Retinal Vein Occlusion",
-                "ODP": "Optic Disc Pallor",
-                "CRVO": "Central Retinal Vein Occlusion",
-                "CNV": "Choroidal Neovascularization",
-                "RS": "Retinitis",
-                "ODE": "Optic Disc Edema",
-                "LS": "Laser Scars",
-                "CSR": "Central Serous Retinopathy",
-                "HTR": "Hypertensive Retinopathy",
-                "ASR": "Arteriosclerotic Retinopathy",
-                "CRS": "Chorioretinitis"
-            }
+            # Clamp image_index
+            if image_index < 0:
+                image_index = 0
+            if image_index >= len(images):
+                image_index = len(images) - 1
 
-            # Format result text with disease names and confidence scores
+            image_info = images[image_index]
+            image_path = image_info.get("image_path", "")
+            eye_value = image_info.get("eye", "Select Eye")
+
+            # Find the diagnosis for this eye
+            diagnosis_dict = record.get("diagnosis", {})
+            diagnosis_for_eye = diagnosis_dict.get(eye_value, {})
+
+            # Format result text
             full_result_text = ""
-            for disease, probability in result_dict.items():
+            for disease, probability in diagnosis_for_eye.items():
                 if isinstance(probability, (int, float)):
                     full_result_text += f"{disease} ({probability * 100:.2f}%)\n\n"
                 elif isinstance(probability, dict) and probability.get("prediction") == 1:
                     full_result_text += f"{disease} ({probability.get('probability', 0) * 100:.2f}%)\n\n"
-
-            # Remove trailing newlines
             full_result_text = full_result_text.rstrip()
 
             # Convert date to "Month Day, Year" format
-            formatted_date = datetime.strptime(date_text, "%Y-%m-%d").strftime("%B %d, %Y")
+            date_text = record.get("date", "")
+            try:
+                formatted_date = datetime.strptime(date_text, "%Y-%m-%d").strftime("%B %d, %Y")
+            except Exception:
+                formatted_date = date_text
 
             # Update UI elements
-            image_path = record.get("image_path", "")
-            if image_path:
-                self.set_image_placeholder_history(image_path)
-                self.ui.resultPlaceholder_2.setText(full_result_text)
-                self.ui.resultPlaceholder_2.setWordWrap(True)
-                self.ui.resultPlaceholder_2.setFixedWidth(191)
-                self.ui.resultPlaceholder_2.adjustSize()
-                self.ui.resultPlaceholder_2.setVisible(True)
-                self.ui.nameValue_2.setText(name_text)
-                self.ui.dateValue_2.setText(formatted_date)
-                self.ui.remarkValue_2.setText(remark_text)
-                if isinstance(self.ui.dropdown_2, QComboBox):  # Ensure dropdown_2 is a QComboBox
-                    self.ui.dropdown_2.setCurrentText(eye_value)  # Set the dropdown_2 value
-                else:
-                    print("dropdown_2 is not a QComboBox.")  # Debugging message
-                self.ui.stackedWidget.setCurrentIndex(3)  # Move to history viewer
+            self.set_image_placeholder_history(image_path)
+            self.ui.resultPlaceholder_2.setText(full_result_text)
+            self.ui.resultPlaceholder_2.setWordWrap(True)
+            self.ui.resultPlaceholder_2.setFixedWidth(191)
+            self.ui.resultPlaceholder_2.adjustSize()
+            self.ui.resultPlaceholder_2.setVisible(True)
+            self.ui.nameValue_2.setText(record.get("patient_name", ""))
+            self.ui.dateValue_2.setText(formatted_date)
+            self.ui.remarkValue_2.setText(record.get("notes", ""))
+            if isinstance(self.ui.dropdown_2, QComboBox):
+                self.ui.dropdown_2.setCurrentText(eye_value)
+            self.ui.stackedWidget.setCurrentIndex(3)
 
-            # Update button visibility
-            self.ui.leftButton.setVisible(self.current_row > 0)
-            self.ui.rightButton.setVisible(self.current_row < self.ui.historyTable.rowCount() - 1)
+            # Update navigation buttons for images in this record
+            self.ui.leftButton.setVisible(image_index > 0)
+            self.ui.rightButton.setVisible(image_index < len(images) - 1)
         else:
-            print(f"No record found for row {row}.")  # Debug: Log if no record is found
+            print(f"No record found for row {row}.")
+
+    @Slot()
+    def navigate_left(self):
+        """Navigate to the previous image in the selected record."""
+        if hasattr(self, "selected_record") and hasattr(self, "selected_record_image_index"):
+            if self.selected_record_image_index > 0:
+                self.selected_record_image_index -= 1
+                self.load_record_view(self.current_row, self.selected_record_image_index)
+
+    @Slot()
+    def navigate_right(self):
+        """Navigate to the next image in the selected record."""
+        if hasattr(self, "selected_record") and hasattr(self, "selected_record_image_index"):
+            images = self.selected_record.get("images", [])
+            if self.selected_record_image_index < len(images) - 1:
+                self.selected_record_image_index += 1
+                self.load_record_view(self.current_row, self.selected_record_image_index)
 
     def set_image_placeholder_history(self, image_path):
         """Set the image in the imagePlaceholder_2 QLabel for the history viewer page."""
@@ -905,20 +915,6 @@ class ButtonHandlers:
         self.ui.resultPlaceholder.setWordWrap(True)  # Enable word wrap
         self.ui.resultPlaceholder.setFixedWidth(191)  # Set fixed width to 191
         self.ui.resultPlaceholder.adjustSize()  # Adjust the size of the QLabel to fit the text
-
-    @Slot()
-    def navigate_left(self):
-        """Navigate to the previous record."""
-        if self.current_row > 0:
-            self.current_row -= 1
-            self.update_record(self.current_row)
-
-    @Slot()
-    def navigate_right(self):
-        """Navigate to the next record."""
-        if self.current_row < self.ui.historyTable.rowCount() - 1:
-            self.current_row += 1
-            self.update_record(self.current_row)
 
     @Slot()
     def open_image_preview(self, event):
@@ -1090,32 +1086,48 @@ class ButtonHandlers:
                     pdf.cell(0, 10, f"Printed On: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", ln=True, align="R")
                     pdf.ln(5)
 
-                    # Diagnosis
+                    # Diagnosis (per eye) with disease/condition name, confidence, and type, plus description below
                     pdf.set_font("Arial", "B", 12)
                     pdf.cell(0, 10, "Diagnosis:", ln=True, align="L")
                     pdf.set_font("Arial", size=12)
-                    diagnosed_conditions = []
 
-                    for disease, confidence in record.get("diagnosis", {}).items():
-                        clean_disease = strip_html_tags(disease)
-                        pdf.cell(0, 10, f"- {clean_disease}: {confidence * 100:.2f}%", ln=True, align="L")
-                        diagnosed_conditions.append(clean_disease)
-
-                    pdf.ln(5)
-
-                    pdf.set_font("Arial", "B", 12)
-                    pdf.cell(0, 10, "Disease Descriptions:", ln=True, align="L")
-                    pdf.set_font("Arial", size=12)
-
-                    for condition in diagnosed_conditions:
-                        for desc_code, (name, description, category) in disease_description.items():
-                            if name.lower() in condition.lower():
+                    diagnosis = record.get("diagnosis", {})
+                    for eye, diseases in diagnosis.items():
+                        if isinstance(diseases, dict) and diseases:
+                            for disease, confidence in diseases.items():
+                                desc_text = ""
+                                disease_type = ""
+                                for desc_code, desc_tuple in disease_description.items():
+                                    name = desc_tuple[0]
+                                    description = desc_tuple[1]
+                                    # Some tuples have a third element (type)
+                                    if len(desc_tuple) > 2:
+                                        dtype = desc_tuple[2]
+                                    else:
+                                        dtype = ""
+                                    if name.lower() in disease.lower():
+                                        desc_text = description
+                                        disease_type = dtype
+                                        break
+                                # Print: OD (Left Eye): Diabetic Retinopathy (99.59%) - Disease
                                 pdf.set_font("Arial", "B", 11)
-                                pdf.cell(0, 10, f"- {name} ({category}):", ln=True)
-                                pdf.set_font("Arial", size=11)
-                                pdf.multi_cell(0, 10, f"  {description}")
+                                pdf.set_x(10)
+                                line = f"{eye}: {disease} ({confidence * 100:.2f}%)"
+                                if disease_type:
+                                    line += f" - {disease_type}"
+                                pdf.multi_cell(0, 8, line, align="L")
+                                # Print description below
+                                if desc_text:
+                                    pdf.set_font("Arial", size=10)
+                                    pdf.set_x(15)
+                                    pdf.multi_cell(0, 7, desc_text, align="L")
                                 pdf.ln(1)
-                                break
+                        else:
+                            pdf.set_font("Arial", "B", 11)
+                            pdf.set_x(10)
+                            pdf.multi_cell(0, 8, f"{eye}: No diagnosis", align="L")
+                            pdf.ln(1)
+                    pdf.ln(2)
 
                     # Remarks
                     remarks = record.get("notes", "").strip()
@@ -1126,20 +1138,41 @@ class ButtonHandlers:
                         pdf.multi_cell(0, 10, remarks)
                         pdf.ln(5)
 
-                    # Uploaded Image
-                    pdf.set_font("Arial", "B", 12)
-                    pdf.cell(0, 10, "Uploaded Image", ln=True, align="C")
-                    image_path = record.get("image_path", "")
-                    if os.path.exists(image_path):
-                        current_y = pdf.get_y()
+                    # Uploaded Images (move to before signature)
+                    images = record.get("images", [])
+                    if images:
+                        pdf.ln(5)
                         image_width = 80
-                        x_center = (210 - image_width) // 2
-                        pdf.image(image_path, x=x_center, y=current_y, w=image_width)
-                        pdf.set_y(current_y + 80)  # Move cursor below image
-                        pdf.ln(10)
+                        image_height = 60
+                        margin = 10
+                        start_y = pdf.get_y()
+                        total_width = len(images) * image_width + (len(images) - 1) * margin
+                        start_x = (210 - total_width) // 2
+                        # Draw images
+                        for idx, img in enumerate(images):
+                            image_path = img.get("image_path", "")
+                            file_name = img.get("file_name", "")
+                            eye = img.get("eye", "")
+                            x = start_x + idx * (image_width + margin)
+                            if os.path.exists(image_path):
+                                pdf.image(image_path, x=x, y=start_y, w=image_width, h=image_height)
+                        # Draw labels under each image (after all images are drawn)
+                        label_y = start_y + image_height + 2
+                        for idx, img in enumerate(images):
+                            file_name = img.get("file_name", "")
+                            eye = img.get("eye", "")
+                            x = start_x + idx * (image_width + margin)
+                            pdf.set_xy(x, label_y)
+                            pdf.set_font("Arial", "B", 10)
+                            label = f"{file_name} - {eye}"
+                            pdf.cell(image_width, 6, label, align="C")
+                        pdf.set_y(label_y + 10)
+                    else:
+                        pdf.set_font("Arial", "I", 10)
+                        pdf.cell(0, 10, "No images found", ln=True, align="C")
 
-                    # Doctor Name
-                    pdf.set_y(-70)
+                    # Doctor Name (move after images)
+                    pdf.ln(5)
                     pdf.set_font("Arial", "B", 12)
                     pdf.cell(0, 10, "Doctor's Name:", ln=True)
                     pdf.set_font("Arial", "", 12)
