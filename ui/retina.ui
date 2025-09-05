@@ -2603,11 +2603,25 @@ QTableCornerButton::section, QHeaderView::section:vertical {
            <string/>
           </property>
          </widget>
+         <widget class="QLineEdit" name="searchBar">
+          <property name="geometry">
+           <rect>
+            <x>434</x>
+            <y>23</y>
+            <width>221</width>
+            <height>35</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+         </widget>
          <zorder>historyBackButton</zorder>
          <zorder>line</zorder>
          <zorder>historyTable</zorder>
          <zorder>archiveButton</zorder>
          <zorder>printButton</zorder>
+         <zorder>searchBar</zorder>
         </widget>
        </item>
       </layout>
